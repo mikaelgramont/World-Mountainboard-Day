@@ -300,15 +300,21 @@ textarea[contenteditable] {-webkit-appearance: none;}
 
 
 @media screen and (max-width: 480px) {
-  background: url("../img/bg-480.jpg");
+  body {
+    background: url("../img/bg-480.jpg");
+  }
 }
 
 @media screen and (min-width: 481px) and (max-width: 1024px) {
-  background: url("../img/bg-1024.jpg");
+  body {
+    background: url("../img/bg-1024.jpg");
+  }
 }
 
 @media screen and (min-width: 1025px) {
-  background: url("../img/bg-1920.jpg");
+  body {
+    background: url("../img/bg-1920.jpg");
+  }
 }
 
 
