@@ -1,2 +1,2 @@
 tmp/*
-logs/*
+logs/*.log
