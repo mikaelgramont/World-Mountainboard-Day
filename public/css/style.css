@@ -297,3 +297,18 @@ textarea[contenteditable] {-webkit-appearance: none;}
   p, h2, h3 { orphans: 3; widows: 3; }
   h2, h3 { page-break-after: avoid; }
 }
+
+
+@media screen and (max-width: 480px) {
+  background: url("../img/bg-480.jpg");
+}
+
+@media screen and (min-width: 481px) and (max-width: 1024px) {
+  background: url("../img/bg-1024.jpg");
+}
+
+@media screen and (min-width: 1025px) {
+  background: url("../img/bg-1920.jpg");
+}
+
+
