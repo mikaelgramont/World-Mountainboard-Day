@@ -1,0 +1,33 @@
+- Figure out how to get templates that render on server and client
+
+
+- Use cases:
+  
+Ahead of time
+User A wants to find places to ride around where he is right now
+	List spots:
+		near the user
+		in their country and others
+			List countries
+		in their region
+			List regions per country
+	
+User B wants to enter his favorite spot into the database
+	POST/PUT a spot
+User C wants to show where he's going to ride on WMD
+	POST/PUT checkin at WMD date, at given spot
+User D wants to see who's going to be riding around a given location on WMD
+	List checkins around a location at a given date 
+User E wants to post a picture of an existing spot he's found in the database
+	POST/PUT a media with a given spot
+	
+On WMD
+User A wants to check-in to a spot in the database
+	POST/PUT checkin at WMD date
+User B wants to check-in to a new spot
+	POST/PUT a spot
+	POST/PUT checkin at WMD date, at given spot
+User C wants to post a picture he just took at a spot he checked-in to
+	POST/PUT a media with spot at last checkin
+User D wants to post a picture he just took, of a spot he found in the DB	
+	POST/PUT a media with a chosen spot
