@@ -317,4 +317,4 @@ textarea[contenteditable] {-webkit-appearance: none;}
   }
 }
 
-
+dd,dt {display: inline-block;}

@@ -34,12 +34,6 @@
   
   <!-- Mobile IE allows us to activate ClearType technology for smoothing fonts for easy reading -->
   <meta http-equiv="cleartype" content="on">
-  <meta property="og:title" content="World Mountainboard Day 2012 - Where are you riding on June 23rd?" />
-  <meta property="og:type" content="company" />
-  <meta property="og:site_name" content="World Mountainboard Day 2012" />
-  <meta property="og:url" content="http://worldmountainboardday.com" />
-  <meta property="og:image" content="https://launchrock-assets.s3.amazonaws.com/facebook-files/V0VeznB63KA93wl.jpg" />
-  <meta property="og:description" content="World Mountainboard Day is a new website launching soon, sign up to be notified!" />
 
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -47,9 +41,25 @@
 <body>
   <div id="container">
     <div id="main" role="main">
-		<div rel="FUZR76QR" class="lrdiscoverwidget" data-logo="on" data-background="on" data-share-url="worldmountainboardday.com" data-css=""></div>
+		<div id="riders">
+          <ul id="rider-list"></ul>
+        </div>
     </div>
   </div> <!--! end of #container -->
-  <script src="http://launchrock-ignition.s3.amazonaws.com/ignition.1.1.js"></script>
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.1.min.js"><\/script>')</script>
+  <script src="js/libs/underscore-1.1.6.js"></script>
+  <script src="js/libs/backbone.js"></script>
+    
+  <script type="text/template" id="rider-template">
+    <div class="rider">
+    <dl>
+      <dd>name</dd>
+      <dt><%= username %></dt>
+      <dd>country</dd>
+      <dt><%= country.title %></dt>
+    </dl> 
+    </div>
+  </script>
+  <script src="./js/riderstest.js"></script>
 </body>
 </html>
