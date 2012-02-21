@@ -1,4 +1,4 @@
-tmp/*
+design/*
 logs/*.log
 .DS_Store
 .project

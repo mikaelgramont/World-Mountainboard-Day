@@ -1,4 +1,8 @@
-- Figure out how to get templates that render on server and client
+Find a logo and a font to represent it in small displays
+Determine timezone based on location
+	0-new Date().getTimezoneOffset()/60
+Not serve Rakefile, css/src, css/lib, js/src, js/lib
+
 
 
 - Use cases:
@@ -35,3 +39,30 @@ User D wants to post a picture he just took, of a spot he found in the DB
 TODO
 	delete user => change status to invalid?
 	email personalisation depending on site
+	
+http://www.jaimerios.com/?p=39
+var R = 6371; // km
+var dLat = (lat2-lat1).toRad();
+var dLon = (lon2-lon1).toRad();
+var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+ 
+Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * Math.sin(dLon/2) * Math.sin(dLon/2);
+ 
+var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+var d = R * c;
+
+
+
+
+Responsive app:
+ - works on mobile landscape/portrait
+ - larger screens (tablets)
+ - desktop
+Uses twitter bootstrap as a framework for CSS
+Uses Backbone as a client-side framework
+Templates must be served from the public/templates/ folder
+These same templates must be able to render on the server side.
+This means that hitting a url directly (without ajax) must result in the same rendering but wrapped (header, nav, footer)
+So we need a templating language that works in PHP and JS => mustache
+ 
+ 
