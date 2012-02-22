@@ -1,15 +1,11 @@
 // app.js
 console.log('executing code in js/src/app/main.js')
-define([
-    'jquery', 
-    'underscore',
-    'backbone'
-], function($, _, Backbone){
+define(['jquery','underscore','backbone'], function($, _, Backbone){
     return {
         initialize: function(){
             // you can use $, _ or Backbone here
         	console.log('initializing app');
-        	init();        	
+        	init();
         }
     };
 });
