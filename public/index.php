@@ -34,13 +34,64 @@ foreach($dependencies as $k => $v) {
 </head>
 
 <body>
-  <div id="container">
-	<div id="main" role="main">
-		<div id="riders">
+	<header>
+		<div class="container">
+			<h1>World Mountainboard Day</h1>
+			<nav class="main">
+				<ul>
+					<li><a href="/locations/">Locations</a></li>
+					<li><a href="/riders/">Riders</a></li>
+					<li><a href="/sessions/">Sessions</a></li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+		
+	<div id="main" role="main" class="main container">
+		<section id="riders">
+			<h1>Riders</h1>
 			<ul id="rider-list"></ul>
-		</div>    
+			<!-- Here, insert icons to represent actions the user might want to take -->
+		</section>
+		<aside class="main">
+			<!-- Here, insert things that will be shown on desktop, but not on mobile -->
+			<article>
+				<h3>Latest spot</h3>
+				<a href="/spots/1/" class="spot">_Atlanta_</a>
+			</article>
+			<article>
+				<h3>Latest rider</h3>
+				<a href="/riders/1/" class="rider">_Pelican_</a>
+			</article>
+			<article>
+				<h3>Latest photo</h3>
+				<a href="/media/1/" class="photo">_Stalefish_</a>
+			</article>
+			<figure>
+				<p class="checkin">
+					<a href="/checkins/now/">23 riders</a> are riding right now!
+				</p>
+				<p class="spot">
+					Our database currently has <a href="/checkins/now/">84 spots</a> in <a href="/countries/">16 countries!</a>
+				</p>
+			</figure>
+		</aside>
 	</div>
-  </div> <!--! end of #container -->
+	
+	<footer>
+		<div class="container">
+			<nav>
+				<ul>
+					<li><a href="/about/">About</a></li>
+					<li><a href="/ridedb/">RideDB</a></li>
+					<li><a href="/contact/">Contact</a></li>
+				</ul>
+			</nav>
+		</div>
+	</footer>
+  
+  
+	
   <script>
   require.config({
     paths: {
@@ -56,14 +107,10 @@ foreach($dependencies as $k => $v) {
   
   </script>
   <script type="text/template" id="rider-template">
-	  <div class="rider">
-	  <dl>
-	    <dd>name</dd>
-	    <dt><%= username %></dt>
-    	<dd>country</dd>
-    	<dt><%= country.title %></dt>
-  	  </dl> 
- 	  </div>
+	<h2><a href="/riders/<%= userId %>/" class="rider"><%= username %></a></h2>
+	<% if (country.id) {%>
+   		<p class="country">Country: <a href="/countries/<%= country.id %>"><%= country.title %></a></p>
+	<% } %>
   </script>
 </body>
 </html>

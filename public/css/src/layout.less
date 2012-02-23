@@ -1,0 +1,51 @@
+/*
+ * This file will contain rules to setup different layout dimensions
+ * in response to media queries  
+ */
+@desktopWidth: 970px;
+
+@headerFooterBackground: #333;
+@logoColor: #eee;
+@headerLinks: #eee;
+@navHeight: 50px;
+
+.container {
+  width: @desktopWidth;
+  margin: 0 auto;
+}
+
+header, footer {
+  background: @headerFooterBackground;
+}
+
+header h1 {
+  color: @logoColor;
+}
+
+nav {
+  height: @navHeight;
+  padding: 0 200px;
+}
+
+nav li {
+  float: left;
+  width: 100px;
+  height: @navHeight;
+  font-size: 16px;
+  line-height: @navHeight;
+}
+
+nav a {
+  color: @headerLinks;
+}
+
+.main section {
+  float: left;
+  width: 750px;
+  margin-right: 20px;
+}
+
+aside.main {
+  float: right;
+  width: 200px;
+}

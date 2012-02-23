@@ -1,0 +1,26 @@
+/* WIDTHS */
+.container {
+  width: 970px;
+  margin: 0 auto;
+}
+header,
+footer {
+  background: #333333;
+}
+header h1 {
+  color: #eeeeee;
+}
+nav {
+  height: 50px;
+  padding: 0 200px;
+}
+nav li {
+  float: left;
+  width: 100px;
+  height: 50px;
+  font-size: 16px;
+  line-height: 50px;
+}
+nav a {
+  color: #eeeeee;
+}
