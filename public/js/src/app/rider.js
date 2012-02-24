@@ -1,4 +1,5 @@
 /******************************************************************************
+ * js/src/app/rider.js
  * Rider model, collection and view
  *****************************************************************************/
 require(['jquery','underscore','backbone'], function($, _, Backbone){
