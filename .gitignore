@@ -1,5 +1,6 @@
 .project
 .settings
 tmp/*
+design/*
 logs/*.log
 .DS_Store

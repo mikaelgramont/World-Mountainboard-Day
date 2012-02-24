@@ -1,0 +1,92 @@
+/*
+ * This file will contain rules to setup different layout dimensions
+ * in response to media queries  
+ */
+@desktopWidthThreshold: 1008px;
+@desktopWidth: 970px;
+
+@mobileLandscapeWidthThreshold: 480px;
+@mobileLandscapeWidth: 450px;
+
+@mobilePortraitWidthThreshold: 320px;
+@mobilePortraitWidth: 300px;
+
+
+
+
+@headerFooterBackground: #333;
+@logoColor: #eee;
+@headerLinks: #eee;
+@navHeight: 50px;
+
+.container {
+  width: @mobilePortraitWidth;
+  margin: 0 auto;
+}
+
+header, footer {
+  background: @headerFooterBackground;
+}
+
+header h1 {
+	font-size: 16px;
+	color: @logoColor;
+}
+
+nav {
+  height: @navHeight;
+}
+
+nav li {
+  float: left;
+  height: @navHeight;
+  margin: 5px;
+  font-size: 16px;
+  line-height: @navHeight;
+}
+
+nav a {
+  color: @headerLinks;
+}
+
+.main section {
+}
+
+aside.main {
+	display: none;
+}
+
+@media (min-width: @mobileLandscapeWidthThreshold) {
+	.container {
+		width: @mobilePortraitWidth;
+	}
+	.main section {
+		float: left;
+		clear: both;
+	}
+	aside.main {
+		display: block;
+	}
+}
+
+@media (min-width: @desktopWidthThreshold) {
+	.container {
+		width: @desktopWidth;
+	}
+	.main section {
+		float: left;
+		margin-right: 20px;
+		width: 750px;
+	}
+	aside.main {
+		float: right;
+		width: 200px;
+	}
+}
+
+@media (max-width: @mobilePortraitWidthThreshold) {
+	aside.main {
+  		
+	}
+}
+
