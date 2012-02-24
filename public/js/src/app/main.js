@@ -1,6 +1,9 @@
-// app.js
-console.log('js/src/app/main.js - app loading')
-define(['jquery','underscore','backbone'], function($, _, Backbone){
+/******************************************************************************
+ * js/src/app/main.js
+ * Point of entry into the application
+ *****************************************************************************/
+define('app', ['jquery','underscore','backbone'], function($, _, Backbone){
+	console.log('js/src/app/main.js - defining app')
     return {
         initialize: function(){
         	  // The Application
