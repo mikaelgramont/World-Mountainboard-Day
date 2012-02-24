@@ -2,27 +2,15 @@
  * This file will contain rules to setup different layout dimensions
  * in response to media queries  
  */
+@desktopWidthThreshold: 1008px;
 @desktopWidth: 970px;
-@mobileWidthLandscape: 480px;
-@mobileWidthPortrait: 320px;
 
-@media (max-width: @mobileWidthPortrait) {
-	.main aside {
-	  display: none;
-	}
-}
+@mobileLandscapeWidthThreshold: 480px;
+@mobileLandscapeWidth: 450px;
 
-@media (max-width: @mobileWidthLandscape) {
-	.main aside {
-	  display: none;
-	}
-}
+@mobilePortraitWidthThreshold: 320px;
+@mobilePortraitWidth: 300px;
 
-@media (max-width: @desktopWidth) {
-	.main aside {
-	  display: block;
-	}
-}
 
 
 
@@ -32,7 +20,7 @@
 @navHeight: 50px;
 
 .container {
-  width: @desktopWidth;
+  width: @mobilePortraitWidth;
   margin: 0 auto;
 }
 
@@ -41,18 +29,18 @@ header, footer {
 }
 
 header h1 {
-  color: @logoColor;
+	font-size: 16px;
+	color: @logoColor;
 }
 
 nav {
   height: @navHeight;
-  padding: 0 200px;
 }
 
 nav li {
   float: left;
-  width: 100px;
   height: @navHeight;
+  margin: 5px;
   font-size: 16px;
   line-height: @navHeight;
 }
@@ -62,12 +50,43 @@ nav a {
 }
 
 .main section {
-  float: left;
-  width: 750px;
-  margin-right: 20px;
 }
 
 aside.main {
-  float: right;
-  width: 200px;
+	display: none;
 }
+
+@media (min-width: @mobileLandscapeWidthThreshold) {
+	.container {
+		width: @mobilePortraitWidth;
+	}
+	.main section {
+		float: left;
+		clear: both;
+	}
+	aside.main {
+		display: block;
+	}
+}
+
+@media (min-width: @desktopWidthThreshold) {
+	.container {
+		width: @desktopWidth;
+	}
+	.main section {
+		float: left;
+		margin-right: 20px;
+		width: 750px;
+	}
+	aside.main {
+		float: right;
+		width: 200px;
+	}
+}
+
+@media (max-width: @mobilePortraitWidthThreshold) {
+	aside.main {
+  		
+	}
+}
+

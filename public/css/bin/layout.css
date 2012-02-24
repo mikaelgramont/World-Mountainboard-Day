@@ -3,7 +3,7 @@
  * in response to media queries  
  */
 .container {
-  width: 970px;
+  width: 300px;
   margin: 0 auto;
 }
 header,
@@ -11,28 +11,51 @@ footer {
   background: #333333;
 }
 header h1 {
+  font-size: 16px;
   color: #eeeeee;
 }
 nav {
   height: 50px;
-  padding: 0 200px;
 }
 nav li {
   float: left;
-  width: 100px;
   height: 50px;
+  margin: 5px;
   font-size: 16px;
   line-height: 50px;
 }
 nav a {
   color: #eeeeee;
 }
-.main section {
-  float: left;
-  width: 750px;
-  margin-right: 20px;
-}
 aside.main {
-  float: right;
-  width: 200px;
+  display: none;
+}
+@media (min-width: 480px) {
+  .container {
+    width: 300px;
+  }
+  .main section {
+    float: left;
+    clear: both;
+  }
+  aside.main {
+    display: block;
+  }
+}
+@media (min-width: 1008px) {
+  .container {
+    width: 970px;
+  }
+  .main section {
+    float: left;
+    margin-right: 20px;
+    width: 750px;
+  }
+  aside.main {
+    float: right;
+    width: 200px;
+  }
+}
+@media (max-width: 320px) {
+  
 }
