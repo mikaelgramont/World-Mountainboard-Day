@@ -3,6 +3,28 @@
  * in response to media queries  
  */
 @desktopWidth: 970px;
+@mobileWidthLandscape: 480px;
+@mobileWidthPortrait: 320px;
+
+@media (max-width: @mobileWidthPortrait) {
+	.main aside {
+	  display: none;
+	}
+}
+
+@media (max-width: @mobileWidthLandscape) {
+	.main aside {
+	  display: none;
+	}
+}
+
+@media (max-width: @desktopWidth) {
+	.main aside {
+	  display: block;
+	}
+}
+
+
 
 @headerFooterBackground: #333;
 @logoColor: #eee;
