@@ -3,7 +3,7 @@
  * 
  * Rider model, collection and view
  *****************************************************************************/
-define(['jquery', 'underscore', 'backbone'], function($, _, Backbone){
+define(['jquery', 'underscore', 'backbone', 'bootstrap/bootstrap-modal'], function($, _, Backbone){
 	var model = Backbone.Model.extend({
 		// Default attributes for a rider item.
 		defaults: function() {
@@ -27,7 +27,12 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone){
 		template: _.template($('#rider-template').html()),
 	
 		events: {
-			
+			'click': function(e){
+				$("#myModal").modal().html
+					(_.template($('#modal-template').html(), this.model.attributes)
+				);
+				e.preventDefault();
+			}
 		},
 	
 		// The RiderView listens for changes to its model, re-rendering.

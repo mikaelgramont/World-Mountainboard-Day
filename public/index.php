@@ -76,6 +76,9 @@ $config = new Zend_Config_Ini('../config.ini', APPLICATION_ENV);
 			</nav>
 		</div>
 	</footer>
+    
+    <div class="modal" id="myModal"></div>
+    
   <script>
     var require = {
     	'baseUrl' : 'js/lib'
@@ -88,9 +91,23 @@ $config = new Zend_Config_Ini('../config.ini', APPLICATION_ENV);
 
   <script type="text/template" id="rider-template">
 	<h2><a href="/riders/<%= userId %>/" class="rider"><%= username %></a></h2>
-	<% if (country.id) {%>
-   		<p class="country">Country: <a href="/countries/<%= country.id %>"><%= country.title %></a></p>
-	<% } %>
   </script>
+  
+  <script type="text/template" id="modal-template">
+    <div class="modal-header">
+	    <a class="close" data-dismiss="modal">×</a>
+    	<h3><%= username %></h3>
+    </div>
+    <div class="modal-body">
+		<% if (country.id) {%>
+   			<p class="country">Country: <a href="/countries/<%= country.id %>"><%= country.title %></a></p>
+		<% } %>
+    </div>
+    <div class="modal-footer">
+    	<a href="#" class="btn">Close</a>
+    </div>
+  </script>
+  
+  
 </body>
 </html>
