@@ -43,7 +43,7 @@ task :js do
       dname = d.strip.split("/")[-1]
       puts "---> Building optimized bundle for require.js"
       #`cat #{d}*.js > #{JS_BIN}/#{dname}.js`
-      `r.js -o name=../src/main out=#{JS_BIN}/main.js baseUrl=js/lib`
+      `r.js -o name=../src/main out=#{JS_BIN}/main.min.js baseUrl=js/lib`
       `r.js -o name=../src/main out=#{JS_BIN}/main.js baseUrl=js/lib optimize=none`
     end
   end

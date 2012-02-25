@@ -1,0 +1,7 @@
+[production]
+minify = true
+apiUrl = 'api.example.org'
+
+[development : production]
+minify = false
+apiUrl = 'api.example.dev'

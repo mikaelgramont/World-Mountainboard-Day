@@ -11565,11 +11565,11 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 }));
 
 /******************************************************************************
+ * js/src/app/rider.js
+ * 
  * Rider model, collection and view
  *****************************************************************************/
 define('../src/app/rider',['jquery', 'underscore', 'backbone'], function($, _, Backbone){
-	console.log('js/src/app/rider.js - setting up the ride model, collection and view')
-	
 	var model = Backbone.Model.extend({
 		// Default attributes for a rider item.
 		defaults: function() {
@@ -11582,7 +11582,7 @@ define('../src/app/rider',['jquery', 'underscore', 'backbone'], function($, _, B
 	var collection = Backbone.Collection.extend({
 		// Reference to this collection's model.
 		model: model,
-		url: '//test.api.ridedb.dev/riders/'
+		url: window.config.apiUrl + '/riders/'
 	});
 	
 	var view = Backbone.View.extend({
@@ -11625,7 +11625,8 @@ define('../src/app/rider',['jquery', 'underscore', 'backbone'], function($, _, B
 	};
 });
 /******************************************************************************
- * js/src/app/main.js
+ * js/src/main.js
+ * 
  * Point of entry into the application
  *****************************************************************************/
 require([
@@ -11637,13 +11638,8 @@ require([
    	// Application modules
    	'../src/app/rider',
 ], function($, _, Backbone, riderModule){
-	// The Application
-	// ---------------
-	
-	// Create our global collection of **Riders**.
+	// Start building the application
 	var riders = new riderModule.collection;
-	
-	// Our overall **AppView** is the top-level piece of UI.
 	var AppView = Backbone.View.extend({
 		el: $("#app"),
 		
@@ -11665,7 +11661,6 @@ require([
 		}
 	});
 	
-	  // Finally, we kick things off by creating the **App**.
 	var app = new AppView;
 });
 define("../src/main", function(){});

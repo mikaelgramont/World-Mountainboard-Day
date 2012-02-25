@@ -1,5 +1,6 @@
 /******************************************************************************
- * js/src/app/main.js
+ * js/src/main.js
+ * 
  * Point of entry into the application
  *****************************************************************************/
 require([
@@ -11,13 +12,8 @@ require([
    	// Application modules
    	'../src/app/rider',
 ], function($, _, Backbone, riderModule){
-	// The Application
-	// ---------------
-	
-	// Create our global collection of **Riders**.
+	// Start building the application
 	var riders = new riderModule.collection;
-	
-	// Our overall **AppView** is the top-level piece of UI.
 	var AppView = Backbone.View.extend({
 		el: $("#app"),
 		
@@ -39,6 +35,5 @@ require([
 		}
 	});
 	
-	  // Finally, we kick things off by creating the **App**.
 	var app = new AppView;
 });

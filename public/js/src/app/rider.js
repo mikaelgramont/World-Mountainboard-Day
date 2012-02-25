@@ -1,4 +1,6 @@
 /******************************************************************************
+ * js/src/app/rider.js
+ * 
  * Rider model, collection and view
  *****************************************************************************/
 define(['jquery', 'underscore', 'backbone'], function($, _, Backbone){
@@ -14,7 +16,7 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone){
 	var collection = Backbone.Collection.extend({
 		// Reference to this collection's model.
 		model: model,
-		url: '//test.api.ridedb.dev/riders/'
+		url: window.appConfig.apiUrl + '/riders/'
 	});
 	
 	var view = Backbone.View.extend({

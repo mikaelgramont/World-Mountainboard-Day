@@ -1,10 +1,14 @@
 <?php
 defined('APPLICATION_ENV') || define('APPLICATION_ENV',
 	(getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
-$min = (APPLICATION_ENV == 'production') && false; 
+
+set_include_path('../php/'.PATH_SEPARATOR.get_include_path());
+require_once 'Zend/Config/Ini.php';
+$config = new Zend_Config_Ini('../config.ini', APPLICATION_ENV);
+
 ?>
 <!doctype html>
-<html class="no-js" lang="en">
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
@@ -14,12 +18,6 @@ $min = (APPLICATION_ENV == 'production') && false;
 
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" href="css/bin/styles.css">
-  <script>
-    var require = {
-    	'baseUrl' : '/js/lib'
-    };
-  </script>  
-  <script data-main="../bin/main<?php if($min) echo ".min"?>" src="js/lib/require-1.0.6<?php if($min) echo ".min"?>.js"></script>
 </head>
 
 <body>
@@ -78,19 +76,16 @@ $min = (APPLICATION_ENV == 'production') && false;
 			</nav>
 		</div>
 	</footer>
-  
-  
-<!-- 	
   <script>
-  require(['domReady','app'], function(domReady, app){
-       domReady(function () {
-           app.initialize();
-       });
-   });
-
-  
+    var require = {
+    	'baseUrl' : 'js/lib'
+    }, appConfig = {
+    	apiUrl: '//<?php echo $config->apiUrl ?>'
+   	};
   </script>
- -->
+<?php /* js/bin/main.js contains the application entry point */?>
+  <script data-main="../bin/main<?php if($config->minify) echo ".min"?>" src="js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
+
   <script type="text/template" id="rider-template">
 	<h2><a href="/riders/<%= userId %>/" class="rider"><%= username %></a></h2>
 	<% if (country.id) {%>
