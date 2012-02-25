@@ -15,7 +15,6 @@ end
 desc 'Runs all javascript and css related jobs'
 task :default do
   Rake::Task['js'].invoke
-  Rake::Task['minify'].invoke
   Rake::Task['css'].invoke
   puts "==== DONE ===="
 end
@@ -42,48 +41,10 @@ task :js do
   Dir["#{JS_SRC}/*/"].each do |d|
     if FileList["#{d}*.js"].any?
       dname = d.strip.split("/")[-1]
-      puts "---> Concatenating all javascript files inside of #{dname} to #{dname}.js"
-      `cat #{d}*.js > #{JS_BIN}/#{dname}.js`
-    end
-  end
-
-  if FileList["#{JS_SRC}/*.coffee"].any?
-    if installed? "coffee"
-      puts "---> Compiling individual coffeescript files"
-      `coffee -c -o #{JS_BIN}/ #{JS_SRC}/*.coffee`
-    else
-      fail "You need coffeescript! Install it by running: `npm install -g coffee-script`"
-    end
-  end
-
-  Dir["#{JS_SRC}/*/"].each do |d|
-    if FileList["#{d}*.coffee"].any?
-      if installed? "coffee"
-        dname = d.strip.split("/")[-1]
-        puts "---> Concatenating all coffeescript files inside of #{dname} then compiling to #{dname}.js"
-        `coffee --join #{JS_BIN}/#{dname}.coffee --compile #{d}*.coffee`
-      else
-        fail "You need coffeescript! Install it by running: `npm install -g coffee-script`"
-      end
-    end
-  end
-end
-
-desc 'Minify all javascript files'
-task :minify do
-  puts "---> Minifying all javascript files"
-  FileList["#{JS_BIN}/*.js"].each do |f|
-    fname = f.strip.split("/")[-1]
-
-    # Don't minify things that are already minified!
-    if fname.split(".")[-2] != "min"
-      if installed? "uglifyjs"
-        min_name = fname.insert(fname.rindex(".js"), ".min")
-        puts "     Minifying #{fname} to #{min_name}"
-        `uglifyjs -o #{JS_BIN}/#{min_name} #{f}`
-      else
-        fail "You need uglifyjs! Install it by running: `npm install -g uglify-js`"
-      end
+      puts "---> Building optimized bundle for require.js"
+      #`cat #{d}*.js > #{JS_BIN}/#{dname}.js`
+      `r.js -o name=#{JS_SRC}/main out=#{JS_BIN}/main.js baseUrl=.`
+      `r.js -o name=#{JS_SRC}/main out=#{JS_BIN}/main.js baseUrl=. optimize=none`
     end
   end
 end

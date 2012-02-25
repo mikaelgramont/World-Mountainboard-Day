@@ -1,21 +1,7 @@
 <?php
 defined('APPLICATION_ENV') || define('APPLICATION_ENV',
 	(getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
-$min = (APPLICATION_ENV == 'production'); 
-$dependencies = array(
-	'jquery' => 'js/lib/jquery-1.7.1',
-	'underscore' => 'js/lib/underscore-amd-1.3.1',
-	'backbone' => 'js/lib/backbone-amd-0.9.1',
-	'domReady' => 'js/lib/domReady-1.0.0',
-	'app' => 'js/bin/app',
-);
-$deps = array();
-foreach($dependencies as $k => $v) {
-	if($min) {
-		$v .= '.min';
-	}
-	$deps[] = "'$k': '$v'";
-}
+$min = (APPLICATION_ENV == 'production') && false; 
 ?>
 <!doctype html>
 <html class="no-js" lang="en">
@@ -28,9 +14,8 @@ foreach($dependencies as $k => $v) {
 
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" href="css/bin/styles.css">
-  <link rel="stylesheet" href="css/bin/dummy.css">
   
-  <script src="js/lib/require-1.0.6<?php if($min && false) echo ".min"?>.js"></script>
+  <script data-main="js/bin/main<?php if($min) echo ".min"?>.js" src="js/lib/require-1.0.6<?php if($min) echo ".min"?>.js"></script>
 </head>
 
 <body>
@@ -91,13 +76,8 @@ foreach($dependencies as $k => $v) {
 	</footer>
   
   
-	
+<!-- 	
   <script>
-  require.config({
-    paths: {
-	<?php echo implode(', ', $deps).PHP_EOL;?>
-    }
-  });
   require(['domReady','app'], function(domReady, app){
        domReady(function () {
            app.initialize();
@@ -106,6 +86,7 @@ foreach($dependencies as $k => $v) {
 
   
   </script>
+ -->
   <script type="text/template" id="rider-template">
 	<h2><a href="/riders/<%= userId %>/" class="rider"><%= username %></a></h2>
 	<% if (country.id) {%>

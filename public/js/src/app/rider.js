@@ -1,9 +1,10 @@
 /******************************************************************************
  * Rider model, collection and view
  *****************************************************************************/
-require(['jquery','underscore','backbone'], function($, _, Backbone){
+define(['js/lib/backbone'], function(Backbone){
 	console.log('js/src/app/rider.js - setting up the ride model, collection and view')
-	window.Rider = Backbone.Model.extend({
+	
+	var model = Backbone.Model.extend({
 		// Default attributes for a rider item.
 		defaults: function() {
 			return {
@@ -12,17 +13,13 @@ require(['jquery','underscore','backbone'], function($, _, Backbone){
 		}
 	});
 	
-	window.RiderList = Backbone.Collection.extend({
+	var collection = Backbone.Collection.extend({
 		// Reference to this collection's model.
-		model: Rider,
+		model: model,
 		url: '//test.api.ridedb.dev/riders/'
 	});
 	
-	// Create our global collection of **Riders**.
-	window.Riders = new RiderList;
-	
-	// The DOM element for a todo item...
-	window.RiderView = Backbone.View.extend({
+	var view = Backbone.View.extend({
 		tagName:  "li",
 		className: "rider",
 		
@@ -38,7 +35,7 @@ require(['jquery','underscore','backbone'], function($, _, Backbone){
 			this.model.bind('destroy', this.remove, this);
 		},
 	
-		// Re-render the contents of the todo item.
+		// Re-render the contents of the item
 		render: function() {
 			$(this.el).html(this.template(this.model.toJSON()));
 			return this;
@@ -54,4 +51,10 @@ require(['jquery','underscore','backbone'], function($, _, Backbone){
 	      this.model.destroy();
 	    }
 	});
+	
+	return {
+		'model': model,
+		'collection': collection,
+		'view': view
+	};
 });
