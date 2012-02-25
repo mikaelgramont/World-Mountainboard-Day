@@ -11797,7 +11797,18 @@ define('../src/app/rider',['jquery', 'underscore', 'backbone', 'bootstrap/bootst
 		url: window.appConfig.apiUrl + '/riders/'
 	});
 	
-	var view = Backbone.View.extend({
+	var modalView = Backbone.View.extend({
+		template: _.template($('#modal-template').html()),
+		render: function(){
+			$(this.el).html(this.template(this.model.toJSON()));
+			return this;
+		},
+		getHtml: function() {
+			return $(this.el).html();
+		}
+	});
+	
+	var titleView = Backbone.View.extend({
 		tagName:  "li",
 		className: "rider",
 		
@@ -11806,8 +11817,9 @@ define('../src/app/rider',['jquery', 'underscore', 'backbone', 'bootstrap/bootst
 	
 		events: {
 			'click': function(e){
-				$("#myModal").modal().html
-					(_.template($('#modal-template').html(), this.model.attributes)
+				var view = new modalView({model: this.model});
+				$("#myModal").modal().html(
+					view.render().getHtml()
 				);
 				e.preventDefault();
 			}
@@ -11838,7 +11850,7 @@ define('../src/app/rider',['jquery', 'underscore', 'backbone', 'bootstrap/bootst
 	return {
 		'model': model,
 		'collection': collection,
-		'view': view
+		'view': titleView
 	};
 });
 /******************************************************************************
