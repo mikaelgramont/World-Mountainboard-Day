@@ -9266,8 +9266,6 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 })( window );
 
-define("js/lib/jquery", function(){});
-
 //     Underscore.js 1.3.1
 //     (c) 2009-2012 Jeremy Ashkenas, DocumentCloud Inc.
 //     Underscore is freely distributable under the MIT license.
@@ -9276,7 +9274,7 @@ define("js/lib/jquery", function(){});
 //     For all details and documentation:
 //     http://documentcloud.github.com/underscore
 
-(function() {
+(function(root) {
 
   // Baseline setup
   // --------------
@@ -10270,14 +10268,13 @@ define("js/lib/jquery", function(){});
   // AMD define happens at the end for compatibility with AMD loaders
   // that don't enforce next-turn semantics on modules.
   if (typeof define === 'function' && define.amd) {
+	root._ = _;
     define('underscore',[], function() {
       return _;
     });
   }
 
 }).call(this);
-
-define("js/lib/underscore", function(){});
 
 //     Backbone.js 0.9.1
 
@@ -10293,7 +10290,7 @@ define("js/lib/underscore", function(){});
     factory(root, exports, require('underscore'));
   } else if (typeof define === 'function' && define.amd) {
     // AMD
-    define('js/lib/backbone',['underscore', 'jquery', 'exports'], function(_, $, exports) {
+    define('backbone',['underscore', 'jquery', 'exports'], function(_, $, exports) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backbone.
       root.Backbone = factory(root, exports, _, $);
@@ -11570,7 +11567,7 @@ define("js/lib/underscore", function(){});
 /******************************************************************************
  * Rider model, collection and view
  *****************************************************************************/
-define('js/src/app/rider',['js/lib/backbone'], function(Backbone){
+define('../src/app/rider',['jquery', 'underscore', 'backbone'], function($, _, Backbone){
 	console.log('js/src/app/rider.js - setting up the ride model, collection and view')
 	
 	var model = Backbone.Model.extend({
@@ -11632,13 +11629,14 @@ define('js/src/app/rider',['js/lib/backbone'], function(Backbone){
  * Point of entry into the application
  *****************************************************************************/
 require([
-         
-	'js/lib/jquery',
-	'js/lib/underscore',
-   	'js/lib/backbone',
+    // Libraries
+	'jquery',
+	'underscore',
+   	'backbone',
    	
-   	'js/src/app/rider',
-], function(dumm, dummy, Backbone, riderModule){
+   	// Application modules
+   	'../src/app/rider',
+], function($, _, Backbone, riderModule){
 	// The Application
 	// ---------------
 	
@@ -11646,37 +11644,28 @@ require([
 	var riders = new riderModule.collection;
 	
 	// Our overall **AppView** is the top-level piece of UI.
-	window.AppView = Backbone.View.extend({
-		// Instead of generating a new element, bind to the existing skeleton of
-		// the App already present in the HTML.
-		el: $("#main"),
+	var AppView = Backbone.View.extend({
+		el: $("#app"),
 		
-		// At initialization we bind to the relevant events on the `Riders`
-		// collection, when items are added or changed. Kick things off by
-		// loading any preexisting todos that might be saved in *localStorage*.
 		initialize: function() {
-			this.input    = this.$("#new-todo");
-			
 			riders.bind('add',   this.addOne, this);
 			riders.bind('reset', this.addAll, this);
-			 
 			riders.fetch();
 		},
 		
-		// Add a single rider to the list by creating a view for it, and
-		// appending its element to the `<ul>`.
 		addOne: function(rider) {
 			var view = new riderModule.view({model: rider});
-			this.$("#rider-list").append(view.render().el);
+			this.$("#rider-list").append(
+				view.render().el
+			);
 		},
 		
-		// Add all items in the **Riders** collection at once.
 		addAll: function() {
 			riders.each(this.addOne);
 		}
 	});
 	
 	  // Finally, we kick things off by creating the **App**.
-	window.App = new AppView;
+	var app = new AppView;
 });
-define("js/src/main", function(){});
+define("../src/main", function(){});

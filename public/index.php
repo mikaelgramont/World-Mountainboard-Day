@@ -14,8 +14,12 @@ $min = (APPLICATION_ENV == 'production') && false;
 
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" href="css/bin/styles.css">
-  
-  <script data-main="js/bin/main<?php if($min) echo ".min"?>.js" src="js/lib/require-1.0.6<?php if($min) echo ".min"?>.js"></script>
+  <script>
+    var require = {
+    	'baseUrl' : '/js/lib'
+    };
+  </script>  
+  <script data-main="../bin/main<?php if($min) echo ".min"?>" src="js/lib/require-1.0.6<?php if($min) echo ".min"?>.js"></script>
 </head>
 
 <body>
@@ -32,7 +36,7 @@ $min = (APPLICATION_ENV == 'production') && false;
 		</div>
 	</header>
 		
-	<div id="main" role="main" class="main container">
+	<div id="app" role="main" class="main container">
 		<section id="riders">
 			<h1>Riders</h1>
 			<ul id="rider-list"></ul>

@@ -1,9 +1,7 @@
 /******************************************************************************
  * Rider model, collection and view
  *****************************************************************************/
-define(['js/lib/backbone'], function(Backbone){
-	console.log('js/src/app/rider.js - setting up the ride model, collection and view')
-	
+define(['jquery', 'underscore', 'backbone'], function($, _, Backbone){
 	var model = Backbone.Model.extend({
 		// Default attributes for a rider item.
 		defaults: function() {
