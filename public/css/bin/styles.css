@@ -4019,7 +4019,7 @@ nav a {
 nav.main {
   float: left;
 }
-nav.session-corner {
+.session-corner {
   float: right;
 }
 .session-corner .lang-selector {
@@ -4028,6 +4028,14 @@ nav.session-corner {
 }
 .session-corner .login-btn-group {
   float: right;
+}
+.lang-selector .dropdown-menu {
+  min-width: 0;
+}
+.lang-selector .dropdown-menu li {
+  float: none;
+  line-height: 1em;
+  height: inherit;
 }
 header nav li,
 footer nav li {
