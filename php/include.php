@@ -111,21 +111,19 @@ class Globals
 		return $cache;
 	}
 
-	public function getBundleRevisions()
+	public function getBundleRevisions($bundleList)
 	{
-		if(!self::$_bundleRevisions) {
-			self::$_bundleRevisions = self::buildBundleRevisions(
-				self::getConfig()->jsBundles
-			);
+		if(!self::$_bundleRevisions || 0) {
+			self::$_bundleRevisions = self::buildBundleRevisions($bundleList);
 		}
 		
 		return self::$_bundleRevisions;
 	}
 	
 	/**
-	 * Builds the list of file revisions
+	 * Builds the list of file revisions, with and without '.min'. 
 	 * @param string $fileList A comma-separated list of files, without
-	 * extensions. By convention, they are located in the js/bin folder.
+	 * extensions. By convention, files are located in the js/bin folder.
 	 */
 	public function buildBundleRevisions($fileList)
 	{
@@ -133,7 +131,8 @@ class Globals
 		$commandTemplate = 'git log -n 1 ' .self::JS_BIN. '%s';
 		foreach(explode(',', $fileList) as $file) {
 			foreach(array('', '.min') as $suffix) {
-				$fullname = $file.$suffix.'.js';
+				$nameNoExtension = $file.$suffix;
+				$fullname = $nameNoExtension.'.js';
 				$gitResponse = @shell_exec(sprintf($commandTemplate, $fullname));
 				$preg = '/commit ([a-f0-9]{32})/';
 				preg_match($preg, $gitResponse, $matches);
@@ -143,27 +142,33 @@ class Globals
 				}
 				
 				// Limit the hash to 8 chars.
-				$return[$fullname] = $file.$suffix.'.'.substr($matches[1], 0, 8).'.js';
+				$return[$nameNoExtension] = $nameNoExtension.'.'.substr($matches[1], 0, 8);
 			}
 		}
 		
-		error_log(var_export($return, true));
 		return $return;
 	}
 	
-	public function getVersionnedBundleModuleName($file)
+	/**
+	 * Returns the list of versionned bundles applicable
+	 * to the current environment (prod/dev)
+	 */
+	public function getApplicableVersionnedBundles($minify, $versioning)
 	{
-		$fileEntry = $file;
-		if(self::getConfig()->minify) {
-			$fileEntry .= '.min';
-		}
-		$fileEntry .= '.js';
+		$bundles = self::getConfig()->jsBundles;
+		$revisions = self::getBundleRevisions($bundles);
 		
-		$revisions = self::getBundleRevisions();
-		if(!isset($revisions[$fileEntry])) {
-			throw new Exception("Bundle revision not found: '" .$file."'");
+		$return = array();
+		foreach(explode(',', $bundles) as $bundle) {
+			if($minify) {
+				$bundle .= '.min';
+			}
+			if($versioning) {
+				$return[$bundle] = self::JS_BIN_FROM_ROOT . $revisions[$bundle];
+			} else {	
+				$return[$bundle] = self::JS_BIN_FROM_ROOT . $bundle;
+			}
 		}
-		
-		return self::JS_BIN . $revisions[$fileEntry];
+		return $return;
 	}
 }

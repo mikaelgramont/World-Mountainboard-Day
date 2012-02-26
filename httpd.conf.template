@@ -13,7 +13,7 @@
             
             RewriteEngine on
             # Rewrite file names to get rid of the revision hash
-            RewriteRule ^(.*\.)[a-f0-9]{8}+\.(js)$ $1$2 [L]
+            RewriteRule ^(.*\-)[a-f0-9]{8}+\.(min\.js|js)$ $1$2 [L]
             <FilesMatch "\.(ico|flv|jpg|jpeg|png|gif|js|css)$">
                 # These 3 next rules make sure files are cached on the client and won't be checked
                 # for another month. 

@@ -1,10 +1,10 @@
 <?php
-define('APPLICATION_ENV', 'production');
+//define('APPLICATION_ENV', 'production');
+//define('APPLICATION_ENV', 'staging');
 
 set_include_path('../php/'.PATH_SEPARATOR.get_include_path());
 require_once 'include.php';
 $config = Globals::getConfig();
-$fileRevisions = Globals::getBundleRevisions();
 
 ?>
 <!doctype html>
@@ -82,14 +82,14 @@ $fileRevisions = Globals::getBundleRevisions();
     
 	<script>
 		var require = {
-    		baseUrl': 'js/lib',
-    		paths: {
-
-        	}
+    		baseUrl: 'js/lib',
+    		paths: <?php echo json_encode(Globals::getApplicableVersionnedBundles(
+    			$config->minify, $config->versioning)) ?>
+		
     	}, appConfig = {
 			apiUrl: '//<?php echo $config->apiUrl ?>'
 		};
   	</script>
-  	<script data-main="<?php echo Globals::getVersionnedBundleModuleName('main') ?>" src="js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
+  	<script data-main="main<?php if($config->minify) echo ".min"?>" src="js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
 </body>
 </html>
