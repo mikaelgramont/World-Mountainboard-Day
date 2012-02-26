@@ -3,7 +3,20 @@
  *
  * Rider model, collection and view
  *****************************************************************************/
-define(['jquery', 'underscore', 'backbone', 'bootstrap/bootstrap-modal'], function($, _, Backbone){
+define([
+    // Libraries
+	'jquery',
+	'underscore',
+	'backbone',
+	
+	// Templates
+	'text!templates/rider/username.html',
+	'text!templates/modal.html',
+
+	// Bootstrap  plugins
+	'bootstrap/bootstrap-modal',
+	
+	], function($, _, Backbone, usernameTpl, modalTpl){
 	var model = Backbone.Model.extend({
 		// Default attributes for a rider item.
 		defaults: function() {
@@ -20,7 +33,7 @@ define(['jquery', 'underscore', 'backbone', 'bootstrap/bootstrap-modal'], functi
 	});
 	
 	var modalView = Backbone.View.extend({
-		template: _.template($('#modal-template').html()),
+		template: _.template(modalTpl),
 		render: function(){
 			$(this.el).html(this.template(this.model.toJSON()));
 			return this;
@@ -35,7 +48,7 @@ define(['jquery', 'underscore', 'backbone', 'bootstrap/bootstrap-modal'], functi
 		className: "rider",
 		
 		// Cache the template function for a single item.
-		template: _.template($('#rider-username').html()),
+		template: _.template(usernameTpl),
 	
 		events: {
 			'click': function(e){

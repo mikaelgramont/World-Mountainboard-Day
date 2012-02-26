@@ -91,12 +91,7 @@ $config = new Zend_Config_Ini('../config.ini', APPLICATION_ENV);
 <?php /* js/bin/main.js contains the application entry point */?>
   	<script data-main="../bin/main<?php if($config->minify) echo ".min"?>" src="js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
 
-	<script type="text/template" id="rider-username">
-<?php include('js/lib/templates/rider/username.html'); ?>
-	</script>
-	<script type="text/template" id="rider-session-corner">
-<?php include('js/lib/templates/rider/session-corner.html'); ?>
-	</script>
+
 	<script type="text/template" id="modal-template">
 <?php include('js/lib/templates/modal-template.html'); ?>
   </script>
