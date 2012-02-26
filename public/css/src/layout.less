@@ -37,16 +37,30 @@ nav {
   height: @navHeight;
 }
 
-nav li {
+nav a {
+  color: @headerLinks;
+}
+
+nav.main {
+	float: left;
+}
+
+nav.session-corner {
+	float: right;
+}
+
+.session-corner .lang-selector {
+	float: left;
+	margin-right: 5px;
+}
+
+header nav li,
+footer nav li {
   float: left;
   height: @navHeight;
   margin: 5px;
   font-size: 16px;
   line-height: @navHeight;
-}
-
-nav a {
-  color: @headerLinks;
 }
 
 .main section {

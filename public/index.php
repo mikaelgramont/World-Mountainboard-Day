@@ -1,4 +1,5 @@
 <?php
+//define('APPLICATION_ENV', 'production');
 defined('APPLICATION_ENV') || define('APPLICATION_ENV',
 	(getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
 
@@ -31,6 +32,7 @@ $config = new Zend_Config_Ini('../config.ini', APPLICATION_ENV);
 					<li><a href="/sessions/">Sessions</a></li>
 				</ul>
 			</nav>
+<?php include('js/lib/templates/rider/session-corner.html'); ?>			
 		</div>
 	</header>
 		
@@ -79,33 +81,24 @@ $config = new Zend_Config_Ini('../config.ini', APPLICATION_ENV);
     
     <div class="modal" id="myModal"></div>
     
-  <script>
-    var require = {
-    	'baseUrl' : 'js/lib'
-    }, appConfig = {
-    	apiUrl: '//<?php echo $config->apiUrl ?>'
-   	};
-  </script>
+	<script>
+		var require = {
+    		'baseUrl' : 'js/lib'
+    	}, appConfig = {
+			apiUrl: '//<?php echo $config->apiUrl ?>'
+		};
+  	</script>
 <?php /* js/bin/main.js contains the application entry point */?>
-  <script data-main="../bin/main<?php if($config->minify) echo ".min"?>" src="js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
+  	<script data-main="../bin/main<?php if($config->minify) echo ".min"?>" src="js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
 
-  <script type="text/template" id="rider-template">
-	<h2><a href="/riders/<%= userId %>/" class="rider"><%= username %></a></h2>
-  </script>
-  
-  <script type="text/template" id="modal-template">
-    <div class="modal-header">
-	    <a class="close" data-dismiss="modal">×</a>
-    	<h3><%= username %></h3>
-    </div>
-    <div class="modal-body">
-		<% if (country.id) {%>
-   			<p class="country">Country: <a href="/countries/<%= country.id %>"><%= country.title %></a></p>
-		<% } %>
-    </div>
-    <div class="modal-footer">
-    	<a href="#" class="btn">Close</a>
-    </div>
+	<script type="text/template" id="rider-username">
+<?php include('js/lib/templates/rider/username.html'); ?>
+	</script>
+	<script type="text/template" id="rider-session-corner">
+<?php include('js/lib/templates/rider/session-corner.html'); ?>
+	</script>
+	<script type="text/template" id="modal-template">
+<?php include('js/lib/templates/modal-template.html'); ?>
   </script>
   
   

@@ -30,12 +30,12 @@ define(['jquery', 'underscore', 'backbone', 'bootstrap/bootstrap-modal'], functi
 		}
 	});
 	
-	var titleView = Backbone.View.extend({
+	var usernameView = Backbone.View.extend({
 		tagName:  "li",
 		className: "rider",
 		
 		// Cache the template function for a single item.
-		template: _.template($('#rider-template').html()),
+		template: _.template($('#rider-username').html()),
 	
 		events: {
 			'click': function(e){
@@ -72,6 +72,6 @@ define(['jquery', 'underscore', 'backbone', 'bootstrap/bootstrap-modal'], functi
 	return {
 		'model': model,
 		'collection': collection,
-		'view': titleView
+		'view': usernameView
 	};
 });

@@ -11808,12 +11808,12 @@ define('../src/app/rider',['jquery', 'underscore', 'backbone', 'bootstrap/bootst
 		}
 	});
 	
-	var titleView = Backbone.View.extend({
+	var usernameView = Backbone.View.extend({
 		tagName:  "li",
 		className: "rider",
 		
 		// Cache the template function for a single item.
-		template: _.template($('#rider-template').html()),
+		template: _.template($('#rider-username').html()),
 	
 		events: {
 			'click': function(e){
@@ -11850,7 +11850,7 @@ define('../src/app/rider',['jquery', 'underscore', 'backbone', 'bootstrap/bootst
 	return {
 		'model': model,
 		'collection': collection,
-		'view': titleView
+		'view': usernameView
 	};
 });
 /******************************************************************************
