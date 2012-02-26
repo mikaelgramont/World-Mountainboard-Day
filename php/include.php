@@ -28,7 +28,7 @@ class Globals
 	protected static $_cache;
 
 	/**
-	 * Two-level deep list of the js file bundle revisions
+	 * List of the js file bundle revisions
 	 * @var array
 	 */
 	protected static $_bundleRevisions;
@@ -153,20 +153,17 @@ class Globals
 	
 	public function getVersionnedBundleModuleName($file)
 	{
-		$fileEntry = $file.'.js';
+		$fileEntry = $file;
+		if(self::getConfig()->minify) {
+			$fileEntry .= '.min';
+		}
+		$fileEntry .= '.js';
+		
 		$revisions = self::getBundleRevisions();
 		if(!isset($revisions[$fileEntry])) {
 			throw new Exception("Bundle revision not found: '" .$file."'");
 		}
 		
-		$parts = array();
-		$parts[] = self::JS_BIN;
-		if(self::getConfig()->minify) {
-			$parts[] = '.min';
-		}
-		
-		$parts[] = $revisions[$fileEntry];
-		
-		return join('',$parts);
+		return self::JS_BIN . $revisions[$fileEntry];
 	}
 }

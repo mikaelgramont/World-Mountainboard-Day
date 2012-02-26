@@ -1,5 +1,5 @@
 <?php
-//define('APPLICATION_ENV', 'production');
+define('APPLICATION_ENV', 'production');
 
 set_include_path('../php/'.PATH_SEPARATOR.get_include_path());
 require_once 'include.php';
@@ -82,7 +82,10 @@ $fileRevisions = Globals::getBundleRevisions();
     
 	<script>
 		var require = {
-    		'baseUrl' : 'js/lib'
+    		baseUrl': 'js/lib',
+    		paths: {
+
+        	}
     	}, appConfig = {
 			apiUrl: '//<?php echo $config->apiUrl ?>'
 		};
