@@ -11,6 +11,10 @@ require([
    	
    	// Application modules
    	'../src/app/rider',
+
+   	// Bootstrap plugins
+   	'bootstrap/bootstrap-dropdown',
+   	
 ], function($, _, Backbone, riderModule){
 	// Start building the application
 	var riders = new riderModule.collection;

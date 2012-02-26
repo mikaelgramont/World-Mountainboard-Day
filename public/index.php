@@ -79,7 +79,7 @@ $config = new Zend_Config_Ini('../config.ini', APPLICATION_ENV);
 		</div>
 	</footer>
     
-    <div class="modal" id="myModal"></div>
+    <div class="modal" id="myModal" style="display: none"></div>
     
 	<script>
 		var require = {

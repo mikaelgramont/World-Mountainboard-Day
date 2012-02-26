@@ -30,6 +30,9 @@ nav.session-corner {
   float: left;
   margin-right: 5px;
 }
+.session-corner .login-btn-group {
+  float: right;
+}
 header nav li,
 footer nav li {
   float: left;
