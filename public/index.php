@@ -1,11 +1,10 @@
 <?php
 //define('APPLICATION_ENV', 'production');
-defined('APPLICATION_ENV') || define('APPLICATION_ENV',
-	(getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
 
 set_include_path('../php/'.PATH_SEPARATOR.get_include_path());
-require_once 'Zend/Config/Ini.php';
-$config = new Zend_Config_Ini('../config.ini', APPLICATION_ENV);
+require_once 'include.php';
+$config = Globals::getConfig();
+$fileRevisions = Globals::getBundleRevisions();
 
 ?>
 <!doctype html>
@@ -79,7 +78,7 @@ $config = new Zend_Config_Ini('../config.ini', APPLICATION_ENV);
 		</div>
 	</footer>
     
-    <div class="modal" id="myModal" style="display: none"></div>
+    <div class="modal" id="modal" style="display: none"></div>
     
 	<script>
 		var require = {
@@ -88,14 +87,6 @@ $config = new Zend_Config_Ini('../config.ini', APPLICATION_ENV);
 			apiUrl: '//<?php echo $config->apiUrl ?>'
 		};
   	</script>
-<?php /* js/bin/main.js contains the application entry point */?>
-  	<script data-main="../bin/main<?php if($config->minify) echo ".min"?>" src="js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
-
-
-	<script type="text/template" id="modal-template">
-<?php include('js/lib/templates/modal-template.html'); ?>
-  </script>
-  
-  
+  	<script data-main="<?php echo Globals::getVersionnedBundleModuleName('main') ?>" src="js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
 </body>
 </html>

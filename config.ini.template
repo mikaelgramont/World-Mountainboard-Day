@@ -1,7 +1,19 @@
 [production]
-minify = true
+; Url of the Rest API
 apiUrl = 'api.example.org'
 
+; Cache config
+cache.method = 'APC' ; 'File' or 'APC'
+cache.dir = '../cache'
+cache.ttl = 3600
+
+; Whether to use minified scripts
+minify = true
+
+; The list of js bundles that need to be versionned (for client-side caching)
+; ex: 'main,rider' => main.js, main.min.js, rider.js, rider.min.js will be versionned
+jsBundles = 'main'
+
 [development : production]
-minify = false
 apiUrl = 'api.example.dev'
+minify = false

@@ -12124,7 +12124,7 @@ define('../src/app/rider',[
 		events: {
 			'click': function(e){
 				var view = new modalView({model: this.model});
-				$("#myModal").modal().html(
+				$("#modal").modal().html(
 					view.render().getHtml()
 				);
 				e.preventDefault();

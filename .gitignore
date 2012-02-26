@@ -5,3 +5,4 @@ design/*
 logs/*.log
 .DS_Store
 config.ini
+public/test.php
