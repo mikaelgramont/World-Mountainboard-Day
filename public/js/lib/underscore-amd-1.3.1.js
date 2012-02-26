@@ -6,7 +6,7 @@
 //     For all details and documentation:
 //     http://documentcloud.github.com/underscore
 
-(function() {
+(function(root) {
 
   // Baseline setup
   // --------------
@@ -1000,6 +1000,7 @@
   // AMD define happens at the end for compatibility with AMD loaders
   // that don't enforce next-turn semantics on modules.
   if (typeof define === 'function' && define.amd) {
+	root._ = _;
     define('underscore', function() {
       return _;
     });

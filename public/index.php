@@ -1,24 +1,15 @@
 <?php
+//define('APPLICATION_ENV', 'production');
 defined('APPLICATION_ENV') || define('APPLICATION_ENV',
 	(getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
-$min = (APPLICATION_ENV == 'production'); 
-$dependencies = array(
-	'jquery' => 'js/lib/jquery-1.7.1',
-	'underscore' => 'js/lib/underscore-amd-1.3.1',
-	'backbone' => 'js/lib/backbone-amd-0.9.1',
-	'domReady' => 'js/lib/domReady-1.0.0',
-	'app' => 'js/bin/app',
-);
-$deps = array();
-foreach($dependencies as $k => $v) {
-	if($min) {
-		$v .= '.min';
-	}
-	$deps[] = "'$k': '$v'";
-}
+
+set_include_path('../php/'.PATH_SEPARATOR.get_include_path());
+require_once 'Zend/Config/Ini.php';
+$config = new Zend_Config_Ini('../config.ini', APPLICATION_ENV);
+
 ?>
 <!doctype html>
-<html class="no-js" lang="en">
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
@@ -28,9 +19,6 @@ foreach($dependencies as $k => $v) {
 
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" href="css/bin/styles.css">
-  <link rel="stylesheet" href="css/bin/dummy.css">
-  
-  <script src="js/lib/require-1.0.6<?php if($min && false) echo ".min"?>.js"></script>
 </head>
 
 <body>
@@ -44,10 +32,11 @@ foreach($dependencies as $k => $v) {
 					<li><a href="/sessions/">Sessions</a></li>
 				</ul>
 			</nav>
+<?php include('js/lib/templates/rider/session-corner.html'); ?>			
 		</div>
 	</header>
 		
-	<div id="main" role="main" class="main container">
+	<div id="app" role="main" class="main container">
 		<section id="riders">
 			<h1>Riders</h1>
 			<ul id="rider-list"></ul>
@@ -89,28 +78,29 @@ foreach($dependencies as $k => $v) {
 			</nav>
 		</div>
 	</footer>
-  
-  
-	
-  <script>
-  require.config({
-    paths: {
-	<?php echo implode(', ', $deps).PHP_EOL;?>
-    }
-  });
-  require(['domReady','app'], function(domReady, app){
-       domReady(function () {
-           app.initialize();
-       });
-   });
+    
+    <div class="modal" id="myModal" style="display: none"></div>
+    
+	<script>
+		var require = {
+    		'baseUrl' : 'js/lib'
+    	}, appConfig = {
+			apiUrl: '//<?php echo $config->apiUrl ?>'
+		};
+  	</script>
+<?php /* js/bin/main.js contains the application entry point */?>
+  	<script data-main="../bin/main<?php if($config->minify) echo ".min"?>" src="js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
 
+	<script type="text/template" id="rider-username">
+<?php include('js/lib/templates/rider/username.html'); ?>
+	</script>
+	<script type="text/template" id="rider-session-corner">
+<?php include('js/lib/templates/rider/session-corner.html'); ?>
+	</script>
+	<script type="text/template" id="modal-template">
+<?php include('js/lib/templates/modal-template.html'); ?>
+  </script>
   
-  </script>
-  <script type="text/template" id="rider-template">
-	<h2><a href="/riders/<%= userId %>/" class="rider"><%= username %></a></h2>
-	<% if (country.id) {%>
-   		<p class="country">Country: <a href="/countries/<%= country.id %>"><%= country.title %></a></p>
-	<% } %>
-  </script>
+  
 </body>
 </html>

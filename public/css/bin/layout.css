@@ -17,15 +17,29 @@ header h1 {
 nav {
   height: 50px;
 }
-nav li {
+nav a {
+  color: #eeeeee;
+}
+nav.main {
+  float: left;
+}
+nav.session-corner {
+  float: right;
+}
+.session-corner .lang-selector {
+  float: left;
+  margin-right: 5px;
+}
+.session-corner .login-btn-group {
+  float: right;
+}
+header nav li,
+footer nav li {
   float: left;
   height: 50px;
   margin: 5px;
   font-size: 16px;
   line-height: 50px;
-}
-nav a {
-  color: #eeeeee;
 }
 aside.main {
   display: none;

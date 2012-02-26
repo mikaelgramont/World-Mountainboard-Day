@@ -4,3 +4,4 @@ tmp/*
 design/*
 logs/*.log
 .DS_Store
+config.ini
