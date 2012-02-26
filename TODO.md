@@ -7,7 +7,7 @@ Add .gitignore to empty folder in order to keep them in the git repository (see 
 Version CSS files as well
 Add a jslint task into the Rake file
 Add mustache.js for template rendering
-Replace jQuery with zepto.js or ender.js
+Replace jQuery with zepto.js or ender.js <= jQuery is a hard dependency for bootstrap plugins
 
 # API TODO
 delete user => change status to invalid?
