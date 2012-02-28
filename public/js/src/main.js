@@ -8,6 +8,7 @@ require([
 	'jquery',
 	'underscore',
    	'backbone',
+   	'mustache-wrapper',
    	
    	// Application modules
    	'../src/app/rider',
@@ -15,7 +16,7 @@ require([
    	// Bootstrap plugins
    	'bootstrap/bootstrap-dropdown',
    	
-], function($, _, Backbone, riderModule){
+], function($, _, Backbone, mustache, riderModule){
 	// Start building the application
 	var riders = new riderModule.collection;
 	var AppView = Backbone.View.extend({

@@ -3,11 +3,11 @@ Find a logo and a font to represent it in small displays
 Determine timezone based on location
 	0-new Date().getTimezoneOffset()/60
 Apache: Not serve Rakefile, css/src, js/src, .gitignore
-Add .gitignore to empty folder in order to keep them in the git repository (see install script for list)
 Version CSS files as well
 Add a jslint task into the Rake file
 Add mustache.js for template rendering
 Replace jQuery with zepto.js or ender.js <= jQuery is a hard dependency for bootstrap plugins
+Maybe replace requirejs with browserify to see if it's any better
 
 # API TODO
 delete user => change status to invalid?

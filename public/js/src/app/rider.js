@@ -8,15 +8,16 @@ define([
 	'jquery',
 	'underscore',
 	'backbone',
-	
+	'mustache-wrapper',
+
 	// Templates
-	'text!templates/rider/username.html',
-	'text!templates/modal.html',
+	'text!templates/rider/username.tpl',
+	'text!templates/modal.tpl',
 
 	// Bootstrap  plugins
 	'bootstrap/bootstrap-modal',
 	
-	], function($, _, Backbone, usernameTpl, modalTpl){
+	], function($, _, Backbone, mustache, usernameTpl, modalTpl){
 	var model = Backbone.Model.extend({
 		// Default attributes for a rider item.
 		defaults: function() {
@@ -33,9 +34,10 @@ define([
 	});
 	
 	var modalView = Backbone.View.extend({
-		template: _.template(modalTpl),
 		render: function(){
-			$(this.el).html(this.template(this.model.toJSON()));
+			$(this.el).html(
+				mustache.to_html(modalTpl, this.model.toJSON())
+			);
 			return this;
 		},
 		getHtml: function() {
@@ -47,9 +49,6 @@ define([
 		tagName:  "li",
 		className: "rider",
 		
-		// Cache the template function for a single item.
-		template: _.template(usernameTpl),
-	
 		events: {
 			'click': function(e){
 				var view = new modalView({model: this.model});
@@ -67,7 +66,9 @@ define([
 	
 		// Re-render the contents of the item
 		render: function() {
-			$(this.el).html(this.template(this.model.toJSON()));
+			$(this.el).html(
+				mustache.to_html(usernameTpl, this.model.toJSON())
+			);
 			return this;
 		},
 	

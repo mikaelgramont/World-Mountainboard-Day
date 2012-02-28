@@ -5,7 +5,6 @@
 set_include_path('../php/'.PATH_SEPARATOR.get_include_path());
 require_once 'include.php';
 $config = Globals::getConfig();
-
 ?>
 <!doctype html>
 <html lang="en">
@@ -82,11 +81,13 @@ $config = Globals::getConfig();
     
 	<script>
 		var require = {
-    		baseUrl: 'js/lib',
-    		paths: <?php echo json_encode(Globals::getApplicableVersionnedBundles(
-    			$config->minify, $config->versioning)) ?>
-		
-    	}, appConfig = {
+			baseUrl: 'js/lib',
+			paths: <?php echo json_encode(Globals::getApplicableVersionnedBundles(
+				$config->minify,
+				$config->versioning
+			)) ?>
+
+		}, appConfig = {
 			apiUrl: '//<?php echo $config->apiUrl ?>'
 		};
   	</script>
