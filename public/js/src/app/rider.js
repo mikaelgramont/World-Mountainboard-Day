@@ -34,9 +34,10 @@ define([
 	});
 	
 	var modalView = Backbone.View.extend({
+		template: mustache.compile(modalTpl),
 		render: function(){
 			$(this.el).html(
-				mustache.to_html(modalTpl, this.model.toJSON())
+				this.tempate(this.model.toJSON())
 			);
 			return this;
 		},
@@ -63,11 +64,13 @@ define([
 		initialize: function() {
 			this.model.bind('destroy', this.remove, this);
 		},
+		
+		template: mustache.compile(usernameTpl),
 	
 		// Re-render the contents of the item
 		render: function() {
 			$(this.el).html(
-				mustache.to_html(usernameTpl, this.model.toJSON())
+				this.template(this.model.toJSON())
 			);
 			return this;
 		},

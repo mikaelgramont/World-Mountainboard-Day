@@ -4,6 +4,8 @@ defined('APPLICATION_ENV') || define('APPLICATION_ENV',
 
 require_once 'Zend/Config/Ini.php';
 require_once 'Zend/Cache.php';
+require_once 'MustacheLoader.php';
+require_once 'Mustache.php';
 	
 // Dummy class to contain global elements
 class Globals

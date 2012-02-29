@@ -30,7 +30,11 @@ $config = Globals::getConfig();
 					<li><a href="/sessions/">Sessions</a></li>
 				</ul>
 			</nav>
-<?php include('js/lib/templates/rider/session-corner.html'); ?>			
+<?php
+	$session_corner = file_get_contents('js/lib/templates/rider/session-corner.tpl');
+	$m = new Mustache;
+	echo $m->render($session_corner, array('lang' => 'FR'));	
+?>			
 		</div>
 	</header>
 		

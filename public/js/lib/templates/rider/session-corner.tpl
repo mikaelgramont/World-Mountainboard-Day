@@ -1,7 +1,7 @@
 <nav class="session-corner" id="session-corner">
     <div class="btn-group lang-selector">
     	<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-    		FR
+    		{{ lang }}
     		<span class="caret"></span>
     	</a>
     	<ul class="dropdown-menu">
