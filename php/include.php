@@ -34,7 +34,7 @@ class Globals
 	 * @var array
 	 */
 	protected static $_bundleRevisions;
-	
+
 	public function getConfig()
 	{
 		if(!self::$_config) {
@@ -173,4 +173,37 @@ class Globals
 		}
 		return $return;
 	}
+
+	public function getTemplates($dir)
+	{
+		if($templates = self::getCache()->load('templates')) {
+			return $templates;
+		};
+		
+		$templates = array();
+		foreach(self::rglob('*.tpl', 0, $dir) as $name) {
+			$nameShort = str_replace($dir, '', $name);
+			$templates[$nameShort] = file_get_contents($name);
+		}
+		
+		self::getCache()->save($templates, 'templates');
+		
+		return $templates;
+	}
+	
+    public static function rglob($pattern, $flags = 0, $path = '')
+    {
+	    if (!$path && ($dir = dirname($pattern)) != '.') {
+	    	if ($dir == '\\' || $dir == '/') {
+	    		$dir = '';
+	    	}
+	    	return self::rglob(basename($pattern), $flags, $dir . '/');
+	    }
+	    $paths = glob($path . '*', GLOB_ONLYDIR | GLOB_NOSORT);
+	    $files = glob($path . $pattern, $flags);
+	    foreach ($paths as $p) {
+		    $files = array_merge($files, self::rglob($pattern, $flags, $p . '/'));
+	    }
+	    return $files;
+    }	
 }

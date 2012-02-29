@@ -5,6 +5,7 @@
 set_include_path('../php/'.PATH_SEPARATOR.get_include_path());
 require_once 'include.php';
 $config = Globals::getConfig();
+$templates = Globals::getTemplates('js/lib/templates/');
 ?>
 <!doctype html>
 <html lang="en">
@@ -31,7 +32,7 @@ $config = Globals::getConfig();
 				</ul>
 			</nav>
 <?php
-	$session_corner = file_get_contents('js/lib/templates/rider/session-corner.tpl');
+	$session_corner = $templates['rider/session-corner.tpl'];
 	$m = new Mustache;
 	echo $m->render($session_corner, array('lang' => 'FR'));	
 ?>			
