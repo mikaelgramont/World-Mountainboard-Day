@@ -37,7 +37,7 @@ define([
 		template: mustache.compile(modalTpl),
 		render: function(){
 			$(this.el).html(
-				this.tempate(this.model.toJSON())
+				this.template(this.model.toJSON())
 			);
 			return this;
 		},

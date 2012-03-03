@@ -6,6 +6,10 @@ require_once 'Zend/Config/Ini.php';
 require_once 'Zend/Cache.php';
 require_once 'MustacheLoader.php';
 require_once 'Mustache.php';
+
+if(APPLICATION_ENV != 'production') {
+	error_reporting(E_ALL|E_STRICT);
+}
 	
 // Dummy class to contain global elements
 class Globals
@@ -16,6 +20,7 @@ class Globals
 	
 	const JS_BIN = 'js/bin/';
 	const JS_BIN_FROM_ROOT = '../bin/';
+	const CSS_BIN = 'css/bin/';
 	
 	/**
 	 * Configuration object
@@ -113,9 +118,9 @@ class Globals
 		return $cache;
 	}
 
-	public function getBundleRevisions($bundleList)
+	public static function getBundleRevisions($bundleList)
 	{
-		if(!self::$_bundleRevisions || 0) {
+		if(!self::$_bundleRevisions) {
 			self::$_bundleRevisions = self::buildBundleRevisions($bundleList);
 		}
 		
@@ -127,7 +132,7 @@ class Globals
 	 * @param string $fileList A comma-separated list of files, without
 	 * extensions. By convention, files are located in the js/bin folder.
 	 */
-	public function buildBundleRevisions($fileList)
+	public static function buildBundleRevisions($fileList)
 	{
 		$return = array();
 		$commandTemplate = 'git log -n 1 ' .self::JS_BIN. '%s';
@@ -155,7 +160,7 @@ class Globals
 	 * Returns the list of versionned bundles applicable
 	 * to the current environment (prod/dev)
 	 */
-	public function getApplicableVersionnedBundles($minify, $versioning)
+	public static function getApplicableVersionnedBundles($minify, $versioning)
 	{
 		$bundles = self::getConfig()->jsBundles;
 		$revisions = self::getBundleRevisions($bundles);
@@ -174,7 +179,84 @@ class Globals
 		return $return;
 	}
 
-	public function getTemplates($dir)
+	/**
+	 * Returns the list of versionned CSS files
+	 * 
+	 * @param boolean $minify
+	 * @param boolean $versioning
+	 */
+	public static function getVersionnedCSS()
+	{
+		// TODO: add an entry in config file, or read all css from folder
+		// build the git list of files
+		$css = array(
+			'plain' => array(
+				'full' => array(),
+				'minified' => array()
+			), 'versionned' => array(
+				'full' => array(),
+				'minified' => array()
+			)
+		);
+		$files = array();
+		
+		if(!$css = self::getCache()->load('css')) {
+			$commandTemplate = 'git log -n 1 %s';
+			foreach(glob(self::CSS_BIN.'*.css') as $name) {
+				$gitResponse = @shell_exec(sprintf($commandTemplate, $name));
+				$preg = '/commit ([a-f0-9]{32})/';
+				preg_match($preg, $gitResponse, $matches);
+				if(!isset($matches[1])) {
+					error_log("Cannot find revision for file: ".$name);
+					continue;
+				}
+					
+				$barename = str_replace(self::CSS_BIN, '', str_replace('.min', '', $name));
+				$versionnedFile = str_replace('.css', '', $name).'.'.substr($matches[1], 0, 8). '.css';
+				
+				if(strpos($name, '.min') !== false) {
+					$css['versionned']['minified'][$barename] = $versionnedFile;
+					$css['plain']['minified'][$barename] = str_replace(self::CSS_BIN, '', $name);
+				} else {
+					$css['versionned']['full'][$barename] = $versionnedFile;
+					$css['plain']['full'][$barename] = $barename;
+				}
+			}
+			self::getCache()->save($css, 'css');
+		}
+		return $css;
+	}
+	
+	public static function getApplicableCSS($minify)
+	{
+		$css = self::getVersionnedCSS();			
+	
+		if($minify) {
+			return $css['minified'];
+		} else {
+			return $css['full'];
+		}
+	}
+	
+	/**
+	 * Returns the list of versionned resource files
+	 * such as images, pdfs, etc.
+	 * 
+	 * @param boolean $versioning
+	 */
+	public static function getVersionnedResources($versioning)
+	{
+		$return = array();
+		return $return;	
+	}
+	
+	/**
+	 * Returns a hash table of template paths
+	 * to template contents
+	 * 
+	 * @param string $dir
+	 */
+	public static function getTemplates($dir)
 	{
 		if($templates = self::getCache()->load('templates')) {
 			return $templates;
@@ -191,6 +273,13 @@ class Globals
 		return $templates;
 	}
 	
+	/**
+	 * Returns a multi-level array of file/folder names
+	 * 
+	 * @param string $pattern
+	 * @param string $flags
+	 * @param string $path
+	 */
     public static function rglob($pattern, $flags = 0, $path = '')
     {
 	    if (!$path && ($dir = dirname($pattern)) != '.') {

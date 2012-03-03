@@ -6,6 +6,7 @@ set_include_path('../php/'.PATH_SEPARATOR.get_include_path());
 require_once 'include.php';
 $config = Globals::getConfig();
 $templates = Globals::getTemplates('js/lib/templates/');
+$css = Globals::getApplicableCSS($config->minify);
 ?>
 <!doctype html>
 <html lang="en">
@@ -17,7 +18,7 @@ $templates = Globals::getTemplates('js/lib/templates/');
   <meta name="description" content="">
 
   <meta name="viewport" content="width=device-width">
-  <link rel="stylesheet" href="css/bin/styles.css">
+  <link rel="stylesheet" href="<?php echo $css['styles.css'] ?>">
 </head>
 
 <body>

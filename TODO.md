@@ -1,7 +1,6 @@
 # Client-side TODO
 Find a logo and a font to represent it in small displays
-Determine timezone based on location
-	0-new Date().getTimezoneOffset()/60
+Determine timezone based on location: 0-new Date().getTimezoneOffset()/60
 Apache: Not serve Rakefile, css/src, js/src, .gitignore
 Version CSS files as well
 Add a jslint task into the Rake file
@@ -10,7 +9,7 @@ Replace jQuery with zepto.js or ender.js <= jQuery is a hard dependency for boot
 Maybe replace requirejs with browserify to see if it's any better
 
 # API TODO
-delete user => change status to invalid?
+delete user => change status to invalid? => What about their old photos and albums?
 email personalisation depending on site
 	
 # Notes

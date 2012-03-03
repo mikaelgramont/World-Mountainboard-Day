@@ -6,21 +6,16 @@
         HostNameLookups Off
 
         <Directory /Users/mgramont/Dev/World-Mountainboard-Day/public>
-            Options -Indexes FollowSymLinks -MultiViews
-            AllowOverride None
-            Order allow,deny
-            allow from all
-            
-            RewriteEngine on
-            # Rewrite file names to get rid of the revision hash
-            RewriteRule ^(.*\-)[a-f0-9]{8}+\.(min\.js|js)$ $1$2 [L]
-            <FilesMatch "\.(ico|flv|jpg|jpeg|png|gif|js|css)$">
-                # These 3 next rules make sure files are cached on the client and won't be checked
-                # for another month. 
-                FileETag none
-                Header unset Last-Modified
-                ExpiresDefault "access plus 1 month"
-            </FilesMatch>
+              Options -Indexes FollowSymLinks -MultiViews
+              AllowOverride None
+              Order allow,deny
+              allow from all
+              IndexIgnore *.tmp
+              RewriteEngine on
+              RewriteRule ^(.*\.)[a-f0-9]{1,32}+\.([a-z]{2,3})$  $1$2    [L]
+              FileETag none
+              Header unset Last-Modified
+              ExpiresDefault "access plus 1 month"
         </Directory>
         ErrorLog /Users/mgramont/Dev/World-Mountainboard-Day/logs/error.log
         LogLevel warn
