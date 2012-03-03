@@ -94,7 +94,9 @@ $f = Globals::getImage('glyphicons-halflings.png', $config->versioning);
 			)) ?>
 
 		}, appConfig = {
-			apiUrl: '//<?php echo $config->apiUrl ?>'
+			apiUrl: '//<?php echo $config->apiUrl ?>',
+			cdnUrl: '<?php echo $config->cdnUrl ?>',
+			images: <?php echo json_encode(Globals::getApplicableImagePaths($config->versioning)) ?>
 		};
   	</script>
   	<script data-main="main<?php if($config->minify) echo ".min"?>" src="js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>

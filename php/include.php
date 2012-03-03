@@ -241,7 +241,7 @@ class Globals
 			'versionned' => array()
 		);
 		
-		if(!$resources = self::getCache()->load('images')) {
+		if(!$images = self::getCache()->load('images')) {
 			foreach(glob(self::IMG.'*.*') as $name) {
 				if(!$hash = self::getGitCommitHash($name)) {
 					error_log("Cannot find revision for file: ".$name);
@@ -259,6 +259,14 @@ class Globals
 		}
 		return $images;
 	}	
+	
+	public static function getApplicableImagePaths($versioning)
+	{
+		$images = self::getVersionnedImages();
+		$versKey = $versioning ? 'versionned' : 'plain';
+		return $images[$versKey];
+	}
+	
 	
 	/**
 	 * Returns a path to an image.
