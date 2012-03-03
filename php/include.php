@@ -22,6 +22,8 @@ class Globals
 	const JS_BIN_FROM_ROOT = '../bin/';
 	const CSS_BIN = 'css/bin/';
 	
+	const IMG = 'img/';
+	
 	/**
 	 * Configuration object
 	 * @var Zend_Config_Ini
@@ -140,16 +142,12 @@ class Globals
 			foreach(array('', '.min') as $suffix) {
 				$nameNoExtension = $file.$suffix;
 				$fullname = $nameNoExtension.'.js';
-				$gitResponse = @shell_exec(sprintf($commandTemplate, $fullname));
-				$preg = '/commit ([a-f0-9]{32})/';
-				preg_match($preg, $gitResponse, $matches);
-				if(!isset($matches[1])) {
-					error_log("Cannot find revision for file: ".$fullname);
+				if(!$hash = self::getGitCommitHash(self::JS_BIN . $fullname)) {
+					error_log("Cannot find revision for file: ".self::JS_BIN . $fullname);
 					continue;
 				}
 				
-				// Limit the hash to 8 chars.
-				$return[$nameNoExtension] = $nameNoExtension.'.'.substr($matches[1], 0, 8);
+				$return[$nameNoExtension] = $nameNoExtension.'.'.$hash;
 			}
 		}
 		
@@ -187,8 +185,6 @@ class Globals
 	 */
 	public static function getVersionnedCSS()
 	{
-		// TODO: add an entry in config file, or read all css from folder
-		// build the git list of files
 		$css = array(
 			'plain' => array(
 				'full' => array(),
@@ -198,21 +194,15 @@ class Globals
 				'minified' => array()
 			)
 		);
-		$files = array();
-		
 		if(!$css = self::getCache()->load('css')) {
-			$commandTemplate = 'git log -n 1 %s';
 			foreach(glob(self::CSS_BIN.'*.css') as $name) {
-				$gitResponse = @shell_exec(sprintf($commandTemplate, $name));
-				$preg = '/commit ([a-f0-9]{32})/';
-				preg_match($preg, $gitResponse, $matches);
-				if(!isset($matches[1])) {
+				if(!$hash = self::getGitCommitHash($name)) {
 					error_log("Cannot find revision for file: ".$name);
 					continue;
 				}
 					
 				$barename = str_replace(self::CSS_BIN, '', str_replace('.min', '', $name));
-				$versionnedFile = str_replace('.css', '', $name).'.'.substr($matches[1], 0, 8). '.css';
+				$versionnedFile = str_replace('.css', '', $name).'.'.$hash. '.css';
 				
 				if(strpos($name, '.min') !== false) {
 					$css['versionned']['minified'][$barename] = $versionnedFile;
@@ -241,15 +231,52 @@ class Globals
 	}
 	
 	/**
-	 * Returns the list of versionned resource files
-	 * such as images, pdfs, etc.
+	 * Returns the list of versionned image files
 	 * 
+	 */
+	public static function getVersionnedImages()
+	{
+		$images = array(
+			'plain' => array(),
+			'versionned' => array()
+		);
+		
+		if(!$resources = self::getCache()->load('images')) {
+			foreach(glob(self::IMG.'*.*') as $name) {
+				if(!$hash = self::getGitCommitHash($name)) {
+					error_log("Cannot find revision for file: ".$name);
+					continue;
+				}
+
+				$pathInfo = pathinfo($name);
+				$versionnedFile = $pathInfo['filename'].'.'.$hash. (isset($pathInfo['extension']) ? '.'.$pathInfo['extension'] : '');
+				$barename = str_replace(self::IMG, '', $name);
+				
+				$images['versionned'][$barename] = $versionnedFile;
+				$images['plain'][$barename] = $name;
+			}
+			self::getCache()->save($images, 'images');
+		}
+		return $images;
+	}	
+	
+	/**
+	 * Returns a path to an image.
+	 * 
+	 * @param string $file
 	 * @param boolean $versioning
 	 */
-	public static function getVersionnedResources($versioning)
+	public static function getImage($file, $versioning)
 	{
-		$return = array();
-		return $return;	
+		$images = self::getVersionnedImages();
+		
+		$versKey = $versioning ? 'versionned' : 'plain';
+		
+		if (!isset($images[$versKey][$file])) {
+			throw new Exception("Image file not found: '$file', '$versKey'");
+		}
+		
+		return $images[$versKey][$file];
 	}
 	
 	/**
@@ -296,5 +323,19 @@ class Globals
 		    $files = array_merge($files, self::rglob($pattern, $flags, $p . '/'));
 	    }
 	    return $files;
-    }	
+    }
+    
+    public static function getGitCommitHash($path)
+    {
+		$commandTemplate = 'git log -n 1 %s';
+    	$gitResponse = @shell_exec(sprintf($commandTemplate, $path));
+		$preg = '/commit ([a-f0-9]{32})/';
+		preg_match($preg, $gitResponse, $matches);
+		if(!isset($matches[1])) {
+			error_log("Cannot find revision for file: ".$path);
+			return '';
+		}
+					
+    	return substr($matches[1], 0, 8);
+    }
 }

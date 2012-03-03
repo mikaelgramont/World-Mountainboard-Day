@@ -6,6 +6,7 @@ set_include_path('../php/'.PATH_SEPARATOR.get_include_path());
 require_once 'include.php';
 $config = Globals::getConfig();
 $templates = Globals::getTemplates('js/lib/templates/');
+$f = Globals::getImage('glyphicons-halflings.png', $config->versioning);
 ?>
 <!doctype html>
 <html lang="en">
