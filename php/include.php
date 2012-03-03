@@ -40,7 +40,7 @@ class Globals
 	 */
 	protected static $_bundleRevisions;
 
-	public function getConfig()
+	public static function getConfig()
 	{
 		if(!self::$_config) {
 			self::$_config = self::configFactory();
@@ -53,7 +53,7 @@ class Globals
 		return new Zend_Config_Ini('../config.ini', APPLICATION_ENV);
 	}
 
-	public function getCache()
+	public static function getCache()
 	{
 		if(!self::$_cache) {
 			$config = self::getConfig();
@@ -219,7 +219,7 @@ class Globals
 					$css['plain']['minified'][$barename] = str_replace(self::CSS_BIN, '', $name);
 				} else {
 					$css['versionned']['full'][$barename] = $versionnedFile;
-					$css['plain']['full'][$barename] = $barename;
+					$css['plain']['full'][$barename] = $name;
 				}
 			}
 			self::getCache()->save($css, 'css');
@@ -227,15 +227,17 @@ class Globals
 		return $css;
 	}
 	
-	public static function getApplicableCSS($minify)
+	public static function getApplicableCSS($file, $minify, $versioning)
 	{
 		$css = self::getVersionnedCSS();			
-	
-		if($minify) {
-			return $css['minified'];
-		} else {
-			return $css['full'];
+		$minKey = $minify ? 'minified' : 'full';
+		$versKey = $versioning ? 'versionned' : 'plain';
+		
+		if (!isset($css[$versKey][$minKey][$file])) {
+			throw new Exception("CSS file not found: '$file', '$minKey', '$versKey'");
 		}
+		
+		return $css[$versKey][$minKey][$file];
 	}
 	
 	/**

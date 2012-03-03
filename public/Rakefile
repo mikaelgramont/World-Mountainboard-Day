@@ -14,8 +14,8 @@ end
 
 desc 'Runs all javascript and css related jobs'
 task :default do
-  Rake::Task['js'].invoke
   Rake::Task['css'].invoke
+  Rake::Task['js'].invoke
   puts "==== DONE ===="
 end
 
@@ -77,6 +77,10 @@ task :css do
         css_name = fname.sub(/\.less/, ".css")
         puts "---> Compiling #{fname} to #{css_name}"
         `lessc #{f} > #{CSS_BIN}/#{css_name}`
+
+        min_name = fname.sub(/\.less/, ".min.css")
+        puts "---> Compiling and minifying #{fname} to #{min_name}"
+        `lessc #{f} --compress > #{CSS_BIN}/#{min_name}`
       else
         fail "You need less! Install it by running: `npm install -g less`"
       end
