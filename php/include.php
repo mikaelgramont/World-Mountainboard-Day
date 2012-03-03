@@ -19,7 +19,6 @@ class Globals
 	const FILE = 'File';
 	
 	const JS_BIN = 'js/bin/';
-	const JS_BIN_FROM_ROOT = '../bin/';
 	const CSS_BIN = 'css/bin/';
 	
 	const IMG = 'img/';
@@ -158,7 +157,7 @@ class Globals
 	 * Returns the list of versionned bundles applicable
 	 * to the current environment (prod/dev)
 	 */
-	public static function getApplicableVersionnedBundles($minify, $versioning)
+	public static function getApplicableVersionnedBundles($minify, $versioning, $cdnUrl)
 	{
 		$bundles = self::getConfig()->jsBundles;
 		$revisions = self::getBundleRevisions($bundles);
@@ -169,9 +168,9 @@ class Globals
 				$bundle .= '.min';
 			}
 			if($versioning) {
-				$return[$bundle] = self::JS_BIN_FROM_ROOT . $revisions[$bundle];
+				$return[$bundle] = $cdnUrl.self::JS_BIN . $revisions[$bundle];
 			} else {	
-				$return[$bundle] = self::JS_BIN_FROM_ROOT . $bundle;
+				$return[$bundle] = $cdnUrl.self::JS_BIN . $bundle;
 			}
 		}
 		return $return;
@@ -217,7 +216,7 @@ class Globals
 		return $css;
 	}
 	
-	public static function getApplicableCSS($file, $minify, $versioning)
+	public static function getApplicableCSS($file, $minify, $versioning, $cdnUrl)
 	{
 		$css = self::getVersionnedCSS();			
 		$minKey = $minify ? 'minified' : 'full';
@@ -227,7 +226,7 @@ class Globals
 			throw new Exception("CSS file not found: '$file', '$minKey', '$versKey'");
 		}
 		
-		return $css[$versKey][$minKey][$file];
+		return $cdnUrl.$css[$versKey][$minKey][$file];
 	}
 	
 	/**
@@ -252,8 +251,8 @@ class Globals
 				$versionnedFile = $pathInfo['filename'].'.'.$hash. (isset($pathInfo['extension']) ? '.'.$pathInfo['extension'] : '');
 				$barename = str_replace(self::IMG, '', $name);
 				
-				$images['versionned'][$barename] = $versionnedFile;
-				$images['plain'][$barename] = $name;
+				$images['versionned'][$barename] = self::IMG.$versionnedFile;
+				$images['plain'][$barename] = self::IMG.$name;
 			}
 			self::getCache()->save($images, 'images');
 		}

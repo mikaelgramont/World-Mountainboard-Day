@@ -1,6 +1,8 @@
 [production]
 ; Url of the Rest API
 apiUrl = 'api.example.org'
+cdnUrl = '/'
+cdnProtocol = ''
 
 ; Cache config
 cache.method = 'APC' ; 'File' or 'APC'
@@ -16,4 +18,6 @@ jsBundles = 'main'
 
 [development : production]
 apiUrl = 'api.example.dev'
+;cdnUrl = 'cdn.example.dev/'
+;cdnProtocol = '//'
 minify = false

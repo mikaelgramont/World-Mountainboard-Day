@@ -6,7 +6,7 @@ set_include_path('../php/'.PATH_SEPARATOR.get_include_path());
 require_once 'include.php';
 $config = Globals::getConfig();
 $templates = Globals::getTemplates('js/lib/templates/');
-$f = Globals::getImage('glyphicons-halflings.png', $config->versioning);
+$cdnUrl = $config->cdnProtocol . $config->cdnUrl;
 ?>
 <!doctype html>
 <html lang="en">
@@ -18,7 +18,8 @@ $f = Globals::getImage('glyphicons-halflings.png', $config->versioning);
   <meta name="description" content="">
 
   <meta name="viewport" content="width=device-width">
-  <link rel="stylesheet" href="<?php echo Globals::getApplicableCSS('styles.css', $config->minify, $config->versioning) ?>">
+  <link rel="stylesheet" href="<?php echo Globals::getApplicableCSS(
+	'styles.css', $config->minify, $config->versioning, $cdnUrl) ?>">
 </head>
 
 <body>
@@ -87,18 +88,19 @@ $f = Globals::getImage('glyphicons-halflings.png', $config->versioning);
     
 	<script>
 		var require = {
-			baseUrl: 'js/lib',
+			baseUrl: '<?php echo $cdnUrl?>js/lib',
 			paths: <?php echo json_encode(Globals::getApplicableVersionnedBundles(
 				$config->minify,
-				$config->versioning
+				$config->versioning,
+				$cdnUrl
 			)) ?>
 
 		}, appConfig = {
 			apiUrl: '//<?php echo $config->apiUrl ?>',
-			cdnUrl: '<?php echo $config->cdnUrl ?>',
+			cdnUrl: '<?php echo $cdnUrl ?>',
 			images: <?php echo json_encode(Globals::getApplicableImagePaths($config->versioning)) ?>
 		};
   	</script>
-  	<script data-main="main<?php if($config->minify) echo ".min"?>" src="js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
+  	<script data-main="main<?php if($config->minify) echo ".min"?>" src="<?php echo $cdnUrl ?>js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
 </body>
 </html>
