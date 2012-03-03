@@ -7,18 +7,19 @@ require([
     // Libraries
 	'jquery',
 	'underscore',
-   	'backbone',
-   	'mustache-wrapper',
-   	
-   	// Application modules
-   	'../src/app/rider',
+	'backbone',
+	'mustache-wrapper',
 
-   	// Bootstrap plugins
-   	'bootstrap/bootstrap-dropdown',
-   	
+	// Application modules
+	'../src/app/session',
+	'../src/app/rider',
+
+	// Bootstrap plugins
+	'bootstrap/bootstrap-dropdown'
+
 ], function($, _, Backbone, mustache, riderModule){
 	// Start building the application
-	var riders = new riderModule.collection;
+	var riders = new riderModule.collection();
 	var AppView = Backbone.View.extend({
 		el: $("#app"),
 		
@@ -40,5 +41,5 @@ require([
 		}
 	});
 	
-	var app = new AppView;
+	var app = new AppView();
 });

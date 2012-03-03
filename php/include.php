@@ -265,8 +265,7 @@ class Globals
 		$versKey = $versioning ? 'versionned' : 'plain';
 		return $images[$versKey];
 	}
-	
-	
+		
 	/**
 	 * Returns a path to an image.
 	 * 
@@ -345,4 +344,28 @@ class Globals
 					
     	return substr($matches[1], 0, 8);
     }
+
+	public static function getApiSessionData($cookies)
+	{
+		/**
+		 * TODO: perform a POST request to the api server
+		 * at /sessions/ in order to get a session id in a response cookie
+		 * Only do that if we have a username, userpassword and a 'remember'
+		 * parameter.
+		 */
+		
+		return array(
+			'apiSessionId' => null,
+			'lang' => 'en',
+			'user' => self::getGuest()
+		);
+	}
+	
+	public static function getGuest()
+	{
+		return array(
+			'username' => 'guest',
+			'userId' => 0
+		);
+	}
 }

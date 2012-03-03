@@ -12396,7 +12396,9 @@ define('mustache-wrapper',['mustache'], function(){
     });
 }());
 
-define('text!templates/rider/username.tpl',[],function () { return '<h2>\n\t<a href="/riders/{{ userId }}/" class="rider">\n\t\t{{ username }}\n\t</a>\n</h2>';});
+define('text!templates/session/corner.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t\t<li class="fr"><a href="#">FR</a></li>\n    \t\t<li class="en"><a href="#">EN</a></li>\n    \t\t<li class="es"><a href="#">ES</a></li>\n    \t</ul>\n    </div>\n\t\n    <div class="btn-group login-btn-group">\n    \t<a class="btn" href="/user/login/">Login</a>\n    \t<a class="btn" href="/user/register/">Register</a>\n    </div>\t\n</nav>';});
+
+define('text!templates/session/login.tpl',[],function () { return '<div class="session-login-form">\n\tLogin form\n</div>';});
 
 define('text!templates/modal.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>Name: {{ username }}</h3>\n</div>\n<div class="modal-body">\n{{#country}}\n\t<p class="country">Country: <a href="/countries/{{ id }}">{{ title }}</a></p>\n{{/country}}\n</div>\n<div class="modal-footer">\n\t<a href="#" class="btn">Close</a>\n</div>';});
 
@@ -12613,6 +12615,111 @@ define('text!templates/modal.tpl',[],function () { return '<div class="modal-hea
 define("bootstrap/bootstrap-modal", function(){});
 
 /******************************************************************************
+ * js/src/app/session.js
+ *
+ * Session model
+ *****************************************************************************/
+define('../src/app/session',[
+    // Libraries
+	'jquery',
+	'underscore',
+	'backbone',
+	'mustache-wrapper',
+
+	// Templates
+	'text!templates/session/corner.tpl',
+	'text!templates/session/login.tpl',
+	'text!templates/modal.tpl',
+
+	// Bootstrap  plugins
+	'bootstrap/bootstrap-modal'
+	
+	], function($, _, Backbone, mustache, cornerTpl, loginTpl, modalTpl){
+	
+	var model = Backbone.Model.extend({
+		defaults: function() {
+			return {
+				apiSessionId: null, // By default, no session id
+				user: {},   // guest user by default
+				lang: 'en', // the language being used in the current session
+
+				// the following will be persisted to cookies or localstorage (latter more likely)
+				userN: null, // username
+				userP: null, // user password
+				userR: false, //whether to remember user login and password
+				
+				errors: [] // login/logout errors
+			};
+		},
+		
+		initialize: function() {
+			console.log('session - initialize');
+			console.log('appConfig.sessionData', appConfig.sessionData);
+		},
+		
+		isLoggedIn: function() {
+			return !!this.userId;			
+		},
+		
+		login: function() {
+			/**
+			 * TODO: call this method when the login form is submitted
+			 * - update the current model with data from the login form
+			 * - prepare and send a POST ajax request to the api: /sessions/
+			 * - use the result of that:
+			 *   - in case of success:
+			 *     - clear errors
+			 *     - save the new userId
+			 *     - maybe save parameters to LS (depending on userR)
+			 *     - send a 'login' event 
+			 *   - in case of error
+			 *     - update the UI to show errors
+			 */
+		},
+		
+		logout: function() {
+			/**
+			 * TODO: call this method when the logout form is submitted
+			 * - reset model data
+			 * - prepare and send a DELETE ajax request to the api: /sessions/
+			 * - use the result of that:
+			 *   - in case of success: 
+			 *     - clear errors
+			 *     - save the new userId (0)
+			 *     - clear parameters in LS
+			 *     - send a 'logout' event 
+			 *   - in case of error
+			 *     - update the UI to show errors
+			 */
+		}
+	});
+	
+	var sessionCornerView = Backbone.View.extend({
+		template: mustache.compile(cornerTpl),
+		
+		initialize: function() {
+			this.model.bind('login', this.render, this);
+			this.model.bind('logout', this.render, this);
+		},
+		
+		render: function() {
+			console.log('session - render()', arguments);
+			$(this.el).html(
+				this.template(this.model.toJSON())
+			);
+			return this;
+		}
+	}); 
+	
+	return {
+		model: model,
+		views: [sessionCornerView]
+	};
+});
+
+define('text!templates/rider/username.tpl',[],function () { return '<h2>\n\t<a href="/riders/{{ userId }}/" class="rider">\n\t\t{{ username }}\n\t</a>\n</h2>';});
+
+/******************************************************************************
  * js/src/app/rider.js
  *
  * Rider model, collection and view
@@ -12629,7 +12736,7 @@ define('../src/app/rider',[
 	'text!templates/modal.tpl',
 
 	// Bootstrap  plugins
-	'bootstrap/bootstrap-modal',
+	'bootstrap/bootstrap-modal'
 	
 	], function($, _, Backbone, mustache, usernameTpl, modalTpl){
 	var model = Backbone.Model.extend({
@@ -12691,13 +12798,13 @@ define('../src/app/rider',[
 	
 		// Remove this view from the DOM.
 		remove: function() {
-		  $(this.el).remove();
+			$(this.el).remove();
 		},
 		
 		// Remove the item, destroy the model.
-	    clear: function() {
-	      this.model.destroy();
-	    }
+		clear: function() {
+			this.model.destroy();
+		}
 	});
 	
 	return {
@@ -12811,18 +12918,19 @@ require([
     // Libraries
 	'jquery',
 	'underscore',
-   	'backbone',
-   	'mustache-wrapper',
-   	
-   	// Application modules
-   	'../src/app/rider',
+	'backbone',
+	'mustache-wrapper',
 
-   	// Bootstrap plugins
-   	'bootstrap/bootstrap-dropdown',
-   	
+	// Application modules
+	'../src/app/session',
+	'../src/app/rider',
+
+	// Bootstrap plugins
+	'bootstrap/bootstrap-dropdown'
+
 ], function($, _, Backbone, mustache, riderModule){
 	// Start building the application
-	var riders = new riderModule.collection;
+	var riders = new riderModule.collection();
 	var AppView = Backbone.View.extend({
 		el: $("#app"),
 		
@@ -12844,6 +12952,6 @@ require([
 		}
 	});
 	
-	var app = new AppView;
+	var app = new AppView();
 });
 define("../src/main", function(){});

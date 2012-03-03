@@ -6,17 +6,22 @@
         HostNameLookups Off
 
         <Directory /Users/mgramont/Dev/World-Mountainboard-Day/public>
-              Options -Indexes FollowSymLinks -MultiViews
-              AllowOverride None
-              Order allow,deny
-              allow from all
-              IndexIgnore *.tmp
-              RewriteEngine on
-              RewriteRule ^(.*\.)[a-f0-9]{1,32}+\.([a-z]{2,3})$  $1$2    [L]
-              FileETag none
-              Header unset Last-Modified
-              ExpiresDefault "access plus 1 month"
+          Options -Indexes FollowSymLinks -MultiViews
+          AllowOverride None
+          Order allow,deny
+          allow from all
+          RewriteEngine on
+          RewriteRule ^(.*\.)[a-f0-9]{1,32}+\.([a-z]{2,3})$  $1$2    [L]
+          FileETag none
+          Header unset Last-Modified
+          ExpiresDefault "access plus 1 month"
         </Directory>
+        <Directory /Users/mgramont/Dev/World-Mountainboard-Day/public/css/src>
+          deny from all
+        </Directory>
+        <Directory /Users/mgramont/Dev/World-Mountainboard-Day/public/css/lib>
+          deny from all
+        </Directory>        
         ErrorLog /Users/mgramont/Dev/World-Mountainboard-Day/logs/error.log
         LogLevel warn
 

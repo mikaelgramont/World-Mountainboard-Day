@@ -1,10 +1,12 @@
-JS_SRC = "js/src"
-JS_LIB = "js/lib"
-JS_BIN = "js/bin"
+JS_SRC = "public/js/src"
+JS_APP = "public/js/src/app"
+JS_LIB = "public/js/lib"
+JS_BIN = "public/js/bin"
+JS_HINT_LOG = "logs/jshint.log"
 
-CSS_SRC = "css/src"
-CSS_LIB = "css/lib"
-CSS_BIN = "css/bin"
+CSS_SRC = "public/css/src"
+CSS_LIB = "public/css/lib"
+CSS_BIN = "public/css/bin"
 
 # Compiles scripts
 def installed?(program)
@@ -31,6 +33,14 @@ task :watch do
   end
 end
 
+task :jshint do
+  FileList["#{JS_APP}/*.js"].each do |f|
+    fname = f.strip.split("/")[-1]
+    puts "---> Running jshint against #{JS_APP}/#{fname}"
+    `jshint #{JS_APP}/#{fname} > #{JS_HINT_LOG}`
+  end
+end
+
 desc 'Compiles, and concatenates javascript and coffeescript'
 task :js do
   if FileList["#{JS_SRC}/*.js"].any?
@@ -43,8 +53,8 @@ task :js do
       dname = d.strip.split("/")[-1]
       puts "---> Building optimized bundle for require.js"
       #`cat #{d}*.js > #{JS_BIN}/#{dname}.js`
-      `r.js -o name=../src/main out=#{JS_BIN}/main.min.js baseUrl=js/lib`
-      `r.js -o name=../src/main out=#{JS_BIN}/main.js baseUrl=js/lib optimize=none`
+      `r.js -o name=../src/main out=#{JS_BIN}/main.min.js baseUrl=public/js/lib`
+      `r.js -o name=../src/main out=#{JS_BIN}/main.js baseUrl=public/js/lib optimize=none`
     end
   end
 end

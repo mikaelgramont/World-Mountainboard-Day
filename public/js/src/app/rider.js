@@ -15,7 +15,7 @@ define([
 	'text!templates/modal.tpl',
 
 	// Bootstrap  plugins
-	'bootstrap/bootstrap-modal',
+	'bootstrap/bootstrap-modal'
 	
 	], function($, _, Backbone, mustache, usernameTpl, modalTpl){
 	var model = Backbone.Model.extend({
@@ -77,13 +77,13 @@ define([
 	
 		// Remove this view from the DOM.
 		remove: function() {
-		  $(this.el).remove();
+			$(this.el).remove();
 		},
 		
 		// Remove the item, destroy the model.
-	    clear: function() {
-	      this.model.destroy();
-	    }
+		clear: function() {
+			this.model.destroy();
+		}
 	});
 	
 	return {

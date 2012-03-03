@@ -1,15 +1,17 @@
 # Client-side TODO
 Find a logo and a font to represent it in small displays
 Determine timezone based on location: 0-new Date().getTimezoneOffset()/60
-Apache: Not serve Rakefile, css/src, js/src, .gitignore
-Version CSS files as well
-Add a jslint task into the Rake file
-Add mustache.js for template rendering
+Fix jslint task to output to console
 Replace jQuery with zepto.js or ender.js <= jQuery is a hard dependency for bootstrap plugins
 Maybe replace requirejs with browserify to see if it's any better
 
+# Architecture
+If we need to render the page with state on initial load (logged-in vs logged-out), that means
+the backend needs to know the userN, userP, perform a POST request to the API, catch the sessionId,
+pass it to the client, so it can write it to an api cookie in order to be logged-in right away.
+
 # API TODO
-delete user => change status to invalid? => What about their old photos and albums?
+delete user => change status to invalid? => What about their old photos and albums? This would break links to users because the API wouldn't serve the user.
 email personalisation depending on site
 	
 # Notes
