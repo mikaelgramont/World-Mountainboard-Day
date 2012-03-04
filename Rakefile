@@ -2,7 +2,7 @@ JS_SRC = "public/js/src"
 JS_APP = "public/js/src/app"
 JS_LIB = "public/js/lib"
 JS_BIN = "public/js/bin"
-JS_HINT_LOG = "logs/jshint.log"
+JS_HINT_LOG = "../logs/jshint.log"
 
 CSS_SRC = "public/css/src"
 CSS_LIB = "public/css/lib"

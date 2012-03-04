@@ -17,7 +17,7 @@ require([
 	// Bootstrap plugins
 	'bootstrap/bootstrap-dropdown'
 
-], function($, _, Backbone, mustache, riderModule){
+], function($, _, Backbone, mustache, sessionModule, riderModule){
 	// Start building the application
 	var riders = new riderModule.collection();
 	var AppView = Backbone.View.extend({

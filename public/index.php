@@ -100,10 +100,10 @@ $sessionData = Globals::getApiSessionData($_COOKIE);
 			apiUrl: '//<?php echo $config->apiUrl ?>',
 			cdnUrl: '<?php echo $cdnUrl ?>',
 			images: <?php echo json_encode(Globals::getApplicableImagePaths($config->versioning)) ?>,
-			sessionData = <?php echo json_encode($sessionData) ?>
+			sessionData: <?php echo json_encode($sessionData) ?>
 			
 		};
   	</script>
-  	<script data-main="main<?php if($config->minify) echo ".min"?>" src="<?php echo $cdnUrl ?>js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
+  	<script data-main="../bin/main<?php if($config->minify) echo ".min"?>" src="<?php echo $cdnUrl ?>js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
 </body>
 </html>
