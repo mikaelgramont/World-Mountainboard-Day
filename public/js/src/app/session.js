@@ -36,9 +36,9 @@ define([
 			};
 		},
 		
-		initialize: function() {
+		initialize: function(appConfig) {
 			console.log('session - initialize');
-			console.log('appConfig.sessionData', appConfig.sessionData);
+			console.log('appConfig', appConfig);
 		},
 		
 		isLoggedIn: function() {

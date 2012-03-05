@@ -15,7 +15,7 @@ require([
 	'../src/app/rider',
 
 	// Bootstrap plugins
-	'bootstrap/bootstrap-dropdown'
+	
 
 ], function($, _, Backbone, mustache, sessionModule, riderModule){
 	// Start building the application
@@ -42,4 +42,5 @@ require([
 	});
 	
 	var app = new AppView();
+	var session = new sessionModule.model(appConfig);
 });

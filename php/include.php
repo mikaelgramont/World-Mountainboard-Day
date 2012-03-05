@@ -2,8 +2,10 @@
 defined('APPLICATION_ENV') || define('APPLICATION_ENV',
 	(getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
 
+require_once 'Zend/Loader.php';
 require_once 'Zend/Config/Ini.php';
 require_once 'Zend/Cache.php';
+require_once 'Zend/Http/Client.php';
 require_once 'MustacheLoader.php';
 require_once 'Mustache.php';
 
@@ -348,24 +350,97 @@ class Globals
 	public static function getApiSessionData($cookies)
 	{
 		/**
-		 * TODO: perform a POST request to the api server
-		 * at /sessions/ in order to get a session id in a response cookie
-		 * Only do that if we have a username, userpassword and a 'remember'
-		 * parameter.
+		 * TODO:
+		 * Only login if we have a username, userpassword, a 'remember'
+		 * parameter AND we did not do it before (keep a flag in $_SESSION)
 		 */
 		
+		$sessionData = self::_login('plainuser', '123456789');
+		if(isset($sessionData->userId) && $sessionData->userId) {
+			// Logged-in user
+			$user = self::_getUsersOwnData($sessionData->userId, $sessionData->sessionId);
+		} else {
+			// Guest user
+			$user = self::getGuest();
+			$lang = 'en';
+		}
+		
+		self::setApiSessionId($sessionData->sessionId);
+		
 		return array(
-			'apiSessionId' => null,
-			'lang' => 'en',
-			'user' => self::getGuest()
+			'apiSessionId' => $sessionData->sessionId,
+			'lang' => $lang,
+			'user' => $user
 		);
 	}
 	
+	/**
+	 * Returns a representation of the guest user 
+	 */
 	public static function getGuest()
 	{
 		return array(
 			'username' => 'guest',
 			'userId' => 0
 		);
+	}
+	
+	/**
+	 * Connects to the API and perfoms a login operation
+	 * @param string $username
+	 * @param string $password
+	 */
+	protected static function _login($username, $password)
+	{
+		$config = self::getConfig();
+		$client = new Zend_Http_Client();
+		$client->setUri($config->apiScheme . '://' . $config->apiUrl . '/sessions/');
+		$client->setParameterPost(array(
+			'userN' => $username,
+			'userP' => $password,
+		));
+		
+		try {
+			$response = $client->request(Zend_Http_Client::POST);
+			$sessionData = $response->getBody();
+		} catch (Exception $e) {
+			error_log("Error while initializing API session: '". $e->getMessage() . "'");
+			$sessionData = null;
+		}
+		
+		return json_decode($sessionData);
+	}
+	
+	/**
+	 * Fetches the representation of a user given their id
+	 * @param integer $userId
+	 */
+	protected static function _getUsersOwnData($userId, $sessionId)
+	{
+		$config = self::getConfig();
+		$client = new Zend_Http_Client();
+		$client->setUri($config->apiScheme . '://' . $config->apiUrl . '/riders/' . $userId);
+		$client->setCookie('PHPSESSID', $sessionId);
+		
+		try {
+			$response = $client->request(Zend_Http_Client::GET);
+			$userData = $response->getBody();
+		} catch (Exception $e) {
+			error_log("Error while fetching user data for user '$userData': '". $e->getMessage() . "'");
+			$userData = null;
+		}
+		
+		return json_decode($userData);
+	}
+	
+	public static function getApiSessionId()
+	{
+		return isset($_SESSION['apiSessionId']) ? $_SESSION['apiSessionId'] : null;
+	}
+	
+	public static function setApiSessionId($sessionId)
+	{
+		$_SESSION['apiSessionId'] = $sessionId;
+		error_log('setting session id:'.$sessionId);
 	}
 }

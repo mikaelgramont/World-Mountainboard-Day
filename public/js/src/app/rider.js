@@ -17,7 +17,7 @@ define([
 	// Bootstrap  plugins
 	'bootstrap/bootstrap-modal'
 	
-	], function($, _, Backbone, mustache, usernameTpl, modalTpl){
+	], function($, _, Backbone, mustache, usernameTpl, modalTpl, bootstrapModal){
 	var model = Backbone.Model.extend({
 		// Default attributes for a rider item.
 		defaults: function() {

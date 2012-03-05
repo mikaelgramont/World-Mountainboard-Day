@@ -2,6 +2,7 @@
 //define('APPLICATION_ENV', 'production');
 //define('APPLICATION_ENV', 'staging');
 
+session_start();
 set_include_path('../php/'.PATH_SEPARATOR.get_include_path());
 require_once 'include.php';
 $config = Globals::getConfig();
@@ -104,6 +105,6 @@ $sessionData = Globals::getApiSessionData($_COOKIE);
 			
 		};
   	</script>
-  	<script data-main="../bin/main<?php if($config->minify) echo ".min"?>" src="<?php echo $cdnUrl ?>js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
+  	<script data-main="../<?php echo $config->useBundles ? "bin" : "src" ?>/main<?php if($config->minify) echo ".min"?>" src="<?php echo $cdnUrl ?>js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
 </body>
 </html>
