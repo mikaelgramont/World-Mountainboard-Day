@@ -26,11 +26,21 @@ nav.main {
 .session-corner {
   float: right;
 }
-.session-corner .lang-selector {
+.session-corner .lang-selector,
+.session-corner .username {
   float: left;
   margin-right: 5px;
 }
-.session-corner .login-btn-group {
+.session-corner .username {
+  margin-right: 1em;
+  font-size: 20px;
+  line-height: 1.25em;
+  color: white;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+.session-corner .login-btn-group,
+.session-corner .logout-btn-group {
   float: right;
 }
 .lang-selector .dropdown-menu {

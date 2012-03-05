@@ -9,6 +9,7 @@ $config = Globals::getConfig();
 $templates = Globals::getTemplates('js/lib/templates/');
 $cdnUrl = $config->cdnProtocol . $config->cdnUrl;
 $sessionData = Globals::getApiSessionData($_COOKIE);
+$m = new Mustache;
 ?>
 <!doctype html>
 <html lang="en">
@@ -36,9 +37,8 @@ $sessionData = Globals::getApiSessionData($_COOKIE);
 				</ul>
 			</nav>
 <?php
-	$session_corner = $templates['session/corner.tpl'];
-	$m = new Mustache;
-	echo $m->render($session_corner, array('lang' => 'FR'));	
+	$corner = 'session/corner-' . ($sessionData->rider->userId ? 'logged-in' : 'logged-out'). '.tpl'; 
+	echo $m->render($templates[$corner], $sessionData);
 ?>			
 		</div>
 	</header>
@@ -90,7 +90,7 @@ $sessionData = Globals::getApiSessionData($_COOKIE);
     
 	<script>
 		var require = {
-			baseUrl: '<?php echo $cdnUrl?>js/lib',
+			baseUrl: <?php echo json_encode($cdnUrl.'js/lib') ?>,
 			paths: <?php echo json_encode(Globals::getApplicableVersionnedBundles(
 				$config->minify,
 				$config->versioning,
@@ -98,8 +98,8 @@ $sessionData = Globals::getApiSessionData($_COOKIE);
 			)) ?>
 
 		}, appConfig = {
-			apiUrl: '//<?php echo $config->apiUrl ?>',
-			cdnUrl: '<?php echo $cdnUrl ?>',
+			apiUrl: <?php echo json_encode('//'.$config->apiUrl) ?>,
+			cdnUrl: <?php echo json_encode($cdnUrl) ?>,
 			images: <?php echo json_encode(Globals::getApplicableImagePaths($config->versioning)) ?>,
 			sessionData: <?php echo json_encode($sessionData) ?>
 			

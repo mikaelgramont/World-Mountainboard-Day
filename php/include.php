@@ -25,6 +25,10 @@ class Globals
 	
 	const IMG = 'img/';
 	
+	const COOKIE_USER_REMEMBER = 'userR';
+	const COOKIE_USER_USERNAME = 'userN';
+	const COOKIE_USER_PASSWORD = 'userP';
+	
 	/**
 	 * Configuration object
 	 * @var Zend_Config_Ini
@@ -43,6 +47,15 @@ class Globals
 	 */
 	protected static $_bundleRevisions;
 
+	public static function log($message)
+	{
+		if(!self::getConfig()->debug) {
+			return;
+		}
+		
+		error_log($message);
+	}
+	
 	public static function getConfig()
 	{
 		if(!self::$_config) {
@@ -60,8 +73,9 @@ class Globals
 	{
 		if(!self::$_cache) {
 			$config = self::getConfig();
+			$method = $config->cache->method . ($config->cache->active ? '' : 'PassThru');
 			self::$_cache = self::cacheFactory(
-				$config->cache->method, array(
+				$method, array(
 					'dir' => $config->cache->dir,
 					'ttl' => $config->cache->ttl
 				)
@@ -349,29 +363,38 @@ class Globals
 
 	public static function getApiSessionData($cookies)
 	{
-		/**
-		 * TODO:
-		 * Only login if we have a username, userpassword, a 'remember'
-		 * parameter AND we did not do it before (keep a flag in $_SESSION)
-		 */
-		
-		$sessionData = self::_login('plainuser', '123456789');
-		if(isset($sessionData->userId) && $sessionData->userId) {
-			// Logged-in user
-			$user = self::_getUsersOwnData($sessionData->userId, $sessionData->sessionId);
-		} else {
-			// Guest user
-			$user = self::getGuest();
-			$lang = 'en';
+		$config = self::getConfig();
+
+		if(!$sessionData = self::_getApiSessionData()) {
+			
+			if(isset($cookies[self::COOKIE_USER_REMEMBER]) &&
+			   isset($cookies[self::COOKIE_USER_USERNAME]) &&
+			   isset($cookies[self::COOKIE_USER_PASSWORD])) {
+				$sessionData = self::_login($cookies[self::COOKIE_USER_USERNAME], $cookies[self::COOKIE_USER_PASSWORD]);
+			}
+			
+			if(isset($sessionData->userId) && $sessionData->userId) {
+				// Logged-in user
+				$rider = self::_getRidersOwnData($sessionData->userId, $sessionData->sessionId);
+				$lang = $rider->lang;
+				$sessionId = $sessionData->sessionId;
+			} else {
+				// Guest user
+				$rider = self::getGuest();
+				// TODO: return the closest language to the one from the user request
+				$lang = 'en';
+				$sessionId = null;
+			}
+			
+			$sessionData->debug = $config->debug;
+			$sessionData->lang = $lang;
+			$sessionData->rider = $rider;
+			$sessionData->sessionId = $sessionId;
+			
+			self::setApiSessionData($sessionData);
 		}
 		
-		self::setApiSessionId($sessionData->sessionId);
-		
-		return array(
-			'apiSessionId' => $sessionData->sessionId,
-			'lang' => $lang,
-			'user' => $user
-		);
+		return $sessionData;
 	}
 	
 	/**
@@ -415,7 +438,7 @@ class Globals
 	 * Fetches the representation of a user given their id
 	 * @param integer $userId
 	 */
-	protected static function _getUsersOwnData($userId, $sessionId)
+	protected static function _getRidersOwnData($userId, $sessionId)
 	{
 		$config = self::getConfig();
 		$client = new Zend_Http_Client();
@@ -433,14 +456,14 @@ class Globals
 		return json_decode($userData);
 	}
 	
-	public static function getApiSessionId()
+	protected static function _getApiSessionData()
 	{
-		return isset($_SESSION['apiSessionId']) ? $_SESSION['apiSessionId'] : null;
+		return isset($_SESSION['apiSessionData']) ? $_SESSION['apiSessionData'] : array();
 	}
 	
-	public static function setApiSessionId($sessionId)
+	public static function setApiSessionData($sessionData)
 	{
-		$_SESSION['apiSessionId'] = $sessionId;
-		error_log('setting session id:'.$sessionId);
+		$_SESSION['apiSessionData'] = $sessionData;
+		self::log('Setting session id:'.$sessionData->sessionId);
 	}
 }

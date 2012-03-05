@@ -5,17 +5,17 @@
  *****************************************************************************/
 define([
     // Libraries
-	'jquery',
+	'order!jquery',
 	'underscore',
 	'backbone',
 	'mustache-wrapper',
 
 	// Templates
 	'text!templates/rider/username.tpl',
-	'text!templates/modal.tpl',
+	'text!templates/rider/modal.tpl',
 
 	// Bootstrap  plugins
-	'bootstrap/bootstrap-modal'
+	'order!bootstrap/bootstrap-modal'
 	
 	], function($, _, Backbone, mustache, usernameTpl, modalTpl, bootstrapModal){
 	var model = Backbone.Model.extend({
@@ -24,7 +24,16 @@ define([
 			return {
 				username:  'unknown'
 			};
+		},
+		
+		initialize: function(initialValues) {
+			console.log('rider - initialize', initialValues);
+		},
+		
+		isLoggedIn: function() {
+			return !!this.attributes.userId;
 		}
+		
 	});
 	
 	var collection = Backbone.Collection.extend({
@@ -35,12 +44,14 @@ define([
 	
 	var modalView = Backbone.View.extend({
 		template: mustache.compile(modalTpl),
+		
 		render: function(){
 			$(this.el).html(
 				this.template(this.model.toJSON())
 			);
 			return this;
 		},
+		
 		getHtml: function() {
 			return $(this.el).html();
 		}

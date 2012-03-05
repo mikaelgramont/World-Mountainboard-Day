@@ -5,8 +5,9 @@ nav{height:50px;}
 nav a{color:#eeeeee;}
 nav.main{float:left;}
 .session-corner{float:right;}
-.session-corner .lang-selector{float:left;margin-right:5px;}
-.session-corner .login-btn-group{float:right;}
+.session-corner .lang-selector,.session-corner .username{float:left;margin-right:5px;}
+.session-corner .username{margin-right:1em;font-size:20px;line-height:1.25em;color:white;font-weight:bold;text-transform:capitalize;}
+.session-corner .login-btn-group,.session-corner .logout-btn-group{float:right;}
 .lang-selector .dropdown-menu{min-width:0;}
 .lang-selector .dropdown-menu li{float:none;line-height:1em;height:inherit;}
 header nav li,footer nav li{float:left;height:50px;margin:5px;font-size:16px;line-height:50px;}

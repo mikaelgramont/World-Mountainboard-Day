@@ -5,27 +5,33 @@
  *****************************************************************************/
 define([
     // Libraries
-	'jquery',
+	'order!jquery',
 	'underscore',
 	'backbone',
 	'mustache-wrapper',
 
+	// Application modules
+	'../app/rider',
+	'../app/temp',
+	
 	// Templates
-	'text!templates/session/corner.tpl',
-	'text!templates/session/login.tpl',
-	'text!templates/modal.tpl',
+	'text!templates/session/corner-logged-in.tpl',
+	'text!templates/session/corner-logged-out.tpl',
+	'text!templates/session/login-form.tpl',
 
 	// Bootstrap  plugins
-	'bootstrap/bootstrap-modal'
+	'order!bootstrap/bootstrap-dropdown'
 	
-	], function($, _, Backbone, mustache, cornerTpl, loginTpl, modalTpl){
-	
+	], function($, _, Backbone, mustache, riderModule, tempModule, cornerTpl, loginTpl, dropdownPlugin){
+
 	var model = Backbone.Model.extend({
 		defaults: function() {
 			return {
 				apiSessionId: null, // By default, no session id
-				user: {},   // guest user by default
+				debug: false, // Whether to use debug methods
 				lang: 'en', // the language being used in the current session
+				
+				rider: {},   // guest user by default
 
 				// the following will be persisted to cookies or localstorage (latter more likely)
 				userN: null, // username
@@ -37,12 +43,23 @@ define([
 		},
 		
 		initialize: function(appConfig) {
-			console.log('session - initialize');
-			console.log('appConfig', appConfig);
+			var sessionData = appConfig.sessionData;
+			
+			if(sessionData.debug) {
+				console.log('session - initialize', appConfig);
+			}
+
+			this.attributes.apiSessionId = sessionData.apiSessionId;
+			this.attributes.debug = !!sessionData.debug;
+			this.attributes.lang = sessionData.lang;
+			
+			this.attributes.rider = new riderModule.model(sessionData.rider);
+			
+			window.session = this;
 		},
 		
 		isLoggedIn: function() {
-			return !!this.userId;			
+			return !!this.attributes.rider.isLoggedIn();			
 		},
 		
 		login: function() {
