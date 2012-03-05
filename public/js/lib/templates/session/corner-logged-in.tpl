@@ -17,6 +17,6 @@
     </div>
 	
     <div class="btn-group logout-btn-group">
-    	<a class="btn" href="/user/logout/">Logout</a>
+    	<a id="logout-btn" class="btn" href="/user/logout/">Logout</a>
     </div>	
 </nav>

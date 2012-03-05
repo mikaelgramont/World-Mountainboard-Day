@@ -13,7 +13,7 @@
     </div>
 	
     <div class="btn-group login-btn-group">
-    	<a class="btn" href="/user/login/">Login</a>
+    	<a id="login-btn" class="btn" href="/user/login/">Login</a>
     	<a class="btn" href="/user/register/">Register</a>
     </div>	
 </nav>

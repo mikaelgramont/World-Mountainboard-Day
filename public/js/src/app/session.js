@@ -55,6 +55,8 @@ define([
 			
 			this.attributes.rider = new riderModule.model(sessionData.rider);
 			
+			var corner = new sessionCornerView(this);
+			
 			window.session = this;
 		},
 		
@@ -63,6 +65,7 @@ define([
 		},
 		
 		login: function() {
+			console.log('session - login', arguments);
 			/**
 			 * TODO: call this method when the login form is submitted
 			 * - update the current model with data from the login form
@@ -79,6 +82,7 @@ define([
 		},
 		
 		logout: function() {
+			console.log('session - logout', arguments);
 			/**
 			 * TODO: call this method when the logout form is submitted
 			 * - reset model data
@@ -96,19 +100,42 @@ define([
 	});
 	
 	var sessionCornerView = Backbone.View.extend({
-		template: mustache.compile(cornerTpl),
-		
-		initialize: function() {
+		initialize: function(model) {
+			this.model = model;
+			
 			this.model.bind('login', this.render, this);
 			this.model.bind('logout', this.render, this);
 		},
 		
+		el: $('#session-corner'),
+
+		template: mustache.compile(cornerTpl),
+
 		render: function() {
 			console.log('session - render()', arguments);
 			$(this.el).html(
 				this.template(this.model.toJSON())
 			);
 			return this;
+		},
+		
+		events: {
+			'click': function(e){
+				console.log('session - backbone listener - click', arguments);
+				var handled = true;
+				if(e.originalEvent.originalTarget.id == 'logout-btn') {
+					this.model.logout();
+				} else if (e.originalEvent.originalTarget.id == 'login-btn') {
+					this.model.login();
+				} else {
+					handled = false;
+				}
+				
+				if(handled) {
+					e.preventDefault();
+					e.stopPropagation();
+				}
+			}
 		}
 	}); 
 	
