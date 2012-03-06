@@ -6,11 +6,13 @@
 define([
     // Libraries
 	'order!jquery',
+	'order!jquery.cookie',
 	'underscore',
 	'backbone',
 	'mustache-wrapper',
 
 	// Application modules
+	'../app/register',
 	'../app/rider',
 	'../app/temp',
 	
@@ -19,49 +21,39 @@ define([
 	'text!templates/session/corner-logged-out.tpl',
 	'text!templates/session/login-form.tpl',
 
-	// Bootstrap  plugins
+	// Bootstrap plugins
 	'order!bootstrap/bootstrap-dropdown'
 	
-	], function($, _, Backbone, mustache, riderModule, tempModule, cornerTpl, loginTpl, dropdownPlugin){
+	], function($, cookie, _, Backbone, mustache, register, riderModule, tempModule, cornerTpl, loginTpl, dropdownPlugin){
 
+	/**************************************************************************
+	 * MODEL 
+	 *************************************************************************/
 	var model = Backbone.Model.extend({
-		defaults: function() {
-			return {
-				apiSessionId: null, // By default, no session id
-				debug: false, // Whether to use debug methods
-				lang: 'en', // the language being used in the current session
-				
-				rider: {},   // guest user by default
-
-				// the following will be persisted to cookies or localstorage (latter more likely)
-				userN: null, // username
-				userP: null, // user password
-				userR: false, //whether to remember user login and password
-				
-				errors: [] // login/logout errors
-			};
-		},
+		errors: [], // form errors
 		
 		initialize: function(appConfig) {
-			var sessionData = appConfig.sessionData;
-			
-			if(sessionData.debug) {
+			if(appConfig.sessionData.debug) {
 				console.log('session - initialize', appConfig);
 			}
 
-			this.attributes.apiSessionId = sessionData.apiSessionId;
-			this.attributes.debug = !!sessionData.debug;
-			this.attributes.lang = sessionData.lang;
+			register.setApiSessionId(appConfig.sessionData.apiSessionId);
+			register.setDebug(appConfig.sessionData.debug);
+			register.setLang(appConfig.sessionData.lang);
+			register.setRider(new riderModule.model(appConfig.sessionData.rider));
 			
-			this.attributes.rider = new riderModule.model(sessionData.rider);
+			this.savePersistingIdentityParams('n', 'p', true);
+			this.loadPersistingIdentityParams();
 			
 			var corner = new sessionCornerView(this);
 			
-			window.session = this;
+			if(register.isDebug()) {
+				window.session = this;
+			}
 		},
 		
 		isLoggedIn: function() {
-			return !!this.attributes.rider.isLoggedIn();			
+			return !!register.getRider().isLoggedIn();			
 		},
 		
 		login: function() {
@@ -96,9 +88,36 @@ define([
 			 *   - in case of error
 			 *     - update the UI to show errors
 			 */
+		},
+		
+		// The following reflect login cookies
+		persistingIdentityParams: {
+			userN: null, // username
+			userP: null, // user password
+			userR: false, //whether to remember user login and password
+		},
+		
+		loadPersistingIdentityParams: function() {
+			_.each(['userN', 'userP', 'userR'], function(element, index, list){
+				this.persistingIdentityParams[element] = $.cookie(element);
+			}, this);
+			
+			if(register.isDebug()) {
+				console.log('session - loadPersistingIdentityParams', this.persistingIdentityParams);
+			}
+		},
+		
+		savePersistingIdentityParams: function(userN, userP, userR) {
+			$.cookie('userN',userN);
+			$.cookie('userP',userP);
+			$.cookie('userR',userR);
 		}
 	});
+
 	
+	/**************************************************************************
+	 * VIEWS 
+	 *************************************************************************/
 	var sessionCornerView = Backbone.View.extend({
 		initialize: function(model) {
 			this.model = model;
@@ -138,9 +157,15 @@ define([
 			}
 		}
 	}); 
+
 	
+	/**************************************************************************
+	 * MODULE INTERFACE 
+	 *************************************************************************/
 	return {
 		model: model,
-		views: [sessionCornerView]
+		views: {
+			sessionCorner: sessionCornerView
+		}
 	};
 });

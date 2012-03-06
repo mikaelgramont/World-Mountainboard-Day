@@ -11,16 +11,20 @@ define([
 	'mustache-wrapper',
 
 	// Application modules
+	'../app/register',
 	'../app/rider',
 	
 	// Templates
 	'text!templates/modal.tpl',
 
-	// Bootstrap  plugins
+	// Bootstrap plugins
 	'order!bootstrap/bootstrap-modal'
 	
-	], function($, _, Backbone, mustache, riderModule, modalTpl, bootstrapModal){
-	
+	], function($, _, Backbone, mustache, registerModule, riderModule, modalTpl, bootstrapModal){
+
+	/**************************************************************************
+	 * VIEWS 
+	 *************************************************************************/
 	var modalView = Backbone.View.extend({
 		template: mustache.compile(modalTpl),
 		render: function(){
@@ -51,7 +55,7 @@ define([
 		},
 		
 		addOne: function(rider) {
-			var view = new riderModule.view({model: rider});
+			var view = new riderModule.views.username({model: rider});
 			this.$("#rider-list").append(view.render().el);
 		},
 		

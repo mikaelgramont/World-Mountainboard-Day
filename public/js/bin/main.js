@@ -12297,6 +12297,65 @@ define('mustache-wrapper',['mustache'], function(){
   // Tell Require.js that this module returns a reference to Mustache
   return Mustache;
 });
+/******************************************************************************
+ * js/src/app/register.js
+ *
+ * Module that stores global data and objects
+ *****************************************************************************/
+define('../src/app/register',[], function(){
+	
+	var data = {
+		apiSessionId: null, // By default, no session id
+		debug: false, 		// Whether to use debug methods
+		lang: 'en', 		// The language currently being used
+		rider: {}			// The rider object
+	};
+	
+	/**************************************************************************
+	 * MODULE INTERFACE 
+	 *************************************************************************/
+	return {
+		set: function(key, value) {
+			data[key] = value;
+		},
+		
+		get: function(key) {
+			return data[key];
+		},
+		
+		getApiSessionId: function() {
+			return data.apiSessionId;
+		},
+		
+		setApiSessionId: function(id) {
+			this.set('apiSessionId', id);
+		},
+		
+		isDebug: function() {
+			return data.debug;
+		},
+		
+		setDebug: function(bool) {
+			this.set('debug', !!bool);
+		},
+		
+		getLang: function() {
+			return data.lang;
+		},
+		
+		setLang: function(lang) {
+			this.set('lang', lang);
+		},
+		
+		getRider: function() {
+			return data.rider;
+		},
+		
+		setRider: function(rider) {
+			this.set('rider', rider);
+		}
+	};
+});
 /* =========================================================
  * bootstrap-modal.js v2.0.0
  * http://twitter.github.com/bootstrap/javascript.html#modals
@@ -12798,9 +12857,9 @@ define("bootstrap/bootstrap-modal", function(){});
     });
 }());
 
-define('text!templates/session/corner-logged-in.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n\t<div class="username">\n\t\t{{ rider.username }}\n\t</div>\n\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t\t<li class="fr"><a href="#">FR</a></li>\n    \t\t<li class="en"><a href="#">EN</a></li>\n    \t\t<li class="es"><a href="#">ES</a></li>\n    \t</ul>\n    </div>\n\t\n    <div class="btn-group logout-btn-group">\n    \t<a class="btn" href="/user/logout/">Logout</a>\n    </div>\t\n</nav>';});
+define('text!templates/session/corner-logged-in.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n\t<div class="username">\n\t\t{{ rider.username }}\n\t</div>\n\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t\t<li class="fr"><a href="#">FR</a></li>\n    \t\t<li class="en"><a href="#">EN</a></li>\n    \t\t<li class="es"><a href="#">ES</a></li>\n    \t</ul>\n    </div>\n\t\n    <div class="btn-group logout-btn-group">\n    \t<a id="logout-btn" class="btn" href="/user/logout/">Logout</a>\n    </div>\t\n</nav>';});
 
-define('text!templates/session/corner-logged-out.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t\t<li class="fr"><a href="#">FR</a></li>\n    \t\t<li class="en"><a href="#">EN</a></li>\n    \t\t<li class="es"><a href="#">ES</a></li>\n    \t</ul>\n    </div>\n\t\n    <div class="btn-group login-btn-group">\n    \t<a class="btn" href="/user/login/">Login</a>\n    \t<a class="btn" href="/user/register/">Register</a>\n    </div>\t\n</nav>';});
+define('text!templates/session/corner-logged-out.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t\t<li class="fr"><a href="#">FR</a></li>\n    \t\t<li class="en"><a href="#">EN</a></li>\n    \t\t<li class="es"><a href="#">ES</a></li>\n    \t</ul>\n    </div>\n\t\n    <div class="btn-group login-btn-group">\n    \t<a id="login-btn" class="btn" href="/user/login/">Login</a>\n    \t<a class="btn" href="/user/register/">Register</a>\n    </div>\t\n</nav>';});
 
 define('text!templates/session/login-form.tpl',[],function () { return '<div class="session-login-form">\n\tLogin form\n</div>';});
 
@@ -12819,6 +12878,9 @@ define('../src/app/rider',[
 	'underscore',
 	'backbone',
 	'mustache-wrapper',
+	
+	// Application modules
+	'../app/register',
 
 	// Templates
 	'text!templates/rider/username.tpl',
@@ -12827,7 +12889,11 @@ define('../src/app/rider',[
 	// Bootstrap  plugins
 	'order!bootstrap/bootstrap-modal'
 	
-	], function($, _, Backbone, mustache, usernameTpl, modalTpl, bootstrapModal){
+	], function($, _, Backbone, mustache, registerModule, usernameTpl, modalTpl, bootstrapModal){
+
+	/**************************************************************************
+	 * MODEL 
+	 *************************************************************************/
 	var model = Backbone.Model.extend({
 		// Default attributes for a rider item.
 		defaults: function() {
@@ -12845,13 +12911,21 @@ define('../src/app/rider',[
 		}
 		
 	});
+
 	
+	/**************************************************************************
+	 * COLLECTION 
+	 *************************************************************************/
 	var collection = Backbone.Collection.extend({
 		// Reference to this collection's model.
 		model: model,
 		url: window.appConfig.apiUrl + '/riders/'
 	});
-	
+
+
+	/**************************************************************************
+	 * VIEWS 
+	 *************************************************************************/
 	var modalView = Backbone.View.extend({
 		template: mustache.compile(modalTpl),
 		
@@ -12906,11 +12980,18 @@ define('../src/app/rider',[
 			this.model.destroy();
 		}
 	});
+
 	
+	/**************************************************************************
+	 * MODULE INTERFACE 
+	 *************************************************************************/
 	return {
 		'model': model,
 		'collection': collection,
-		'view': usernameView
+		'views': {
+			modal: modalView,
+			username: usernameView
+		}
 	};
 });
 
@@ -12929,16 +13010,20 @@ define('../src/app/temp',[
 	'mustache-wrapper',
 
 	// Application modules
+	'../app/register',
 	'../app/rider',
 	
 	// Templates
 	'text!templates/modal.tpl',
 
-	// Bootstrap  plugins
+	// Bootstrap plugins
 	'order!bootstrap/bootstrap-modal'
 	
-	], function($, _, Backbone, mustache, riderModule, modalTpl, bootstrapModal){
-	
+	], function($, _, Backbone, mustache, registerModule, riderModule, modalTpl, bootstrapModal){
+
+	/**************************************************************************
+	 * VIEWS 
+	 *************************************************************************/
 	var modalView = Backbone.View.extend({
 		template: mustache.compile(modalTpl),
 		render: function(){
@@ -12969,7 +13054,7 @@ define('../src/app/temp',[
 		},
 		
 		addOne: function(rider) {
-			var view = new riderModule.view({model: rider});
+			var view = new riderModule.views.username({model: rider});
 			this.$("#rider-list").append(view.render().el);
 		},
 		
@@ -13088,6 +13173,7 @@ define('../src/app/session',[
 	'mustache-wrapper',
 
 	// Application modules
+	'../app/register',
 	'../app/rider',
 	'../app/temp',
 	
@@ -13096,21 +13182,18 @@ define('../src/app/session',[
 	'text!templates/session/corner-logged-out.tpl',
 	'text!templates/session/login-form.tpl',
 
-	// Bootstrap  plugins
+	// Bootstrap plugins
 	'order!bootstrap/bootstrap-dropdown'
 	
-	], function($, _, Backbone, mustache, riderModule, tempModule, cornerTpl, loginTpl, dropdownPlugin){
+	], function($, _, Backbone, mustache, register, riderModule, tempModule, cornerTpl, loginTpl, dropdownPlugin){
 
+	/**************************************************************************
+	 * MODEL 
+	 *************************************************************************/
 	var model = Backbone.Model.extend({
 		defaults: function() {
 			return {
-				apiSessionId: null, // By default, no session id
-				debug: false, // Whether to use debug methods
-				lang: 'en', // the language being used in the current session
-				
-				rider: {},   // guest user by default
-
-				// the following will be persisted to cookies or localstorage (latter more likely)
+				// the following will be persisted to cookies
 				userN: null, // username
 				userP: null, // user password
 				userR: false, //whether to remember user login and password
@@ -13120,26 +13203,28 @@ define('../src/app/session',[
 		},
 		
 		initialize: function(appConfig) {
-			var sessionData = appConfig.sessionData;
-			
 			if(sessionData.debug) {
 				console.log('session - initialize', appConfig);
 			}
 
-			this.attributes.apiSessionId = sessionData.apiSessionId;
-			this.attributes.debug = !!sessionData.debug;
-			this.attributes.lang = sessionData.lang;
+			register.setApiSessionId(appConfig.sessionData.apiSessionId);
+			register.setDebug(appConfig.sessionData.debug);
+			register.setLang(appConfig.sessionData.lang);
+			register.setRider(new riderModule.model(appConfig.sessionData.rider));
 			
-			this.attributes.rider = new riderModule.model(sessionData.rider);
+			var corner = new sessionCornerView(this);
 			
-			window.session = this;
+			if(register.isDebug()) {
+				window.session = this;
+			}
 		},
 		
 		isLoggedIn: function() {
-			return !!this.attributes.rider.isLoggedIn();			
+			return !!register.getRider().isLoggedIn();			
 		},
 		
 		login: function() {
+			console.log('session - login', arguments);
 			/**
 			 * TODO: call this method when the login form is submitted
 			 * - update the current model with data from the login form
@@ -13156,6 +13241,7 @@ define('../src/app/session',[
 		},
 		
 		logout: function() {
+			console.log('session - logout', arguments);
 			/**
 			 * TODO: call this method when the logout form is submitted
 			 * - reset model data
@@ -13171,27 +13257,60 @@ define('../src/app/session',[
 			 */
 		}
 	});
+
 	
+	/**************************************************************************
+	 * VIEWS 
+	 *************************************************************************/
 	var sessionCornerView = Backbone.View.extend({
-		template: mustache.compile(cornerTpl),
-		
-		initialize: function() {
+		initialize: function(model) {
+			this.model = model;
+			
 			this.model.bind('login', this.render, this);
 			this.model.bind('logout', this.render, this);
 		},
 		
+		el: $('#session-corner'),
+
+		template: mustache.compile(cornerTpl),
+
 		render: function() {
 			console.log('session - render()', arguments);
 			$(this.el).html(
 				this.template(this.model.toJSON())
 			);
 			return this;
+		},
+		
+		events: {
+			'click': function(e){
+				console.log('session - backbone listener - click', arguments);
+				var handled = true;
+				if(e.originalEvent.originalTarget.id == 'logout-btn') {
+					this.model.logout();
+				} else if (e.originalEvent.originalTarget.id == 'login-btn') {
+					this.model.login();
+				} else {
+					handled = false;
+				}
+				
+				if(handled) {
+					e.preventDefault();
+					e.stopPropagation();
+				}
+			}
 		}
 	}); 
+
 	
+	/**************************************************************************
+	 * MODULE INTERFACE 
+	 *************************************************************************/
 	return {
 		model: model,
-		views: [sessionCornerView]
+		views: {
+			sessionCorner: sessionCornerView
+		}
 	};
 });
 

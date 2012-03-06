@@ -9,6 +9,9 @@ define([
 	'underscore',
 	'backbone',
 	'mustache-wrapper',
+	
+	// Application modules
+	'../app/register',
 
 	// Templates
 	'text!templates/rider/username.tpl',
@@ -17,7 +20,11 @@ define([
 	// Bootstrap  plugins
 	'order!bootstrap/bootstrap-modal'
 	
-	], function($, _, Backbone, mustache, usernameTpl, modalTpl, bootstrapModal){
+	], function($, _, Backbone, mustache, registerModule, usernameTpl, modalTpl, bootstrapModal){
+
+	/**************************************************************************
+	 * MODEL 
+	 *************************************************************************/
 	var model = Backbone.Model.extend({
 		// Default attributes for a rider item.
 		defaults: function() {
@@ -35,13 +42,21 @@ define([
 		}
 		
 	});
+
 	
+	/**************************************************************************
+	 * COLLECTION 
+	 *************************************************************************/
 	var collection = Backbone.Collection.extend({
 		// Reference to this collection's model.
 		model: model,
 		url: window.appConfig.apiUrl + '/riders/'
 	});
-	
+
+
+	/**************************************************************************
+	 * VIEWS 
+	 *************************************************************************/
 	var modalView = Backbone.View.extend({
 		template: mustache.compile(modalTpl),
 		
@@ -96,10 +111,17 @@ define([
 			this.model.destroy();
 		}
 	});
+
 	
+	/**************************************************************************
+	 * MODULE INTERFACE 
+	 *************************************************************************/
 	return {
 		'model': model,
 		'collection': collection,
-		'view': usernameView
+		'views': {
+			modal: modalView,
+			username: usernameView
+		}
 	};
 });
