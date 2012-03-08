@@ -10,6 +10,11 @@ $templates = Globals::getTemplates('js/lib/templates/');
 $cdnUrl = $config->cdnProtocol . $config->cdnUrl;
 $sessionData = Globals::getApiSessionData($_COOKIE);
 $m = new Mustache;
+$bundles = Globals::getApplicableVersionnedBundles(
+	$config->minify,
+	$config->versioning,
+	$cdnUrl
+);
 ?>
 <!doctype html>
 <html lang="en">
@@ -25,7 +30,7 @@ $m = new Mustache;
 	'styles.css', $config->minify, $config->versioning, $cdnUrl) ?>">
 </head>
 
-<body>
+<body id="app">
 	<header>
 		<div class="container">
 			<h1>World Mountainboard Day</h1>
@@ -43,7 +48,7 @@ $m = new Mustache;
 		</div>
 	</header>
 		
-	<div id="app" role="main" class="main container">
+	<div id="main" role="main" class="main container">
 		<section id="riders">
 			<h1>Riders</h1>
 			<ul id="rider-list"></ul>
@@ -91,20 +96,24 @@ $m = new Mustache;
 	<script>
 		var require = {
 			baseUrl: <?php echo json_encode($cdnUrl.'js/lib') ?>,
-			paths: <?php echo json_encode(Globals::getApplicableVersionnedBundles(
-				$config->minify,
-				$config->versioning,
-				$cdnUrl
-			)) ?>
+			paths: <?php echo json_encode($bundles) ?>
 
 		}, appConfig = {
-			apiUrl: <?php echo json_encode('//'.$config->apiUrl) ?>,
+			apiUrl: <?php echo json_encode($config->apiUrl) ?>,
 			cdnUrl: <?php echo json_encode($cdnUrl) ?>,
 			images: <?php echo json_encode(Globals::getApplicableImagePaths($config->versioning)) ?>,
 			sessionData: <?php echo json_encode($sessionData) ?>
 			
 		};
   	</script>
-  	<script data-main="../<?php echo $config->useBundles ? "bin" : "src" ?>/main<?php if($config->minify) echo ".min"?>" src="<?php echo $cdnUrl ?>js/lib/require-1.0.6<?php if($config->minify) echo ".min"?>.js"></script>
+  	<?php
+  		if($config->useBundles) {
+  			$main = $bundles['main'.($config->minify ? ".min" : "")]. '.js';
+  		} else {
+			$main = '../js/src/main.js';
+  		}
+  		$require = $cdnUrl . 'js/lib/require-1.0.6' . ($config->minify ? '.min' : '') . '.js';
+  	?>
+  	<script data-main="<?php echo $main ?>" src="<?php echo $require ?>"></script>
 </body>
 </html>

@@ -20,12 +20,12 @@ define([
 	// Bootstrap  plugins
 	'order!bootstrap/bootstrap-modal'
 	
-	], function($, _, Backbone, mustache, registerModule, usernameTpl, modalTpl, bootstrapModal){
+	], function($, _, Backbone, mustache, register, usernameTpl, modalTpl, bootstrapModal){
 
 	/**************************************************************************
 	 * MODEL 
 	 *************************************************************************/
-	var model = Backbone.Model.extend({
+	var Rider = Backbone.Model.extend({
 		// Default attributes for a rider item.
 		defaults: function() {
 			return {
@@ -34,7 +34,9 @@ define([
 		},
 		
 		initialize: function(initialValues) {
-			console.log('rider - initialize', initialValues);
+			if(register.isDebug()) {
+				//console.log('rider - initialize', initialValues);
+			}
 		},
 		
 		isLoggedIn: function() {
@@ -47,17 +49,18 @@ define([
 	/**************************************************************************
 	 * COLLECTION 
 	 *************************************************************************/
-	var collection = Backbone.Collection.extend({
-		// Reference to this collection's model.
-		model: model,
-		url: window.appConfig.apiUrl + '/riders/'
+	var RiderCollection = Backbone.Collection.extend({
+		model: Rider,
+		initialize: function(){
+			this.url = register.getApiResourceUrl('rider');
+		}
 	});
 
 
 	/**************************************************************************
 	 * VIEWS 
 	 *************************************************************************/
-	var modalView = Backbone.View.extend({
+	var ModalView = Backbone.View.extend({
 		template: mustache.compile(modalTpl),
 		
 		render: function(){
@@ -72,13 +75,13 @@ define([
 		}
 	});
 	
-	var usernameView = Backbone.View.extend({
+	var UsernameView = Backbone.View.extend({
 		tagName:  "li",
 		className: "rider",
 		
 		events: {
 			'click': function(e){
-				var view = new modalView({model: this.model});
+				var view = new ModalView({model: this.model});
 				$("#modal").modal().html(
 					view.render().getHtml()
 				);
@@ -117,11 +120,11 @@ define([
 	 * MODULE INTERFACE 
 	 *************************************************************************/
 	return {
-		'model': model,
-		'collection': collection,
+		'model': Rider,
+		'collection': RiderCollection,
 		'views': {
-			modal: modalView,
-			username: usernameView
+			modal: ModalView,
+			username: UsernameView
 		}
 	};
 });

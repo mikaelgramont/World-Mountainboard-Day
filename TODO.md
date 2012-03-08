@@ -1,12 +1,15 @@
 # Client-side TODO
-How to setup events on views in a declarative way?
-setup events on a new view for the session corner
+Fix versioning false for CSS and bundle false for JS 
 
 
+3d view on maps: http://google-maps-utility-library-v3.googlecode.com/svn/trunk/googleearth/docs/reference.html
+and http://www-web2.youtube.com/watch?v=IXoJLyN356E&feature=g-all-u&context=G24cb18fFAAAAAHgAXAA
+
+Look at chaplin for oauth https://github.com/moviepilot/chaplin
 
 Detect language on the backend
 Build controllers to proxy the API calls, plus some other ones like /user/logout/
-Look into an architecture for i18n
+Look into an architecture for i18n, see https://github.com/SlexAxton/messageformat.js
 Add widget on homepage to show JS loading status while in debug.
 Find a logo and a font to represent it in small displays
 Determine timezone based on location: 0-new Date().getTimezoneOffset()/60

@@ -20,12 +20,12 @@ define([
 	// Bootstrap plugins
 	'order!bootstrap/bootstrap-modal'
 	
-	], function($, _, Backbone, mustache, registerModule, riderModule, modalTpl, bootstrapModal){
+	], function($, _, Backbone, mustache, register, riderModule, modalTpl, bootstrapModal){
 
 	/**************************************************************************
 	 * VIEWS 
 	 *************************************************************************/
-	var modalView = Backbone.View.extend({
+	var ModalView = Backbone.View.extend({
 		template: mustache.compile(modalTpl),
 		render: function(){
 			$(this.el).html(this.template());
@@ -36,8 +36,8 @@ define([
 		}
 	});
 	
-	var tempView = Backbone.View.extend({
-		el: $("#app"),
+	var TempView = Backbone.View.extend({
+		el: $("#main"),
 		
 		initialize: function(riders) {
 			this.riders = riders;
@@ -48,7 +48,7 @@ define([
 		
 		events: {
 			click: function() {
-				var view = new modalView({model: this.model});
+				var view = new ModalView({model: this.model});
 				$("#modal").modal().html(view.render().getHtml());
 				console.log('temp - click');				
 			}
@@ -64,5 +64,10 @@ define([
 		}
 	});
 	
-	var app = new tempView(new riderModule.collection());
+	return {
+		views: {
+			modal: ModalView,
+			temp: TempView
+		}
+	};
 });

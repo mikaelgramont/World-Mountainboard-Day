@@ -13,8 +13,6 @@ define([
 
 	// Application modules
 	'../app/register',
-	'../app/rider',
-	'../app/temp',
 	
 	// Templates
 	'text!templates/session/corner-logged-in.tpl',
@@ -24,32 +22,19 @@ define([
 	// Bootstrap plugins
 	'order!bootstrap/bootstrap-dropdown'
 	
-	], function($, cookie, _, Backbone, mustache, register, riderModule, tempModule, cornerTpl, loginTpl, dropdownPlugin){
+	], function($, cookie, _, Backbone, mustache, register, cornerLoggedInTpl, cornerLoggedOutTpl, loginFormTpl, dropdownPlugin){
 
 	/**************************************************************************
 	 * MODEL 
 	 *************************************************************************/
-	var model = Backbone.Model.extend({
+	var Session = Backbone.Model.extend({
 		errors: [], // form errors
 		
-		initialize: function(appConfig) {
-			if(appConfig.sessionData.debug) {
-				console.log('session - initialize', appConfig);
-			}
-
-			register.setApiSessionId(appConfig.sessionData.apiSessionId);
-			register.setDebug(appConfig.sessionData.debug);
-			register.setLang(appConfig.sessionData.lang);
-			register.setRider(new riderModule.model(appConfig.sessionData.rider));
-			
-			this.savePersistingIdentityParams('n', 'p', true);
+		initialize: function() {
+			//this.savePersistingIdentityParams('plainuser', '123456789', true);
 			this.loadPersistingIdentityParams();
 			
-			var corner = new sessionCornerView(this);
-			
-			if(register.isDebug()) {
-				window.session = this;
-			}
+			var corner = new SessionCornerView(this);
 		},
 		
 		isLoggedIn: function() {
@@ -118,20 +103,20 @@ define([
 	/**************************************************************************
 	 * VIEWS 
 	 *************************************************************************/
-	var sessionCornerView = Backbone.View.extend({
+	var SessionCornerView = Backbone.View.extend({
 		initialize: function(model) {
 			this.model = model;
 			
 			this.model.bind('login', this.render, this);
 			this.model.bind('logout', this.render, this);
+			
+			var templateFile = this.model.isLoggedIn() ? cornerLoggedInTpl : cornerLoggedOutTpl;
+			this.template = mustache.compile(templateFile);
 		},
 		
 		el: $('#session-corner'),
 
-		template: mustache.compile(cornerTpl),
-
 		render: function() {
-			console.log('session - render()', arguments);
 			$(this.el).html(
 				this.template(this.model.toJSON())
 			);
@@ -140,12 +125,17 @@ define([
 		
 		events: {
 			'click': function(e){
-				console.log('session - backbone listener - click', arguments);
 				var handled = true;
 				if(e.originalEvent.originalTarget.id == 'logout-btn') {
 					this.model.logout();
 				} else if (e.originalEvent.originalTarget.id == 'login-btn') {
-					this.model.login();
+					//this.model.login();
+					//TODO: show a new modal view with the login form in it
+					var loginForm = new LoginFormView(this.model);
+					$("#modal").modal().html(
+						loginForm.render().getHtml()
+					);
+					
 				} else {
 					handled = false;
 				}
@@ -158,14 +148,39 @@ define([
 		}
 	}); 
 
-	
+	var LoginFormView = Backbone.View.extend({
+		initialize: function(model) {
+			this.model = model;
+		},
+		
+		template: mustache.compile(loginFormTpl),
+
+		render: function() {
+			console.log('session - LoginFormView render()', arguments);
+			$(this.el).html(
+				this.template(this.model.toJSON())
+			);
+			return this;
+		},
+		
+		getHtml: function() {
+			return $(this.el).html();
+		},
+		
+		events: {
+			'click': function(e){
+				console.log('session - LoginModalView - click', arguments);
+			}
+		}
+	}); 
 	/**************************************************************************
 	 * MODULE INTERFACE 
 	 *************************************************************************/
 	return {
-		model: model,
+		model: Session,
 		views: {
-			sessionCorner: sessionCornerView
+			sessionCorner: SessionCornerView,
+			loginForm: LoginFormView
 		}
 	};
 });

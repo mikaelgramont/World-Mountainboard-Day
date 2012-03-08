@@ -12306,9 +12306,14 @@ define('../src/app/register',[], function(){
 	
 	var data = {
 		apiSessionId: null, // By default, no session id
+		apiUrl: null, 		// The url to the rest api
 		debug: false, 		// Whether to use debug methods
 		lang: 'en', 		// The language currently being used
 		rider: {}			// The rider object
+	};
+	
+	var apiResourceUrls = {
+		'rider': 'riders'
 	};
 	
 	/**************************************************************************
@@ -12329,6 +12334,31 @@ define('../src/app/register',[], function(){
 		
 		setApiSessionId: function(id) {
 			this.set('apiSessionId', id);
+		},
+		
+		getApiUrl: function() {
+			return data.apiUrl;
+		},
+		
+		setApiUrl: function(url) {
+			this.set('apiUrl', url);
+		},
+		
+		getApiResourceUrl: function(resource) {
+			if(typeof apiResourceUrls[resource] == 'undefined') {
+				throw new Error('No url defined for resource "' + resource + '"');
+			}
+			
+			var url = '//' + this.getApiUrl() + '/' + apiResourceUrls[resource] + '/';
+			if(this.getApiSessionId()) {
+				url +=  '?PHPSESSID=' + this.getApiSessionId();
+			}
+			
+			if(this.isDebug()) {
+				console.log('register - url for ' + resource + ': ' + url);
+			}
+			
+			return url;
 		},
 		
 		isDebug: function() {
@@ -12353,221 +12383,11 @@ define('../src/app/register',[], function(){
 		
 		setRider: function(rider) {
 			this.set('rider', rider);
-		}
+		},
+		
+		data: data
 	};
 });
-/* =========================================================
- * bootstrap-modal.js v2.0.0
- * http://twitter.github.com/bootstrap/javascript.html#modals
- * =========================================================
- * Copyright 2012 Twitter, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * ========================================================= */
-
-
-!function( $ ){
-
-  "use strict"
-
- /* MODAL CLASS DEFINITION
-  * ====================== */
-
-  var Modal = function ( content, options ) {
-    this.options = $.extend({}, $.fn.modal.defaults, options)
-    this.$element = $(content)
-      .delegate('[data-dismiss="modal"]', 'click.dismiss.modal', $.proxy(this.hide, this))
-  }
-
-  Modal.prototype = {
-
-      constructor: Modal
-
-    , toggle: function () {
-        return this[!this.isShown ? 'show' : 'hide']()
-      }
-
-    , show: function () {
-        var that = this
-
-        if (this.isShown) return
-
-        $('body').addClass('modal-open')
-
-        this.isShown = true
-        this.$element.trigger('show')
-
-        escape.call(this)
-        backdrop.call(this, function () {
-          var transition = $.support.transition && that.$element.hasClass('fade')
-
-          !that.$element.parent().length && that.$element.appendTo(document.body) //don't move modals dom position
-
-          that.$element
-            .show()
-
-          if (transition) {
-            that.$element[0].offsetWidth // force reflow
-          }
-
-          that.$element.addClass('in')
-
-          transition ?
-            that.$element.one($.support.transition.end, function () { that.$element.trigger('shown') }) :
-            that.$element.trigger('shown')
-
-        })
-      }
-
-    , hide: function ( e ) {
-        e && e.preventDefault()
-
-        if (!this.isShown) return
-
-        var that = this
-        this.isShown = false
-
-        $('body').removeClass('modal-open')
-
-        escape.call(this)
-
-        this.$element
-          .trigger('hide')
-          .removeClass('in')
-
-        $.support.transition && this.$element.hasClass('fade') ?
-          hideWithTransition.call(this) :
-          hideModal.call(this)
-      }
-
-  }
-
-
- /* MODAL PRIVATE METHODS
-  * ===================== */
-
-  function hideWithTransition() {
-    var that = this
-      , timeout = setTimeout(function () {
-          that.$element.off($.support.transition.end)
-          hideModal.call(that)
-        }, 500)
-
-    this.$element.one($.support.transition.end, function () {
-      clearTimeout(timeout)
-      hideModal.call(that)
-    })
-  }
-
-  function hideModal( that ) {
-    this.$element
-      .hide()
-      .trigger('hidden')
-
-    backdrop.call(this)
-  }
-
-  function backdrop( callback ) {
-    var that = this
-      , animate = this.$element.hasClass('fade') ? 'fade' : ''
-
-    if (this.isShown && this.options.backdrop) {
-      var doAnimate = $.support.transition && animate
-
-      this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
-        .appendTo(document.body)
-
-      if (this.options.backdrop != 'static') {
-        this.$backdrop.click($.proxy(this.hide, this))
-      }
-
-      if (doAnimate) this.$backdrop[0].offsetWidth // force reflow
-
-      this.$backdrop.addClass('in')
-
-      doAnimate ?
-        this.$backdrop.one($.support.transition.end, callback) :
-        callback()
-
-    } else if (!this.isShown && this.$backdrop) {
-      this.$backdrop.removeClass('in')
-
-      $.support.transition && this.$element.hasClass('fade')?
-        this.$backdrop.one($.support.transition.end, $.proxy(removeBackdrop, this)) :
-        removeBackdrop.call(this)
-
-    } else if (callback) {
-      callback()
-    }
-  }
-
-  function removeBackdrop() {
-    this.$backdrop.remove()
-    this.$backdrop = null
-  }
-
-  function escape() {
-    var that = this
-    if (this.isShown && this.options.keyboard) {
-      $(document).on('keyup.dismiss.modal', function ( e ) {
-        e.which == 27 && that.hide()
-      })
-    } else if (!this.isShown) {
-      $(document).off('keyup.dismiss.modal')
-    }
-  }
-
-
- /* MODAL PLUGIN DEFINITION
-  * ======================= */
-
-  $.fn.modal = function ( option ) {
-    return this.each(function () {
-      var $this = $(this)
-        , data = $this.data('modal')
-        , options = typeof option == 'object' && option
-      if (!data) $this.data('modal', (data = new Modal(this, options)))
-      if (typeof option == 'string') data[option]()
-      else data.show()
-    })
-  }
-
-  $.fn.modal.defaults = {
-      backdrop: true
-    , keyboard: true
-  }
-
-  $.fn.modal.Constructor = Modal
-
-
- /* MODAL DATA-API
-  * ============== */
-
-  $(function () {
-    $('body').on('click.modal.data-api', '[data-toggle="modal"]', function ( e ) {
-      var $this = $(this), href
-        , $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7
-        , option = $target.data('modal') ? 'toggle' : $.extend({}, $target.data(), $this.data())
-
-      e.preventDefault()
-      $target.modal(option)
-    })
-  })
-
-}( window.jQuery )
-;
-define("bootstrap/bootstrap-modal", function(){});
-
 /**
  * @license RequireJS text 1.0.7 Copyright (c) 2010-2011, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
@@ -12857,214 +12677,62 @@ define("bootstrap/bootstrap-modal", function(){});
     });
 }());
 
+/*!
+ * jQuery Cookie Plugin
+ * https://github.com/carhartl/jquery-cookie
+ *
+ * Copyright 2011, Klaus Hartl
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://www.opensource.org/licenses/mit-license.php
+ * http://www.opensource.org/licenses/GPL-2.0
+ */
+(function($) {
+    $.cookie = function(key, value, options) {
+
+        // key and at least value given, set cookie...
+        if (arguments.length > 1 && (!/Object/.test(Object.prototype.toString.call(value)) || value === null || value === undefined)) {
+            options = $.extend({}, options);
+
+            if (value === null || value === undefined) {
+                options.expires = -1;
+            }
+
+            if (typeof options.expires === 'number') {
+                var days = options.expires, t = options.expires = new Date();
+                t.setDate(t.getDate() + days);
+            }
+
+            value = String(value);
+
+            return (document.cookie = [
+                encodeURIComponent(key), '=', options.raw ? value : encodeURIComponent(value),
+                options.expires ? '; expires=' + options.expires.toUTCString() : '', // use expires attribute, max-age is not supported by IE
+                options.path    ? '; path=' + options.path : '',
+                options.domain  ? '; domain=' + options.domain : '',
+                options.secure  ? '; secure' : ''
+            ].join(''));
+        }
+
+        // key and possibly options given, get cookie...
+        options = value || {};
+        var decode = options.raw ? function(s) { return s; } : decodeURIComponent;
+
+        var pairs = document.cookie.split('; ');
+        for (var i = 0, pair; pair = pairs[i] && pairs[i].split('='); i++) {
+            if (decode(pair[0]) === key) return decode(pair[1] || ''); // IE saves cookies with empty string as "c; ", e.g. without "=" as opposed to EOMB, thus pair[1] may be undefined
+        }
+        return null;
+    };
+})(jQuery);
+
+define("jquery.cookie", function(){});
+
 define('text!templates/session/corner-logged-in.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n\t<div class="username">\n\t\t{{ rider.username }}\n\t</div>\n\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t\t<li class="fr"><a href="#">FR</a></li>\n    \t\t<li class="en"><a href="#">EN</a></li>\n    \t\t<li class="es"><a href="#">ES</a></li>\n    \t</ul>\n    </div>\n\t\n    <div class="btn-group logout-btn-group">\n    \t<a id="logout-btn" class="btn" href="/user/logout/">Logout</a>\n    </div>\t\n</nav>';});
 
 define('text!templates/session/corner-logged-out.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t\t<li class="fr"><a href="#">FR</a></li>\n    \t\t<li class="en"><a href="#">EN</a></li>\n    \t\t<li class="es"><a href="#">ES</a></li>\n    \t</ul>\n    </div>\n\t\n    <div class="btn-group login-btn-group">\n    \t<a id="login-btn" class="btn" href="/user/login/">Login</a>\n    \t<a class="btn" href="/user/register/">Register</a>\n    </div>\t\n</nav>';});
 
-define('text!templates/session/login-form.tpl',[],function () { return '<div class="session-login-form">\n\tLogin form\n</div>';});
+define('text!templates/session/login-form.tpl',[],function () { return '<div class="session-login-form">\n\t<form action="/user/login/" method="post" id="login-form">\n\t\t<label for="userN">\n\t\t\tusername\n\t\t\t<input type="text" id="userN" name="userN"/>\n\t\t</label>\n\t\t<label for="userP">\n\t\t\tpassword\n\t\t\t<input type="password" id="userP" name="userP"/>\n\t\t</label>\n\t\t<label for="userR">\n\t\t\tremember me?\n\t\t\t<input type="checkbox" id="userR" name="userR" value="1"/>\n\t\t</label>\n\t\t<input type="submit" id="login-form-submit" class="btn" value="login"/>\n\t</form>\n</div>';});
 
-define('text!templates/rider/username.tpl',[],function () { return '<h2>\n\t<a href="/riders/{{ userId }}/" class="rider">\n\t\t{{ username }}\n\t</a>\n</h2>';});
-
-define('text!templates/rider/modal.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>Name: {{ username }}</h3>\n</div>\n<div class="modal-body">\n{{#country}}\n\t<p class="country">Country: <a href="/countries/{{ id }}">{{ title }}</a></p>\n{{/country}}\n</div>\n<div class="modal-footer">\n\t<a href="#" class="btn">Close</a>\n</div>';});
-
-/******************************************************************************
- * js/src/app/rider.js
- *
- * Rider model, collection and view
- *****************************************************************************/
-define('../src/app/rider',[
-    // Libraries
-	'order!jquery',
-	'underscore',
-	'backbone',
-	'mustache-wrapper',
-	
-	// Application modules
-	'../app/register',
-
-	// Templates
-	'text!templates/rider/username.tpl',
-	'text!templates/rider/modal.tpl',
-
-	// Bootstrap  plugins
-	'order!bootstrap/bootstrap-modal'
-	
-	], function($, _, Backbone, mustache, registerModule, usernameTpl, modalTpl, bootstrapModal){
-
-	/**************************************************************************
-	 * MODEL 
-	 *************************************************************************/
-	var model = Backbone.Model.extend({
-		// Default attributes for a rider item.
-		defaults: function() {
-			return {
-				username:  'unknown'
-			};
-		},
-		
-		initialize: function(initialValues) {
-			console.log('rider - initialize', initialValues);
-		},
-		
-		isLoggedIn: function() {
-			return !!this.attributes.userId;
-		}
-		
-	});
-
-	
-	/**************************************************************************
-	 * COLLECTION 
-	 *************************************************************************/
-	var collection = Backbone.Collection.extend({
-		// Reference to this collection's model.
-		model: model,
-		url: window.appConfig.apiUrl + '/riders/'
-	});
-
-
-	/**************************************************************************
-	 * VIEWS 
-	 *************************************************************************/
-	var modalView = Backbone.View.extend({
-		template: mustache.compile(modalTpl),
-		
-		render: function(){
-			$(this.el).html(
-				this.template(this.model.toJSON())
-			);
-			return this;
-		},
-		
-		getHtml: function() {
-			return $(this.el).html();
-		}
-	});
-	
-	var usernameView = Backbone.View.extend({
-		tagName:  "li",
-		className: "rider",
-		
-		events: {
-			'click': function(e){
-				var view = new modalView({model: this.model});
-				$("#modal").modal().html(
-					view.render().getHtml()
-				);
-				e.preventDefault();
-			}
-		},
-	
-		// The RiderView listens for changes to its model, re-rendering.
-		initialize: function() {
-			this.model.bind('destroy', this.remove, this);
-		},
-		
-		template: mustache.compile(usernameTpl),
-	
-		// Re-render the contents of the item
-		render: function() {
-			$(this.el).html(
-				this.template(this.model.toJSON())
-			);
-			return this;
-		},
-	
-		// Remove this view from the DOM.
-		remove: function() {
-			$(this.el).remove();
-		},
-		
-		// Remove the item, destroy the model.
-		clear: function() {
-			this.model.destroy();
-		}
-	});
-
-	
-	/**************************************************************************
-	 * MODULE INTERFACE 
-	 *************************************************************************/
-	return {
-		'model': model,
-		'collection': collection,
-		'views': {
-			modal: modalView,
-			username: usernameView
-		}
-	};
-});
-
-define('text!templates/modal.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>Modal</h3>\n</div>\n<div class="modal-body">\n\t<p class="country">Just a modal</p>\n</div>\n<div class="modal-footer">\n\t<a href="#" class="btn">Close</a>\n</div>';});
-
-/******************************************************************************
- * js/src/app/temp.js
- *
- * Temporary code to verify everything works
- *****************************************************************************/
-define('../src/app/temp',[
-    // Libraries
-	'order!jquery',
-	'underscore',
-	'backbone',
-	'mustache-wrapper',
-
-	// Application modules
-	'../app/register',
-	'../app/rider',
-	
-	// Templates
-	'text!templates/modal.tpl',
-
-	// Bootstrap plugins
-	'order!bootstrap/bootstrap-modal'
-	
-	], function($, _, Backbone, mustache, registerModule, riderModule, modalTpl, bootstrapModal){
-
-	/**************************************************************************
-	 * VIEWS 
-	 *************************************************************************/
-	var modalView = Backbone.View.extend({
-		template: mustache.compile(modalTpl),
-		render: function(){
-			$(this.el).html(this.template());
-			return this;
-		},
-		getHtml: function() {
-			return $(this.el).html();
-		}
-	});
-	
-	var tempView = Backbone.View.extend({
-		el: $("#app"),
-		
-		initialize: function(riders) {
-			this.riders = riders;
-			this.riders.bind('add', this.addOne, this);
-			this.riders.bind('reset', this.addAll, this);
-			this.riders.fetch();
-		},
-		
-		events: {
-			click: function() {
-				var view = new modalView({model: this.model});
-				$("#modal").modal().html(view.render().getHtml());
-				console.log('temp - click');				
-			}
-		},
-		
-		addOne: function(rider) {
-			var view = new riderModule.views.username({model: rider});
-			this.$("#rider-list").append(view.render().el);
-		},
-		
-		addAll: function() {
-			this.riders.each(this.addOne);
-		}
-	});
-	
-	var app = new tempView(new riderModule.collection());
-});
 /* ============================================================
  * bootstrap-dropdown.js v2.0.0
  * http://twitter.github.com/bootstrap/javascript.html#dropdowns
@@ -13168,14 +12836,13 @@ define("bootstrap/bootstrap-dropdown", function(){});
 define('../src/app/session',[
     // Libraries
 	'order!jquery',
+	'order!jquery.cookie',
 	'underscore',
 	'backbone',
 	'mustache-wrapper',
 
 	// Application modules
 	'../app/register',
-	'../app/rider',
-	'../app/temp',
 	
 	// Templates
 	'text!templates/session/corner-logged-in.tpl',
@@ -13185,38 +12852,19 @@ define('../src/app/session',[
 	// Bootstrap plugins
 	'order!bootstrap/bootstrap-dropdown'
 	
-	], function($, _, Backbone, mustache, register, riderModule, tempModule, cornerTpl, loginTpl, dropdownPlugin){
+	], function($, cookie, _, Backbone, mustache, register, cornerLoggedInTpl, cornerLoggedOutTpl, loginFormTpl, dropdownPlugin){
 
 	/**************************************************************************
 	 * MODEL 
 	 *************************************************************************/
-	var model = Backbone.Model.extend({
-		defaults: function() {
-			return {
-				// the following will be persisted to cookies
-				userN: null, // username
-				userP: null, // user password
-				userR: false, //whether to remember user login and password
-				
-				errors: [] // login/logout errors
-			};
-		},
+	var Session = Backbone.Model.extend({
+		errors: [], // form errors
 		
-		initialize: function(appConfig) {
-			if(sessionData.debug) {
-				console.log('session - initialize', appConfig);
-			}
-
-			register.setApiSessionId(appConfig.sessionData.apiSessionId);
-			register.setDebug(appConfig.sessionData.debug);
-			register.setLang(appConfig.sessionData.lang);
-			register.setRider(new riderModule.model(appConfig.sessionData.rider));
+		initialize: function() {
+			//this.savePersistingIdentityParams('plainuser', '123456789', true);
+			this.loadPersistingIdentityParams();
 			
-			var corner = new sessionCornerView(this);
-			
-			if(register.isDebug()) {
-				window.session = this;
-			}
+			var corner = new SessionCornerView(this);
 		},
 		
 		isLoggedIn: function() {
@@ -13255,6 +12903,29 @@ define('../src/app/session',[
 			 *   - in case of error
 			 *     - update the UI to show errors
 			 */
+		},
+		
+		// The following reflect login cookies
+		persistingIdentityParams: {
+			userN: null, // username
+			userP: null, // user password
+			userR: false, //whether to remember user login and password
+		},
+		
+		loadPersistingIdentityParams: function() {
+			_.each(['userN', 'userP', 'userR'], function(element, index, list){
+				this.persistingIdentityParams[element] = $.cookie(element);
+			}, this);
+			
+			if(register.isDebug()) {
+				console.log('session - loadPersistingIdentityParams', this.persistingIdentityParams);
+			}
+		},
+		
+		savePersistingIdentityParams: function(userN, userP, userR) {
+			$.cookie('userN',userN);
+			$.cookie('userP',userP);
+			$.cookie('userR',userR);
 		}
 	});
 
@@ -13262,20 +12933,20 @@ define('../src/app/session',[
 	/**************************************************************************
 	 * VIEWS 
 	 *************************************************************************/
-	var sessionCornerView = Backbone.View.extend({
+	var SessionCornerView = Backbone.View.extend({
 		initialize: function(model) {
 			this.model = model;
 			
 			this.model.bind('login', this.render, this);
 			this.model.bind('logout', this.render, this);
+			
+			var templateFile = this.model.isLoggedIn() ? cornerLoggedInTpl : cornerLoggedOutTpl;
+			this.template = mustache.compile(templateFile);
 		},
 		
 		el: $('#session-corner'),
 
-		template: mustache.compile(cornerTpl),
-
 		render: function() {
-			console.log('session - render()', arguments);
 			$(this.el).html(
 				this.template(this.model.toJSON())
 			);
@@ -13284,12 +12955,17 @@ define('../src/app/session',[
 		
 		events: {
 			'click': function(e){
-				console.log('session - backbone listener - click', arguments);
 				var handled = true;
 				if(e.originalEvent.originalTarget.id == 'logout-btn') {
 					this.model.logout();
 				} else if (e.originalEvent.originalTarget.id == 'login-btn') {
-					this.model.login();
+					//this.model.login();
+					//TODO: show a new modal view with the login form in it
+					var loginForm = new LoginFormView(this.model);
+					$("#modal").modal().html(
+						loginForm.render().getHtml()
+					);
+					
 				} else {
 					handled = false;
 				}
@@ -13302,18 +12978,465 @@ define('../src/app/session',[
 		}
 	}); 
 
+	var LoginFormView = Backbone.View.extend({
+		initialize: function(model) {
+			this.model = model;
+		},
+		
+		template: mustache.compile(loginFormTpl),
+
+		render: function() {
+			console.log('session - LoginFormView render()', arguments);
+			$(this.el).html(
+				this.template(this.model.toJSON())
+			);
+			return this;
+		},
+		
+		getHtml: function() {
+			return $(this.el).html();
+		},
+		
+		events: {
+			'click': function(e){
+				console.log('session - LoginModalView - click', arguments);
+			}
+		}
+	}); 
+	/**************************************************************************
+	 * MODULE INTERFACE 
+	 *************************************************************************/
+	return {
+		model: Session,
+		views: {
+			sessionCorner: SessionCornerView,
+			loginForm: LoginFormView
+		}
+	};
+});
+
+define('text!templates/rider/username.tpl',[],function () { return '<h2>\n\t<a href="/riders/{{ userId }}/" class="rider">\n\t\t{{ username }}\n\t</a>\n</h2>';});
+
+define('text!templates/rider/modal.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>Name: {{ username }}</h3>\n</div>\n<div class="modal-body">\n{{#country}}\n\t<p class="country">Country: <a href="/countries/{{ id }}">{{ title }}</a></p>\n{{/country}}\n</div>\n<div class="modal-footer">\n\t<a href="#" class="btn">Close</a>\n</div>';});
+
+/* =========================================================
+ * bootstrap-modal.js v2.0.0
+ * http://twitter.github.com/bootstrap/javascript.html#modals
+ * =========================================================
+ * Copyright 2012 Twitter, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================= */
+
+
+!function( $ ){
+
+  "use strict"
+
+ /* MODAL CLASS DEFINITION
+  * ====================== */
+
+  var Modal = function ( content, options ) {
+    this.options = $.extend({}, $.fn.modal.defaults, options)
+    this.$element = $(content)
+      .delegate('[data-dismiss="modal"]', 'click.dismiss.modal', $.proxy(this.hide, this))
+  }
+
+  Modal.prototype = {
+
+      constructor: Modal
+
+    , toggle: function () {
+        return this[!this.isShown ? 'show' : 'hide']()
+      }
+
+    , show: function () {
+        var that = this
+
+        if (this.isShown) return
+
+        $('body').addClass('modal-open')
+
+        this.isShown = true
+        this.$element.trigger('show')
+
+        escape.call(this)
+        backdrop.call(this, function () {
+          var transition = $.support.transition && that.$element.hasClass('fade')
+
+          !that.$element.parent().length && that.$element.appendTo(document.body) //don't move modals dom position
+
+          that.$element
+            .show()
+
+          if (transition) {
+            that.$element[0].offsetWidth // force reflow
+          }
+
+          that.$element.addClass('in')
+
+          transition ?
+            that.$element.one($.support.transition.end, function () { that.$element.trigger('shown') }) :
+            that.$element.trigger('shown')
+
+        })
+      }
+
+    , hide: function ( e ) {
+        e && e.preventDefault()
+
+        if (!this.isShown) return
+
+        var that = this
+        this.isShown = false
+
+        $('body').removeClass('modal-open')
+
+        escape.call(this)
+
+        this.$element
+          .trigger('hide')
+          .removeClass('in')
+
+        $.support.transition && this.$element.hasClass('fade') ?
+          hideWithTransition.call(this) :
+          hideModal.call(this)
+      }
+
+  }
+
+
+ /* MODAL PRIVATE METHODS
+  * ===================== */
+
+  function hideWithTransition() {
+    var that = this
+      , timeout = setTimeout(function () {
+          that.$element.off($.support.transition.end)
+          hideModal.call(that)
+        }, 500)
+
+    this.$element.one($.support.transition.end, function () {
+      clearTimeout(timeout)
+      hideModal.call(that)
+    })
+  }
+
+  function hideModal( that ) {
+    this.$element
+      .hide()
+      .trigger('hidden')
+
+    backdrop.call(this)
+  }
+
+  function backdrop( callback ) {
+    var that = this
+      , animate = this.$element.hasClass('fade') ? 'fade' : ''
+
+    if (this.isShown && this.options.backdrop) {
+      var doAnimate = $.support.transition && animate
+
+      this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
+        .appendTo(document.body)
+
+      if (this.options.backdrop != 'static') {
+        this.$backdrop.click($.proxy(this.hide, this))
+      }
+
+      if (doAnimate) this.$backdrop[0].offsetWidth // force reflow
+
+      this.$backdrop.addClass('in')
+
+      doAnimate ?
+        this.$backdrop.one($.support.transition.end, callback) :
+        callback()
+
+    } else if (!this.isShown && this.$backdrop) {
+      this.$backdrop.removeClass('in')
+
+      $.support.transition && this.$element.hasClass('fade')?
+        this.$backdrop.one($.support.transition.end, $.proxy(removeBackdrop, this)) :
+        removeBackdrop.call(this)
+
+    } else if (callback) {
+      callback()
+    }
+  }
+
+  function removeBackdrop() {
+    this.$backdrop.remove()
+    this.$backdrop = null
+  }
+
+  function escape() {
+    var that = this
+    if (this.isShown && this.options.keyboard) {
+      $(document).on('keyup.dismiss.modal', function ( e ) {
+        e.which == 27 && that.hide()
+      })
+    } else if (!this.isShown) {
+      $(document).off('keyup.dismiss.modal')
+    }
+  }
+
+
+ /* MODAL PLUGIN DEFINITION
+  * ======================= */
+
+  $.fn.modal = function ( option ) {
+    return this.each(function () {
+      var $this = $(this)
+        , data = $this.data('modal')
+        , options = typeof option == 'object' && option
+      if (!data) $this.data('modal', (data = new Modal(this, options)))
+      if (typeof option == 'string') data[option]()
+      else data.show()
+    })
+  }
+
+  $.fn.modal.defaults = {
+      backdrop: true
+    , keyboard: true
+  }
+
+  $.fn.modal.Constructor = Modal
+
+
+ /* MODAL DATA-API
+  * ============== */
+
+  $(function () {
+    $('body').on('click.modal.data-api', '[data-toggle="modal"]', function ( e ) {
+      var $this = $(this), href
+        , $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7
+        , option = $target.data('modal') ? 'toggle' : $.extend({}, $target.data(), $this.data())
+
+      e.preventDefault()
+      $target.modal(option)
+    })
+  })
+
+}( window.jQuery )
+;
+define("bootstrap/bootstrap-modal", function(){});
+
+/******************************************************************************
+ * js/src/app/rider.js
+ *
+ * Rider model, collection and view
+ *****************************************************************************/
+define('../src/app/rider',[
+    // Libraries
+	'order!jquery',
+	'underscore',
+	'backbone',
+	'mustache-wrapper',
+	
+	// Application modules
+	'../app/register',
+
+	// Templates
+	'text!templates/rider/username.tpl',
+	'text!templates/rider/modal.tpl',
+
+	// Bootstrap  plugins
+	'order!bootstrap/bootstrap-modal'
+	
+	], function($, _, Backbone, mustache, register, usernameTpl, modalTpl, bootstrapModal){
+
+	/**************************************************************************
+	 * MODEL 
+	 *************************************************************************/
+	var Rider = Backbone.Model.extend({
+		// Default attributes for a rider item.
+		defaults: function() {
+			return {
+				username:  'unknown'
+			};
+		},
+		
+		initialize: function(initialValues) {
+			if(register.isDebug()) {
+				//console.log('rider - initialize', initialValues);
+			}
+		},
+		
+		isLoggedIn: function() {
+			return !!this.attributes.userId;
+		}
+		
+	});
+
+	
+	/**************************************************************************
+	 * COLLECTION 
+	 *************************************************************************/
+	var RiderCollection = Backbone.Collection.extend({
+		model: Rider,
+		initialize: function(){
+			this.url = register.getApiResourceUrl('rider');
+		}
+	});
+
+
+	/**************************************************************************
+	 * VIEWS 
+	 *************************************************************************/
+	var ModalView = Backbone.View.extend({
+		template: mustache.compile(modalTpl),
+		
+		render: function(){
+			$(this.el).html(
+				this.template(this.model.toJSON())
+			);
+			return this;
+		},
+		
+		getHtml: function() {
+			return $(this.el).html();
+		}
+	});
+	
+	var UsernameView = Backbone.View.extend({
+		tagName:  "li",
+		className: "rider",
+		
+		events: {
+			'click': function(e){
+				var view = new ModalView({model: this.model});
+				$("#modal").modal().html(
+					view.render().getHtml()
+				);
+				e.preventDefault();
+			}
+		},
+	
+		// The RiderView listens for changes to its model, re-rendering.
+		initialize: function() {
+			this.model.bind('destroy', this.remove, this);
+		},
+		
+		template: mustache.compile(usernameTpl),
+	
+		// Re-render the contents of the item
+		render: function() {
+			$(this.el).html(
+				this.template(this.model.toJSON())
+			);
+			return this;
+		},
+	
+		// Remove this view from the DOM.
+		remove: function() {
+			$(this.el).remove();
+		},
+		
+		// Remove the item, destroy the model.
+		clear: function() {
+			this.model.destroy();
+		}
+	});
+
 	
 	/**************************************************************************
 	 * MODULE INTERFACE 
 	 *************************************************************************/
 	return {
-		model: model,
-		views: {
-			sessionCorner: sessionCornerView
+		'model': Rider,
+		'collection': RiderCollection,
+		'views': {
+			modal: ModalView,
+			username: UsernameView
 		}
 	};
 });
 
+define('text!templates/modal.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>Modal</h3>\n</div>\n<div class="modal-body">\n\t<p class="country">Just a modal</p>\n</div>\n<div class="modal-footer">\n\t<a href="#" class="btn">Close</a>\n</div>';});
+
+/******************************************************************************
+ * js/src/app/temp.js
+ *
+ * Temporary code to verify everything works
+ *****************************************************************************/
+define('../src/app/temp',[
+    // Libraries
+	'order!jquery',
+	'underscore',
+	'backbone',
+	'mustache-wrapper',
+
+	// Application modules
+	'../app/register',
+	'../app/rider',
+	
+	// Templates
+	'text!templates/modal.tpl',
+
+	// Bootstrap plugins
+	'order!bootstrap/bootstrap-modal'
+	
+	], function($, _, Backbone, mustache, register, riderModule, modalTpl, bootstrapModal){
+
+	/**************************************************************************
+	 * VIEWS 
+	 *************************************************************************/
+	var ModalView = Backbone.View.extend({
+		template: mustache.compile(modalTpl),
+		render: function(){
+			$(this.el).html(this.template());
+			return this;
+		},
+		getHtml: function() {
+			return $(this.el).html();
+		}
+	});
+	
+	var TempView = Backbone.View.extend({
+		el: $("#main"),
+		
+		initialize: function(riders) {
+			this.riders = riders;
+			this.riders.bind('add', this.addOne, this);
+			this.riders.bind('reset', this.addAll, this);
+			this.riders.fetch();
+		},
+		
+		events: {
+			click: function() {
+				var view = new ModalView({model: this.model});
+				$("#modal").modal().html(view.render().getHtml());
+				console.log('temp - click');				
+			}
+		},
+		
+		addOne: function(rider) {
+			var view = new riderModule.views.username({model: rider});
+			this.$("#rider-list").append(view.render().el);
+		},
+		
+		addAll: function() {
+			this.riders.each(this.addOne);
+		}
+	});
+	
+	return {
+		views: {
+			modal: ModalView,
+			temp: TempView
+		}
+	};
+});
 /******************************************************************************
  * js/src/main.js
  * 
@@ -13327,9 +13450,47 @@ require([
 	'mustache-wrapper',
 
 	// Application modules
-	'../src/app/session'
+	'../src/app/register',
+	'../src/app/session',
+	'../src/app/rider',
+	'../src/app/temp',
 	
-], function($, _, Backbone, mustache, sessionModule){
-	var session = new sessionModule.model(appConfig);
+	
+], function($, _, Backbone, mustache, register, sessionModule, riderModule, tempModule){
+	var AppView = Backbone.View.extend({
+		initialize: function(config) {
+			if(appConfig.sessionData.debug) {
+				console.log('main - initialize', appConfig);
+			}
+
+			register.setApiSessionId(config.sessionData.sessionId);
+			register.setApiUrl(config.apiUrl);
+			register.setDebug(config.sessionData.debug);
+			register.setLang(config.sessionData.lang);
+			register.setRider(new riderModule.model(config.sessionData.rider));
+			
+			var session = new sessionModule.model();
+			if(register.isDebug()) {
+				window.session = session;
+			}
+			
+			var tempView = new tempModule.views.temp(new riderModule.collection());
+		},
+		
+		el: $('#app'),
+
+		events: {
+			'click': function(e){
+				if(register.isDebug()) {
+					console.log('main - click on', e.originalEvent.originalTarget);
+				}
+				
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		}
+	});
+	
+	var appView = new AppView(appConfig);
 });
 define("../src/main", function(){});

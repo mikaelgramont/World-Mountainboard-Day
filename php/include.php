@@ -221,7 +221,7 @@ class Globals
 				
 				if(strpos($name, '.min') !== false) {
 					$css['versionned']['minified'][$barename] = $versionnedFile;
-					$css['plain']['minified'][$barename] = str_replace(self::CSS_BIN, '', $name);
+					$css['plain']['minified'][$barename] = $name;
 				} else {
 					$css['versionned']['full'][$barename] = $versionnedFile;
 					$css['plain']['full'][$barename] = $name;
@@ -366,6 +366,7 @@ class Globals
 		$config = self::getConfig();
 
 		if(!$sessionData = self::_getApiSessionData()) {
+			$sessionData = new stdClass();
 			
 			if(isset($cookies[self::COOKIE_USER_REMEMBER]) &&
 			   isset($cookies[self::COOKIE_USER_USERNAME]) &&
@@ -458,7 +459,7 @@ class Globals
 	
 	protected static function _getApiSessionData()
 	{
-		return isset($_SESSION['apiSessionData']) ? $_SESSION['apiSessionData'] : array();
+		return isset($_SESSION['apiSessionData']) ? $_SESSION['apiSessionData'] : null;
 	}
 	
 	public static function setApiSessionData($sessionData)

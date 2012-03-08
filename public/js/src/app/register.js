@@ -7,9 +7,14 @@ define([], function(){
 	
 	var data = {
 		apiSessionId: null, // By default, no session id
+		apiUrl: null, 		// The url to the rest api
 		debug: false, 		// Whether to use debug methods
 		lang: 'en', 		// The language currently being used
 		rider: {}			// The rider object
+	};
+	
+	var apiResourceUrls = {
+		'rider': 'riders'
 	};
 	
 	/**************************************************************************
@@ -30,6 +35,31 @@ define([], function(){
 		
 		setApiSessionId: function(id) {
 			this.set('apiSessionId', id);
+		},
+		
+		getApiUrl: function() {
+			return data.apiUrl;
+		},
+		
+		setApiUrl: function(url) {
+			this.set('apiUrl', url);
+		},
+		
+		getApiResourceUrl: function(resource) {
+			if(typeof apiResourceUrls[resource] == 'undefined') {
+				throw new Error('No url defined for resource "' + resource + '"');
+			}
+			
+			var url = '//' + this.getApiUrl() + '/' + apiResourceUrls[resource] + '/';
+			if(this.getApiSessionId()) {
+				url +=  '?PHPSESSID=' + this.getApiSessionId();
+			}
+			
+			if(this.isDebug()) {
+				console.log('register - url for ' + resource + ': ' + url);
+			}
+			
+			return url;
 		},
 		
 		isDebug: function() {
@@ -54,6 +84,8 @@ define([], function(){
 		
 		setRider: function(rider) {
 			this.set('rider', rider);
-		}
+		},
+		
+		data: data
 	};
 });
