@@ -3994,6 +3994,12 @@ a.thumbnail:hover {
 ul {
   list-style: none;
 }
+label.for-checkbox {
+  display: inline;
+}
+input.whole-row {
+  display: block;
+}
 /*
  * This file will contain rules to setup different layout dimensions
  * in response to media queries  
@@ -4086,6 +4092,9 @@ aside.main {
 }
 @media (max-width: 320px) {
   
+}
+.login-form {
+  width: 250px;
 }
 li.rider {
   float: left;

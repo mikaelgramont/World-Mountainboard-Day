@@ -14,7 +14,8 @@ define([], function(){
 	};
 	
 	var apiResourceUrls = {
-		'rider': 'riders'
+		'rider': 'riders',
+		'session': 'sessions'
 	};
 	
 	/**************************************************************************

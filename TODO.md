@@ -1,7 +1,4 @@
 # Client-side TODO
-Fix versioning false for CSS and bundle false for JS 
-
-
 3d view on maps: http://google-maps-utility-library-v3.googlecode.com/svn/trunk/googleearth/docs/reference.html
 and http://www-web2.youtube.com/watch?v=IXoJLyN356E&feature=g-all-u&context=G24cb18fFAAAAAHgAXAA
 

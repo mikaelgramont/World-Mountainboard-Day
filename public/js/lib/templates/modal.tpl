@@ -6,5 +6,5 @@
 	<p class="country">Just a modal</p>
 </div>
 <div class="modal-footer">
-	<a href="#" class="btn">Close</a>
+	<a href="#" class="btn" data-dismiss="modal">Close</a>
 </div>

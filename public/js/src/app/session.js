@@ -35,14 +35,35 @@ define([
 			this.loadPersistingIdentityParams();
 			
 			var corner = new SessionCornerView(this);
+			
+			this.url = register.getApiResourceUrl('session');
 		},
 		
 		isLoggedIn: function() {
 			return !!register.getRider().isLoggedIn();			
 		},
 		
-		login: function() {
-			console.log('session - login', arguments);
+		login: function(formValues) {
+			console.log('session - login', formValues);
+			
+			var session = this;
+			
+			$.ajax({
+				url: this.url,
+				type: 'POST',
+				dataType: 'json',
+				data: formValues,
+				success: function(responseData, status){
+					console.log('session - login ajax success', responseData.sessionId);
+					register.setApiSessionId(responseData.sessionId);
+					session.url = register.getApiResourceUrl('session');
+				},
+				
+				error: function(jqXHR, textStatus, errorThrown) {
+					console.log('session - login ajax error', arguments);
+				}
+			});
+			
 			/**
 			 * TODO: call this method when the login form is submitted
 			 * - update the current model with data from the login form
@@ -129,12 +150,9 @@ define([
 				if(e.originalEvent.originalTarget.id == 'logout-btn') {
 					this.model.logout();
 				} else if (e.originalEvent.originalTarget.id == 'login-btn') {
-					//this.model.login();
-					//TODO: show a new modal view with the login form in it
-					var loginForm = new LoginFormView(this.model);
-					$("#modal").modal().html(
-						loginForm.render().getHtml()
-					);
+					$("#modal").addClass('login-form').html(
+						new LoginFormView(this.model).render()
+					).modal();
 					
 				} else {
 					handled = false;
@@ -148,28 +166,26 @@ define([
 		}
 	}); 
 
+	// The login form
 	var LoginFormView = Backbone.View.extend({
 		initialize: function(model) {
 			this.model = model;
 		},
 		
+		el: $('#modal'),
+		
 		template: mustache.compile(loginFormTpl),
 
 		render: function() {
 			console.log('session - LoginFormView render()', arguments);
-			$(this.el).html(
-				this.template(this.model.toJSON())
-			);
-			return this;
-		},
-		
-		getHtml: function() {
-			return $(this.el).html();
+			return this.template(this.model.toJSON());
 		},
 		
 		events: {
-			'click': function(e){
-				console.log('session - LoginModalView - click', arguments);
+			'submit': function(e){
+				console.log('session - LoginModalView - submit', arguments);
+				var form = e.originalEvent.originalTarget;
+				this.model.login($(form).serialize());
 			}
 		}
 	}); 

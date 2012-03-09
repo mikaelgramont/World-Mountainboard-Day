@@ -664,6 +664,8 @@ a.thumbnail:hover{border-color:#0088cc;-webkit-box-shadow:0 1px 4px rgba(0, 105,
 .show{display:block;}
 .invisible{visibility:hidden;}
 ul{list-style:none;}
+label.for-checkbox{display:inline;}
+input.whole-row{display:block;}
 .container{width:300px;margin:0 auto;}
 header,footer{background:#333333;}
 header h1{font-size:16px;color:#eeeeee;}
@@ -678,5 +680,5 @@ nav.main{float:left;}
 .lang-selector .dropdown-menu li{float:none;line-height:1em;height:inherit;}
 header nav li,footer nav li{float:left;height:50px;margin:5px;font-size:16px;line-height:50px;}
 aside.main{display:none;}
-@media (min-width:480px){.container{width:300px;} .main section{float:left;clear:both;} aside.main{display:block;}}@media (min-width:1008px){.container{width:970px;} .main section{float:left;margin-right:20px;width:750px;} aside.main{float:right;width:200px;}}@media (max-width:320px){}
+@media (min-width:480px){.container{width:300px;} .main section{float:left;clear:both;} aside.main{display:block;}}@media (min-width:1008px){.container{width:970px;} .main section{float:left;margin-right:20px;width:750px;} aside.main{float:right;width:200px;}}@media (max-width:320px){}.login-form{width:250px;}
 li.rider{float:left;width:200px;margin:5px;}

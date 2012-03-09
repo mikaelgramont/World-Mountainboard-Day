@@ -18,6 +18,30 @@ require([
 	
 	
 ], function($, _, Backbone, mustache, register, sessionModule, riderModule, tempModule){
+	var preventDefaultActions = function(e, type) {
+		// makes sure we don't follow links and form submissions
+		if(e.type !== type) {
+			return;
+		}
+
+		var t = e.originalEvent.originalTarget;
+		var detailedDebug = 0;
+		
+		if(register.isDebug() && detailedDebug) {
+			console.log('main - ' + type +' event on', t);
+		}		
+		
+		//TODO: allow external links to be opened
+		if(type == 'click' && 'A' == t.tagName ||
+		   type == 'submit' && 'FORM' == t.tagName) {
+			if(register.isDebug() && detailedDebug) {
+				console.log('main - stopping ' + type +' event');
+			}
+			e.preventDefault();
+			e.stopPropagation();
+		}
+	};
+	
 	var AppView = Backbone.View.extend({
 		initialize: function(config) {
 			if(appConfig.sessionData.debug) {
@@ -41,14 +65,14 @@ require([
 		el: $('#app'),
 
 		events: {
-			'click': function(e){
-				if(register.isDebug()) {
-					console.log('main - click on', e.originalEvent.originalTarget);
-				}
-				
-				e.preventDefault();
-				e.stopPropagation();
+			'click': function(e) {
+				preventDefaultActions(e, 'click');
+			},
+			
+			'submit': function(e) {
+				preventDefaultActions(e, 'submit');
 			}
+			
 		}
 	});
 	

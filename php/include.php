@@ -382,9 +382,9 @@ class Globals
 			} else {
 				// Guest user
 				$rider = self::getGuest();
+				$sessionId = self::_getInitialSessionId();
 				// TODO: return the closest language to the one from the user request
 				$lang = 'en';
-				$sessionId = null;
 			}
 			
 			$sessionData->debug = $config->debug;
@@ -450,12 +450,37 @@ class Globals
 			$response = $client->request(Zend_Http_Client::GET);
 			$userData = $response->getBody();
 		} catch (Exception $e) {
-			error_log("Error while fetching user data for user '$userData': '". $e->getMessage() . "'");
+			error_log("Error while fetching user data for user '$userId': '". $e->getMessage() . "'");
 			$userData = null;
 		}
 		
 		return json_decode($userData);
 	}
+	
+	protected static function _getInitialSessionId()
+	{
+		$sessionId = null;
+		$config = self::getConfig();
+		$client = new Zend_Http_Client();
+		$client->setUri($config->apiScheme . '://' . $config->apiUrl . '/');
+		try {
+			$response = $client->request(Zend_Http_Client::GET);
+			$headers = $response->getHeaders();
+			if(isset($headers['Set-cookie'])) {
+				$regex = '/PHPSESSID=([a-z0-9]{1,32})/';
+				preg_match($regex, $headers['Set-cookie'], $matches);
+				if(isset($matches[1])) {
+					$sessionId = $matches[1]; 
+				}
+				
+			}			
+		} catch (Exception $e) {
+			error_log("Error while fetching initial session id: '". $e->getMessage() . "'");
+			$sessionId = null;
+		}
+		
+		return $sessionId;
+	} 
 	
 	protected static function _getApiSessionData()
 	{

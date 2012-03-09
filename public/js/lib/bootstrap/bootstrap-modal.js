@@ -29,6 +29,8 @@
     this.options = $.extend({}, $.fn.modal.defaults, options)
     this.$element = $(content)
       .delegate('[data-dismiss="modal"]', 'click.dismiss.modal', $.proxy(this.hide, this))
+      
+    this.$element.on('shown', $.proxy(this.refresh, this));
   }
 
   Modal.prototype = {
@@ -92,7 +94,17 @@
           hideModal.call(this)
       }
 
+    , refresh: function (e) {
+    	// mikael - https://github.com/twitter/bootstrap/issues/452
+    	e && e.preventDefault()
+    	var modal = this.$element
+	    	modal.css('margin-top',(modal.outerHeight()/2)*-1)
+	    	     .css('margin-left',(modal.outerWidth()/2)*-1)
+    	return this
+      }
+    
   }
+  
 
 
  /* MODAL PRIVATE METHODS

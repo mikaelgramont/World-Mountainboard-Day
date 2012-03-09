@@ -49,7 +49,7 @@ define([
 		events: {
 			click: function() {
 				var view = new ModalView({model: this.model});
-				$("#modal").modal().html(view.render().getHtml());
+				$("#modal").html(view.render().getHtml()).modal();
 				console.log('temp - click');				
 			}
 		},
