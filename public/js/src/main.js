@@ -24,7 +24,7 @@ require([
 			return;
 		}
 
-		var t = e.originalEvent.originalTarget;
+		var t = e.target;
 		var detailedDebug = 0;
 		
 		if(register.isDebug() && detailedDebug) {
@@ -32,8 +32,8 @@ require([
 		}		
 		
 		//TODO: allow external links to be opened
-		if(type == 'click' && 'A' == t.tagName ||
-		   type == 'submit' && 'FORM' == t.tagName) {
+		if(type == 'click' && t.tagName == 'A'||
+		   type == 'submit' && t.tagName == 'FORM') {
 			if(register.isDebug() && detailedDebug) {
 				console.log('main - stopping ' + type +' event');
 			}
@@ -57,6 +57,7 @@ require([
 			var session = new sessionModule.model();
 			if(register.isDebug()) {
 				window.session = session;
+				window.register = register;
 			}
 			
 			var tempView = new tempModule.views.temp(new riderModule.collection());

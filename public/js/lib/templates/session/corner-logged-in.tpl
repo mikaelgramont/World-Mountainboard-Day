@@ -1,6 +1,6 @@
 <nav class="session-corner" id="session-corner">
 	<div class="username">
-		{{ rider.username }}
+		{{ username }}
 	</div>
 
     <div class="btn-group lang-selector">

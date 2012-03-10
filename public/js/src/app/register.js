@@ -6,11 +6,18 @@
 define([], function(){
 	
 	var data = {
-		apiSessionId: null, // By default, no session id
-		apiUrl: null, 		// The url to the rest api
-		debug: false, 		// Whether to use debug methods
-		lang: 'en', 		// The language currently being used
-		rider: {}			// The rider object
+		// By default, no session id
+		apiSessionId: null,
+		// The url to the rest api
+		apiUrl: null,
+		// Whether to use debug methods
+		debug: false,
+		// The language currently being used
+		lang: 'en',
+		// The rider object
+		rider: {},
+		// The name of the GET parameter for session management
+		apiSessionKey: 'PHPSESSID'
 	};
 	
 	var apiResourceUrls = {
@@ -46,14 +53,27 @@ define([], function(){
 			this.set('apiUrl', url);
 		},
 		
-		getApiResourceUrl: function(resource) {
+		getApiResourceUrl: function(resource, params) {
+			if(typeof params == 'undefined') {
+				params = {};
+			}
+			
 			if(typeof apiResourceUrls[resource] == 'undefined') {
 				throw new Error('No url defined for resource "' + resource + '"');
 			}
 			
 			var url = '//' + this.getApiUrl() + '/' + apiResourceUrls[resource] + '/';
+			
 			if(this.getApiSessionId()) {
-				url +=  '?PHPSESSID=' + this.getApiSessionId();
+				params[this.get('apiSessionKey')] = this.getApiSessionId();
+			}
+			
+			var querystring = [];
+			for(var key in params) {
+				querystring.push(encodeURIComponent(key) + "=" + encodeURIComponent(params[key]));
+			}
+			if(querystring.length > 0) {
+				url += '?' + querystring.join('&');
 			}
 			
 			if(this.isDebug()) {

@@ -1,8 +1,13 @@
 # Client-side TODO
-3d view on maps: http://google-maps-utility-library-v3.googlecode.com/svn/trunk/googleearth/docs/reference.html
-and http://www-web2.youtube.com/watch?v=IXoJLyN356E&feature=g-all-u&context=G24cb18fFAAAAAHgAXAA
+cleanup client-side code:
+ - each time the modal is loaded, one more event listener are registered for the form submission
+ - need a close method to remove event listeners, hide the modal and the background
+ - hitting 'enter' does not work on login form: closes the modal and does not submit 
+- dedupe code in session for login/logout
 
-Look at chaplin for oauth https://github.com/moviepilot/chaplin
+need a pubsub to connect rider update to session corner redrawing
+the register has access to the pubsub object
+
 
 Detect language on the backend
 Build controllers to proxy the API calls, plus some other ones like /user/logout/
@@ -31,6 +36,13 @@ Templates must be served from the public/templates/ folder
 These same templates must be able to render on the server side.
 This means that hitting a url directly (without ajax) must result in the same rendering but wrapped (header, nav, footer)
 So we need a templating language that works in PHP and JS => mustache
+
+3d view on maps: http://google-maps-utility-library-v3.googlecode.com/svn/trunk/googleearth/docs/reference.html
+and http://www-web2.youtube.com/watch?v=IXoJLyN356E&feature=g-all-u&context=G24cb18fFAAAAAHgAXAA
+
+Look at chaplin for oauth https://github.com/moviepilot/chaplin
+
+
 
 ## How to calculate the distance between two (lat,lon) tuples
 http://www.jaimerios.com/?p=39

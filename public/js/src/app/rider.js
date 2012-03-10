@@ -29,7 +29,8 @@ define([
 		// Default attributes for a rider item.
 		defaults: function() {
 			return {
-				username:  'unknown'
+				username:  'unknown',
+				userId: 0
 			};
 		},
 		
@@ -41,8 +42,13 @@ define([
 		
 		isLoggedIn: function() {
 			return !!this.attributes.userId;
-		}
+		},
 		
+		events: {
+			change: function() {
+				console.log('rider model - change', arguments);
+			}
+		}
 	});
 
 	

@@ -3,8 +3,11 @@
 	<h3>Login</h3>
 </div>
 <form action="/user/login/" method="post" id="login-form">
+	<div class="error">
+		{{errorMessage}}
+	</div>
 	<div class="modal-body session-login-form">
-		<input type="text" id="userN" name="userN" class="whole-row" placeholder="username"/>
+		<input type="text" id="userN" name="userN" class="whole-row" placeholder="username" value="{{ rider.username }}"/>
 		<input type="password" id="userP" name="userP" class="whole-row" placeholder="password"/>
 
 		<input type="checkbox" id="userR" name="userR" value="1" class="checkbox"/>

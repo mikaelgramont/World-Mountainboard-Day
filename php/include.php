@@ -361,40 +361,38 @@ class Globals
     	return substr($matches[1], 0, 8);
     }
 
-	public static function getApiSessionData($cookies)
+	/**
+	 * Builds an object representing the session state, alongside
+	 * a few config parameters
+	 * @param array $cookies
+	 */
+    public static function getApiSessionData($cookies)
 	{
 		$config = self::getConfig();
 
-		if(!$sessionData = self::_getApiSessionData()) {
-			$sessionData = new stdClass();
-			
-			if(isset($cookies[self::COOKIE_USER_REMEMBER]) &&
-			   isset($cookies[self::COOKIE_USER_USERNAME]) &&
-			   isset($cookies[self::COOKIE_USER_PASSWORD])) {
-				$sessionData = self::_login($cookies[self::COOKIE_USER_USERNAME], $cookies[self::COOKIE_USER_PASSWORD]);
-			}
-			
-			if(isset($sessionData->userId) && $sessionData->userId) {
-				// Logged-in user
-				$rider = self::_getRidersOwnData($sessionData->userId, $sessionData->sessionId);
-				$lang = $rider->lang;
-				$sessionId = $sessionData->sessionId;
-			} else {
-				// Guest user
-				$rider = self::getGuest();
-				$sessionId = self::_getInitialSessionId();
-				// TODO: return the closest language to the one from the user request
-				$lang = 'en';
-			}
-			
-			$sessionData->debug = $config->debug;
-			$sessionData->lang = $lang;
-			$sessionData->rider = $rider;
-			$sessionData->sessionId = $sessionId;
-			
-			self::setApiSessionData($sessionData);
+		$sessionData = new stdClass();
+		
+		if(isset($cookies[self::COOKIE_USER_REMEMBER]) &&
+		   isset($cookies[self::COOKIE_USER_USERNAME]) &&
+		   isset($cookies[self::COOKIE_USER_PASSWORD])) {
+			$sessionData = self::_login($cookies[self::COOKIE_USER_USERNAME], $cookies[self::COOKIE_USER_PASSWORD]);
 		}
 		
+		if(isset($sessionData->rider->userId) && $sessionData->rider->userId) {
+			// Logged-in user
+			$rider = self::_getRidersOwnData($sessionData->rider->userId, $sessionData->sessionId);
+			$sessionId = $sessionData->sessionId;
+		} else {
+			// Guest user
+			$rider = self::getGuest();
+			$sessionId = self::_getInitialSessionId();
+		}
+		
+		$sessionData->debug = $config->debug;
+		$sessionData->rider = $rider;
+		$sessionData->sessionId = $sessionId;
+		$sessionData->apiSessionKey = 'PHPSESSID';
+			
 		return $sessionData;
 	}
 	
@@ -403,9 +401,11 @@ class Globals
 	 */
 	public static function getGuest()
 	{
+		// TODO: return the closest language to the one from the user request
 		return array(
 			'username' => 'guest',
-			'userId' => 0
+			'userId' => 0,
+			'lang' => 'en'
 		);
 	}
 	
@@ -457,6 +457,9 @@ class Globals
 		return json_decode($userData);
 	}
 	
+	/**
+	 * Because we need to retrieve a session id.
+	 */
 	protected static function _getInitialSessionId()
 	{
 		$sessionId = null;
@@ -481,15 +484,4 @@ class Globals
 		
 		return $sessionId;
 	} 
-	
-	protected static function _getApiSessionData()
-	{
-		return isset($_SESSION['apiSessionData']) ? $_SESSION['apiSessionData'] : null;
-	}
-	
-	public static function setApiSessionData($sessionData)
-	{
-		$_SESSION['apiSessionData'] = $sessionData;
-		self::log('Setting session id:'.$sessionData->sessionId);
-	}
 }
