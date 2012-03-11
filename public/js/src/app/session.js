@@ -19,14 +19,15 @@ define([
 	'text!templates/session/corner-logged-in.tpl',
 	'text!templates/session/corner-logged-out.tpl',
 	'text!templates/session/login-form.tpl',
+	'text!templates/session/logout-message.tpl',
 
 	// Bootstrap plugins
 	'order!bootstrap/bootstrap-dropdown'
 	
-	], function($, cookie, _, Backbone, mustache, register, riderModule, cornerLoggedInTpl, cornerLoggedOutTpl, loginFormTpl, dropdownPlugin){
+	], function($, cookie, _, Backbone, mustache, register, riderModule, cornerLoggedInTpl, cornerLoggedOutTpl, loginFormTpl, logoutMessageTpl, dropdownPlugin){
 
 	// View instances
-	var corner, modal;
+	var sessionCorner, loginLogout;
 	
 	var debug = false;
 	
@@ -52,10 +53,10 @@ define([
 			this.url = register.getApiResourceUrl('session');
 			this.set({rider: register.getRider()});
 
-			corner = new SessionCornerView(this);
-			modal = new LoginFormView(this);
+			sessionCorner = new SessionCornerView(this);
+			loginLogout = new LoginLogoutView(this);
 			
-			debug = register.isDebug();
+			debug = true; register.isDebug();
 		},
 		
 		events: {
@@ -81,17 +82,22 @@ define([
 			register.setRider(this.attributes.rider);
 			this.trigger('change');
 			
+			loginLogout.remove();
 			if(params.isLogin) {
-				modal.remove();
 				this.savePersistingIdentityParams(params.formValuesAsArray);
 			} else {
 				this.clearPersistingIdentityParams();
 			}
 		},
 		
-		onLoginLogoutError: function(jqXHR, textStatus, errorThrown) {
+		onLoginLogoutError: function(isLogin, jqXHR, textStatus, errorThrown) {
 			var response = JSON.parse(jqXHR.responseText);
 			this.set({error: response.errorId});
+
+			if(!isLogin) {
+				loginLogout.displayLogoutMessage();
+				loginLogout.showLogoutError();
+			}
 		},
 		
 		login: function(formValues, formValuesAsArray) {
@@ -102,7 +108,7 @@ define([
 				dataType: 'json',
 				data: formValues,
 				success: _.bind(this.onLoginLogoutSuccess, this, {isLogin: true, formValuesAsArray: formValuesAsArray}),
-				error: _.bind(this.onLoginLogoutError, this) 
+				error: _.bind(this.onLoginLogoutError, this, true) 
 			});
 		},
 		
@@ -113,7 +119,7 @@ define([
 				type: 'DELETE',
 				dataType: 'json',
 				success: _.bind(this.onLoginLogoutSuccess, this, {isLogin: false}),
-				error: _.bind(this.onLoginLogoutError, this) 
+				error: _.bind(this.onLoginLogoutError, this, false) 
 			});
 		},
 		
@@ -206,42 +212,56 @@ define([
 				if(e.target.id == 'logout-btn') {
 					this.model.logout();
 				} else if (e.target.id == 'login-btn') {
-					this.model.resetError();
-					modal.display();
+					loginLogout.displayLoginForm();
 				}
 			}
 		}
 	}); 
 	
 	/**************************************************************************
-	 * Login form
+	 * Login/logout modal
 	 *************************************************************************/
-	var LoginFormView = Backbone.View.extend({
+	var LoginLogoutView = Backbone.View.extend({
 		initialize: function(model) {
 			this.model = model;
-			
 			this.model.bind('change', this.render, this);
-			
-			this.template = mustache.compile(loginFormTpl);
 		},
 		
 		el: $('#modal'),
 		
 		template: mustache.compile(loginFormTpl),
 
-		display: function() {
+		displayLoginForm: function() {
+			this.model.resetError();
 			this.render();
-			$(this.el).addClass('login-form').modal();
+			$(this.el).addClass('session-login-form').modal();
+		},
+		
+		displayLogoutMessage: function() {
+			$(this.el).addClass('session-logout-message').modal();	
 		},
 		
 		remove: function() {
-			$(this.el).removeClass('login-form')
+			$(this.el).removeClass('session-login-form session-logout-message')
 			          .modal('hide');
 		},
 		
 		render: function() {
-			$(this.el).html(this.template(this.model.toJSON()));
+			var templateFile = this.model.isLoggedIn() ? logoutMessageTpl : loginFormTpl;
+			this.template = mustache.compile(templateFile);
+			
+			$(this.el).html(
+				this.template(this.model.toJSON())
+			);
 			return this.el;
+		},
+		
+		showLogoutError: function() {
+			this.render();
+			
+			$(this.el).find('#session-logout-error').show().end()
+			          .find('#session-logout-message').hide().end()
+			          .find('#session-logout-close').removeAttr('disabled');
 		},
 		
 		events: {
@@ -259,7 +279,7 @@ define([
 		model: Session,
 		views: {
 			sessionCorner: SessionCornerView,
-			loginForm: LoginFormView
+			loginLogout: LoginLogoutView
 		}
 	};
 });

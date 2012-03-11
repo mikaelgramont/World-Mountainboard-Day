@@ -3,6 +3,12 @@ need a pubsub to connect rider update to session corner redrawing
 the register has access to the pubsub object
 setup a router in order to deal with local urls
 
+render lang as uppercase with CSS
+
+run api tests and fix them
+
+after login without userR, save apisessionid on the WMD backend, so that reloading the page shows a logged-in page
+
 Detect language on the backend
 Build controllers to proxy the API calls, plus some other ones like /user/logout/
 Look into an architecture for i18n, see https://github.com/SlexAxton/messageformat.js

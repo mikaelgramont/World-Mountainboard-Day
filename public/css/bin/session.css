@@ -1,3 +1,4 @@
-.login-form {
+.session-login-form,
+.session-logout-message {
   width: 250px;
 }

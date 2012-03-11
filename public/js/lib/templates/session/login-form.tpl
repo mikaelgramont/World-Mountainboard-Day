@@ -3,7 +3,7 @@
 	<h3>Login</h3>
 </div>
 <form action="/user/login/" method="post" id="login-form">
-	<div class="modal-body session-login-form">
+	<div class="modal-body">
 		<span class="control-group error">
 			<span class="help-inline">{{ error }}</span>
 		</span>

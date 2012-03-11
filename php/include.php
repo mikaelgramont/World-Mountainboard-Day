@@ -405,7 +405,7 @@ class Globals
 		$guest = new stdClass();
 		$guest->username = 'guest';
 		$guest->userId = 0;
-		$guest->lang = 'EN';
+		$guest->lang = 'en';
 		return $guest;
 	}
 	
