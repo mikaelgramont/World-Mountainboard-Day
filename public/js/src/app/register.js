@@ -53,7 +53,7 @@ define([], function(){
 			this.set('apiUrl', url);
 		},
 		
-		getApiResourceUrl: function(resource, params) {
+		getApiResourceUrl: function(resource, params, id) {
 			if(typeof params == 'undefined') {
 				params = {};
 			}
@@ -63,6 +63,10 @@ define([], function(){
 			}
 			
 			var url = '//' + this.getApiUrl() + '/' + apiResourceUrls[resource] + '/';
+			
+			if(id) {
+				url += id + '/';
+			}
 			
 			if(this.getApiSessionId()) {
 				params[this.get('apiSessionKey')] = this.getApiSessionId();

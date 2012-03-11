@@ -402,11 +402,11 @@ class Globals
 	public static function getGuest()
 	{
 		// TODO: return the closest language to the one from the user request
-		return array(
-			'username' => 'guest',
-			'userId' => 0,
-			'lang' => 'en'
-		);
+		$guest = new stdClass();
+		$guest->username = 'guest';
+		$guest->userId = 0;
+		$guest->lang = 'EN';
+		return $guest;
 	}
 	
 	/**
@@ -441,6 +441,8 @@ class Globals
 	 */
 	protected static function _getRidersOwnData($userId, $sessionId)
 	{
+		error_log('_getRidersOwnData');
+		
 		$config = self::getConfig();
 		$client = new Zend_Http_Client();
 		$client->setUri($config->apiScheme . '://' . $config->apiUrl . '/riders/' . $userId);
@@ -462,6 +464,8 @@ class Globals
 	 */
 	protected static function _getInitialSessionId()
 	{
+		error_log('_getInitialSessionId');
+		
 		$sessionId = null;
 		$config = self::getConfig();
 		$client = new Zend_Http_Client();

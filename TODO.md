@@ -1,13 +1,7 @@
 # Client-side TODO
-cleanup client-side code:
- - each time the modal is loaded, one more event listener are registered for the form submission
- - need a close method to remove event listeners, hide the modal and the background
- - hitting 'enter' does not work on login form: closes the modal and does not submit 
-- dedupe code in session for login/logout
-
 need a pubsub to connect rider update to session corner redrawing
 the register has access to the pubsub object
-
+setup a router in order to deal with local urls
 
 Detect language on the backend
 Build controllers to proxy the API calls, plus some other ones like /user/logout/

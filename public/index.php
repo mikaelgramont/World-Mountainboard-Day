@@ -42,7 +42,7 @@ $bundles = Globals::getApplicableVersionnedBundles(
 				</ul>
 			</nav>
 <?php
-	$corner = 'session/corner-' . ($sessionData->rider->userId ? 'logged-in' : 'logged-out'). '.tpl'; 
+	$corner = 'session/corner-' . ($sessionData->rider->userId ? 'logged-in' : 'logged-out'). '.tpl';
 	echo $m->render($templates[$corner], $sessionData->rider);
 ?>			
 		</div>

@@ -25,35 +25,44 @@ define([
 	
 	], function($, cookie, _, Backbone, mustache, register, riderModule, cornerLoggedInTpl, cornerLoggedOutTpl, loginFormTpl, dropdownPlugin){
 
+	// View instances
 	var corner, modal;
+	
+	var debug = false;
 	
 	/**************************************************************************
 	 * MODEL 
 	 *************************************************************************/
 	var Session = Backbone.Model.extend({
+		/**********************************************************************
+		 * Standard Backbone methods
+		 *********************************************************************/
 		defaults: function(){
 			return {
 				// The rider object
 				rider: null,
 				// Form error
-				errorMessage: 'test'
+				error: null
 			}
 		},
 		
 		initialize: function() {
-			//this.savePersistingIdentityParams('plainuser', '123456789', true);
 			this.loadPersistingIdentityParams();
 			
 			this.url = register.getApiResourceUrl('session');
 			this.set({rider: register.getRider()});
 
 			corner = new SessionCornerView(this);
-			window.myModal = modal = new LoginFormView(this);
+			modal = new LoginFormView(this);
+			
+			debug = register.isDebug();
 		},
 		
 		events: {
 			change: function() {
-				console.info('session - model - change', arguments);
+				if(debug) {
+					console.info('session - model - change', arguments);
+				}
 			}
 		},
 		
@@ -61,74 +70,60 @@ define([
 			return !!register.getRider().isLoggedIn();			
 		},
 		
-		login: function(formValues, formValuesAsArray) {
-			console.info('login', formValues);
-			this.set({errorMessage: ''}, {silent: true});
-			
-			var onLoginSuccess = _.bind(function(data, status){
-				register.setApiSessionId(data.sessionId);
-				this.url = register.getApiResourceUrl('session');
+		/**********************************************************************
+		 * Business logic
+		 *********************************************************************/
+		onLoginLogoutSuccess: function(params, data, status){
+			register.setApiSessionId(data.sessionId);
+			this.url = register.getApiResourceUrl('session');
 
-				this.attributes.rider.set(data.rider);
-				this.trigger('change');
-				
-				// Does not remvoe the background:
-				$("#modal").hide().trigger('hidden');
-				
-				this.savePersistingIdentityParams(formValuesAsArray);
-			}, this);
+			this.attributes.rider.set(data.rider);
+			register.setRider(this.attributes.rider);
+			this.trigger('change');
 			
-			var onLoginError =  _.bind(function(jqXHR, textStatus, errorThrown) {
-				var response = JSON.parse(jqXHR.responseText);
-				this.set({errorMessage: response.errorId});
-				console.info('session - login ajax error', this.get('errorMessage'));
-				// TODO: update the UI to show errors
-			}, this);
-			
+			if(params.isLogin) {
+				modal.remove();
+				this.savePersistingIdentityParams(params.formValuesAsArray);
+			} else {
+				this.clearPersistingIdentityParams();
+			}
+		},
+		
+		onLoginLogoutError: function(jqXHR, textStatus, errorThrown) {
+			var response = JSON.parse(jqXHR.responseText);
+			this.set({error: response.errorId});
+		},
+		
+		login: function(formValues, formValuesAsArray) {
+			this.resetError();
 			$.ajax({
 				url: this.url,
 				type: 'POST',
 				dataType: 'json',
 				data: formValues,
-				success: onLoginSuccess,
-				error: onLoginError 
+				success: _.bind(this.onLoginLogoutSuccess, this, {isLogin: true, formValuesAsArray: formValuesAsArray}),
+				error: _.bind(this.onLoginLogoutError, this) 
 			});
 		},
 		
 		logout: function() {
-			console.info('session - logout', arguments);
-			this.set({errorMessage: ''}, {silent: true});
-
-			var onLogoutSuccess = _.bind(function(data, status){
-				register.setApiSessionId(data.sessionId);
-				this.url = register.getApiResourceUrl('session');
-
-				this.attributes.rider.set(data.rider);
-				this.trigger('change');
-				
-				this.clearPersistingIdentityParams();
-			}, this);
-			
-			var onLogoutError =  _.bind(function(jqXHR, textStatus, errorThrown) {
-				var response = JSON.parse(jqXHR.responseText);
-				this.set({errorMessage: response.errorId});
-				console.info('session - logout ajax error', this.get('errorMessage'));
-				// TODO: update the UI to show errors
-			}, this);			
-
-			var url = '//' + register.getApiUrl() + '/sessions/' + register.getApiSessionId() + '/' +'?PHPSESSID=' + register.getApiSessionId();
-			console.info('delete url', url);
-			
+			this.resetError();
 			$.ajax({
-				url: url,
+				url: register.getApiResourceUrl('session', {}, register.getApiSessionId()),
 				type: 'DELETE',
 				dataType: 'json',
-				success: onLogoutSuccess,
-				error: onLogoutError 
+				success: _.bind(this.onLoginLogoutSuccess, this, {isLogin: false}),
+				error: _.bind(this.onLoginLogoutError, this) 
 			});
 		},
 		
-		// The following reflect login cookies
+		resetError: function() {
+			this.set({'error': null}, {silent: true});
+		},
+		
+		/**********************************************************************
+		 * Login cookies
+		 *********************************************************************/
 		persistingIdentityParams: {
 			userN: null, // username
 			userP: null, // user password
@@ -140,7 +135,7 @@ define([
 				this.persistingIdentityParams[element] = $.cookie(element);
 			}, this);
 			
-			if(register.isDebug()) {
+			if(debug) {
 				console.info('session - loadPersistingIdentityParams', this.persistingIdentityParams);
 			}
 		},
@@ -151,12 +146,15 @@ define([
 				$.cookie(element, null);
 			}, this);
 			
-			if(register.isDebug()) {
+			if(debug) {
 				console.info('session - clearPersistingIdentityParams', this.persistingIdentityParams);
 			}
 		},
 		
 		savePersistingIdentityParams: function(params) {
+			if(debug) {
+				console.info('session - savePersistingIdentityParams', params);
+			}
 			var ret = false;
 			_.each(params, function(param){
 				if(param.name == 'userR' && param.value == '1') {
@@ -178,6 +176,10 @@ define([
 	/**************************************************************************
 	 * VIEWS 
 	 *************************************************************************/
+
+	/**************************************************************************
+	 * Session corner 
+	 *************************************************************************/
 	var SessionCornerView = Backbone.View.extend({
 		initialize: function(session) {
 			this.model = session;
@@ -190,7 +192,6 @@ define([
 		render: function() {
 			var rider = this.model.get('rider');
 			
-			console.info('session - corner view - render');
 			var templateFile = this.model.isLoggedIn() ? cornerLoggedInTpl : cornerLoggedOutTpl;
 			this.template = mustache.compile(templateFile);
 			
@@ -202,28 +203,19 @@ define([
 		
 		events: {
 			click: function(e){
-				var handled = true;
-
 				if(e.target.id == 'logout-btn') {
 					this.model.logout();
 				} else if (e.target.id == 'login-btn') {
-					$("#modal").addClass('login-form').html(
-						modal.render()
-					).modal();
-					
-				} else {
-					handled = false;
-				}
-				
-				if(handled) {
-					e.preventDefault();
-					e.stopPropagation();
+					this.model.resetError();
+					modal.display();
 				}
 			}
 		}
 	}); 
 	
-	// The login form
+	/**************************************************************************
+	 * Login form
+	 *************************************************************************/
 	var LoginFormView = Backbone.View.extend({
 		initialize: function(model) {
 			this.model = model;
@@ -237,19 +229,29 @@ define([
 		
 		template: mustache.compile(loginFormTpl),
 
+		display: function() {
+			this.render();
+			$(this.el).addClass('login-form').modal();
+		},
+		
+		remove: function() {
+			$(this.el).removeClass('login-form')
+			          .modal('hide');
+		},
+		
 		render: function() {
-			console.debug('session - LoginFormView render()', this);
-			return this.template(this.model.toJSON());
+			$(this.el).html(this.template(this.model.toJSON()));
+			return this.el;
 		},
 		
 		events: {
 			'submit': function(e){
-				console.info('session - LoginModalView - submit', arguments);
 				var form = e.target;
 				this.model.login($(form).serialize(), $(form).serializeArray());
 			}
 		}
 	}); 
+
 	/**************************************************************************
 	 * MODULE INTERFACE 
 	 *************************************************************************/

@@ -36,19 +36,20 @@ define([
 		
 		initialize: function(initialValues) {
 			if(register.isDebug()) {
-				//console.log('rider - initialize', initialValues);
+				//console.info('rider - initialize', initialValues);
 			}
 		},
 		
 		isLoggedIn: function() {
-			return !!this.attributes.userId;
+			return !!(parseInt(this.get('userId'), 10));
 		},
 		
 		events: {
 			change: function() {
 				console.log('rider model - change', arguments);
 			}
-		}
+		},
+		
 	});
 
 	
