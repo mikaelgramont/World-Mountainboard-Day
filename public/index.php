@@ -8,6 +8,7 @@ $config = Globals::getConfig();
 $templates = Globals::getTemplates('js/lib/templates/');
 $cdnUrl = $config->cdnProtocol . $config->cdnUrl;
 $sessionData = Globals::getApiSessionData($_COOKIE);
+$i18n = Globals::getTranslations($sessionData->lang);
 $m = new Mustache;
 $bundles = Globals::getApplicableVersionnedBundles(
 	$config->minify,
@@ -42,6 +43,8 @@ $bundles = Globals::getApplicableVersionnedBundles(
 			</nav>
 <?php
 	$corner = 'session/corner-' . ($sessionData->rider->userId ? 'logged-in' : 'logged-out'). '.tpl';
+	$cornerData = $sessionData;
+	$cornerData->i18n = $i18n;
 	echo $m->render($templates[$corner], $sessionData);
 ?>			
 		</div>
@@ -95,14 +98,14 @@ $bundles = Globals::getApplicableVersionnedBundles(
 	<script>
 		var require = {
 			baseUrl: <?php echo json_encode($cdnUrl.'js/lib') ?>,
-			paths: <?php echo json_encode($bundles) ?>,
-			locale: <?php echo json_encode($sessionData->lang) ?>
+			paths: <?php echo json_encode($bundles) ?>
 
 		}, appConfig = {
 			apiUrl: <?php echo json_encode($config->apiUrl) ?>,
 			cdnUrl: <?php echo json_encode($cdnUrl) ?>,
 			images: <?php echo json_encode(Globals::getApplicableImagePaths($config->versioning)) ?>,
-			sessionData: <?php echo json_encode($sessionData) ?>
+			sessionData: <?php echo json_encode($sessionData) ?>,
+			i18n: <?php echo json_encode($i18n) ?>
 			
 		};
   	</script>

@@ -544,4 +544,11 @@ class Globals
 			} 
 		}	
 	}
+	
+	public static function getTranslations($lang)
+	{
+		$translations = file_get_contents('js/src/i18n/'.$lang.'.js');
+		$translation = json_decode($translations);
+		return $translation;
+	}
 }

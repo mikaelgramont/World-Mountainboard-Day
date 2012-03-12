@@ -21,7 +21,7 @@ define([], function(){
 		// The pubsub module
 		pubsub: null,
 		// The translations
-		i18n: null
+		i18n: {}
 	};
 	
 	var apiResourceUrls = {
@@ -116,11 +116,14 @@ define([], function(){
 			set('lang', lang);
 		},
 		
-		getI18n: function() {
-			return get('i18n');
+		getI18n: function(lang) {
+			lang = lang || this.getLang();
+			return get('i18n')[lang];
 		},
 		
-		setI18n: function(i18n) {
+		setI18n: function(lang, hash) {
+			i18n = get('i18n') || {};
+			i18n[lang] = hash;
 			set('i18n', i18n);
 		},
 		
