@@ -1,12 +1,11 @@
 # Client-side TODO
-need a pubsub to connect rider update to session corner redrawing
-the register has access to the pubsub object
-Connect lang dropdown changes to register, and trigger a change site wide through pubsub?
+Build language bundles on the server-side, inject them into the view
 
-setup a router in order to deal with local urls
 
 Look into an architecture for i18n, see https://github.com/SlexAxton/messageformat.js
 
+Connect lang dropdown changes to register, and trigger a change site wide through pubsub?
+setup a router in order to deal with local urls
 
 
 Build controllers to proxy the API calls, plus some other ones like /user/logout/

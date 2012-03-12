@@ -95,7 +95,8 @@ $bundles = Globals::getApplicableVersionnedBundles(
 	<script>
 		var require = {
 			baseUrl: <?php echo json_encode($cdnUrl.'js/lib') ?>,
-			paths: <?php echo json_encode($bundles) ?>
+			paths: <?php echo json_encode($bundles) ?>,
+			locale: <?php echo json_encode($sessionData->lang) ?>
 
 		}, appConfig = {
 			apiUrl: <?php echo json_encode($config->apiUrl) ?>,

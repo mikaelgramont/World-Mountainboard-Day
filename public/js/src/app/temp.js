@@ -48,13 +48,25 @@ define([
 			this.riders.bind('add', this.addOne, this);
 			this.riders.bind('reset', this.addAll, this);
 			this.riders.fetch();
+			
+			pubsub.subscribe('session.lang.change', _.bind(this.redraw, this));
+		},
+		
+		redraw: function() {
+			if(register.isDebug()) {
+				console.log('temp - render');
+			}
+			this.$("#rider-list").html('');
+			this.addAll();
 		},
 		
 		events: {
 			click: function() {
 				var view = new ModalView({model: this.model});
 				$("#modal").html(view.render().getHtml()).modal();
-				console.log('temp - click');				
+				if(register.isDebug()) {
+					console.log('temp - click');
+				}
 			}
 		},
 		

@@ -19,7 +19,9 @@ define([], function(){
 		// The name of the GET parameter for session management
 		apiSessionKey: null,
 		// The pubsub module
-		pubsub: null
+		pubsub: null,
+		// The translations
+		i18n: null
 	};
 	
 	var apiResourceUrls = {
@@ -112,6 +114,14 @@ define([], function(){
 		
 		setLang: function(lang) {
 			set('lang', lang);
+		},
+		
+		getI18n: function() {
+			return get('i18n');
+		},
+		
+		setI18n: function(i18n) {
+			set('i18n', i18n);
 		},
 		
 		getRider: function() {

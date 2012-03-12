@@ -17,8 +17,11 @@ require([
 	'../src/app/rider',
 	'../src/app/temp',
 	
+	// i18n
+	'i18n!nls/lang'
 	
-], function($, _, Backbone, mustache, register, pubsub, sessionModule, riderModule, tempModule){
+	
+], function($, _, Backbone, mustache, register, pubsub, sessionModule, riderModule, tempModule, i18n){
 	var preventDefaultActions = function(e, type) {
 		// makes sure we don't follow links and form submissions
 		if(e.type !== type) {
@@ -56,6 +59,7 @@ require([
 			register.setApiUrl(config.apiUrl);
 			register.setDebug(config.sessionData.debug);
 			register.setLang(config.sessionData.lang);
+			register.setI18n(i18n);
 			register.setRider(new riderModule.model(config.sessionData.rider));
 			
 			var session = new sessionModule.model();

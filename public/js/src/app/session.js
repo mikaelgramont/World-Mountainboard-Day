@@ -212,7 +212,8 @@ define([
 			return {
 				lang: this.model.get('lang'),
 				error: this.model.get('error'),
-				rider: this.model.get('rider').attributes
+				rider: this.model.get('rider').attributes,
+				i18n: register.getI18n()
 			};
 		},
 		

@@ -108,7 +108,7 @@ define([
 		// Re-render the contents of the item
 		render: function() {
 			$(this.el).html(
-				this.template(this.model.toJSON())
+				this.template(_.extend(this.model.toJSON(), {i18n: register.getI18n()}))
 			);
 			return this;
 		},

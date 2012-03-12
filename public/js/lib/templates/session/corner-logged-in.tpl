@@ -17,6 +17,6 @@
     </div>
 	
     <div class="btn-group logout-btn-group">
-    	<a id="logout-btn" class="btn" href="/user/logout/">Logout</a>
+    	<a id="logout-btn" class="btn" href="/user/logout/">{{ i18n.Logout }}</a>
     </div>	
 </nav>
