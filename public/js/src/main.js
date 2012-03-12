@@ -12,12 +12,13 @@ require([
 
 	// Application modules
 	'../src/app/register',
+	'../src/app/pubsub',
 	'../src/app/session',
 	'../src/app/rider',
 	'../src/app/temp',
 	
 	
-], function($, _, Backbone, mustache, register, sessionModule, riderModule, tempModule){
+], function($, _, Backbone, mustache, register, pubsub, sessionModule, riderModule, tempModule){
 	var preventDefaultActions = function(e, type) {
 		// makes sure we don't follow links and form submissions
 		if(e.type !== type) {
@@ -48,7 +49,10 @@ require([
 				console.log('main - initialize', appConfig);
 			}
 
+			register.setPubsub(new pubsub);
+
 			register.setApiSessionId(config.sessionData.sessionId);
+			register.setApiSessionKey(config.sessionData.apiSessionKey);
 			register.setApiUrl(config.apiUrl);
 			register.setDebug(config.sessionData.debug);
 			register.setLang(config.sessionData.lang);

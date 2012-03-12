@@ -4094,6 +4094,9 @@ aside.main {
 .session-logout-message {
   width: 250px;
 }
+.session-corner a.lang {
+  text-transform: uppercase;
+}
 li.rider {
   float: left;
   width: 200px;

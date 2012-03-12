@@ -28,8 +28,10 @@ define([
 
 	// View instances
 	var sessionCorner, loginLogout;
-	
+	// Debug flag
 	var debug = false;
+	// Pubsub instance
+	var pubsub;
 	
 	/**************************************************************************
 	 * MODEL 
@@ -43,7 +45,9 @@ define([
 				// The rider object
 				rider: null,
 				// Form error
-				error: null
+				error: null,
+				// The language used in the application
+				lang: null
 			}
 		},
 		
@@ -51,12 +55,15 @@ define([
 			this.loadPersistingIdentityParams();
 			
 			this.url = register.getApiResourceUrl('session');
-			this.set({rider: register.getRider()});
+			this.set({
+				rider: register.getRider(),
+				lang: register.getLang()
+			});
 
 			sessionCorner = new SessionCornerView(this);
 			loginLogout = new LoginLogoutView(this);
-			
-			debug = true; register.isDebug();
+			debug = register.isDebug();
+			pubsub = register.getPubsub();
 		},
 		
 		events: {
@@ -84,8 +91,10 @@ define([
 			
 			loginLogout.remove();
 			if(params.isLogin) {
+				pubsub.publish('session.login.success');
 				this.savePersistingIdentityParams(params.formValuesAsArray);
 			} else {
+				pubsub.publish('session.logout.success');
 				this.clearPersistingIdentityParams();
 			}
 		},
@@ -161,19 +170,15 @@ define([
 			if(debug) {
 				console.info('session - savePersistingIdentityParams', params);
 			}
-			var ret = false;
+			var cookieParams = null;
 			_.each(params, function(param){
 				if(param.name == 'userR' && param.value == '1') {
-					ret = true;
+					cookieParams = {expires: 30};
 				}
 			});
 			
-			if(!ret) {
-				return;
-			}
-			
 			_.each(params, function(param){
-				$.cookie(param.name, param.value, {expires: 30});
+				$.cookie(param.name, param.value, cookieParams);
 			});
 		}
 	});
@@ -196,15 +201,19 @@ define([
 		el: $('#session-corner'),
 
 		render: function() {
-			var rider = this.model.get('rider');
-			
 			var templateFile = this.model.isLoggedIn() ? cornerLoggedInTpl : cornerLoggedOutTpl;
 			this.template = mustache.compile(templateFile);
 			
-			$(this.el).html(
-				this.template(rider.toJSON())
-			);
+			$(this.el).html(this.template(this.getDataForRender()));
 			return this;
+		},
+		
+		getDataForRender: function() {
+			return {
+				lang: this.model.get('lang'),
+				error: this.model.get('error'),
+				rider: this.model.get('rider').attributes
+			};
 		},
 		
 		events: {

@@ -1,17 +1,15 @@
 # Client-side TODO
 need a pubsub to connect rider update to session corner redrawing
 the register has access to the pubsub object
+Connect lang dropdown changes to register, and trigger a change site wide through pubsub?
+
 setup a router in order to deal with local urls
 
-render lang as uppercase with CSS
-
-run api tests and fix them
-
-after login without userR, save apisessionid on the WMD backend, so that reloading the page shows a logged-in page
-
-Detect language on the backend
-Build controllers to proxy the API calls, plus some other ones like /user/logout/
 Look into an architecture for i18n, see https://github.com/SlexAxton/messageformat.js
+
+
+
+Build controllers to proxy the API calls, plus some other ones like /user/logout/
 Add widget on homepage to show JS loading status while in debug.
 Find a logo and a font to represent it in small displays
 Determine timezone based on location: 0-new Date().getTimezoneOffset()/60

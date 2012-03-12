@@ -2,3 +2,6 @@
 .session-logout-message {
   width: 250px;
 }
+.session-corner a.lang {
+  text-transform: uppercase;
+}

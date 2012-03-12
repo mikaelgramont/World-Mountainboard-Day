@@ -1,18 +1,18 @@
 <nav class="session-corner" id="session-corner">
 	<div class="username">
-		{{ username }}
+		{{ rider.username }}
 	</div>
 
     <div class="btn-group lang-selector">
-    	<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-    		{{#uc}}{{ lang }}{{/uc}}
+    	<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">
+    		{{ lang }}
     		<span class="caret"></span>
     	</a>
     	<ul class="dropdown-menu">
     		<!-- dropdown menu links -->
-    		<li class="fr"><a href="#">FR</a></li>
-    		<li class="en"><a href="#">EN</a></li>
-    		<li class="es"><a href="#">ES</a></li>
+    		<li><a href="#" class="lang fr">fr</a></li>
+    		<li><a href="#" class="lang en">en</a></li>
+    		<li><a href="#" class="lang es">es</a></li>
     	</ul>
     </div>
 	

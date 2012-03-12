@@ -22,6 +22,8 @@ define([
 	
 	], function($, _, Backbone, mustache, register, riderModule, modalTpl, bootstrapModal){
 
+	var pubsub;
+	
 	/**************************************************************************
 	 * VIEWS 
 	 *************************************************************************/
@@ -40,6 +42,8 @@ define([
 		el: $("#main"),
 		
 		initialize: function(riders) {
+			pubsub = register.getPubsub();
+
 			this.riders = riders;
 			this.riders.bind('add', this.addOne, this);
 			this.riders.bind('reset', this.addAll, this);

@@ -2,7 +2,6 @@
 //define('APPLICATION_ENV', 'production');
 //define('APPLICATION_ENV', 'staging');
 
-session_start();
 set_include_path('../php/'.PATH_SEPARATOR.get_include_path());
 require_once 'include.php';
 $config = Globals::getConfig();
@@ -43,7 +42,7 @@ $bundles = Globals::getApplicableVersionnedBundles(
 			</nav>
 <?php
 	$corner = 'session/corner-' . ($sessionData->rider->userId ? 'logged-in' : 'logged-out'). '.tpl';
-	echo $m->render($templates[$corner], $sessionData->rider);
+	echo $m->render($templates[$corner], $sessionData);
 ?>			
 		</div>
 	</header>

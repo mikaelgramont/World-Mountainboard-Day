@@ -19,9 +19,11 @@ define([
 
 	// Bootstrap  plugins
 	'order!bootstrap/bootstrap-modal'
-	
+
 	], function($, _, Backbone, mustache, register, usernameTpl, modalTpl, bootstrapModal){
 
+	var pubsub;
+	
 	/**************************************************************************
 	 * MODEL 
 	 *************************************************************************/
@@ -38,6 +40,7 @@ define([
 			if(register.isDebug()) {
 				//console.info('rider - initialize', initialValues);
 			}
+			pubsub = register.getPubsub();
 		},
 		
 		isLoggedIn: function() {
@@ -48,8 +51,7 @@ define([
 			change: function() {
 				console.log('rider model - change', arguments);
 			}
-		},
-		
+		}
 	});
 
 	

@@ -372,8 +372,7 @@ class Globals
 
 		$sessionData = new stdClass();
 		
-		if(isset($cookies[self::COOKIE_USER_REMEMBER]) &&
-		   isset($cookies[self::COOKIE_USER_USERNAME]) &&
+		if(isset($cookies[self::COOKIE_USER_USERNAME]) &&
 		   isset($cookies[self::COOKIE_USER_PASSWORD])) {
 			$sessionData = self::_login($cookies[self::COOKIE_USER_USERNAME], $cookies[self::COOKIE_USER_PASSWORD]);
 		}
@@ -391,21 +390,44 @@ class Globals
 		$sessionData->debug = $config->debug;
 		$sessionData->rider = $rider;
 		$sessionData->sessionId = $sessionId;
-		$sessionData->apiSessionKey = 'PHPSESSID';
-			
+		$sessionData->apiSessionKey = $config->apiSessionKey;
+		$sessionData->lang = self::_getLang($rider);
+		
 		return $sessionData;
 	}
+	
+	protected static function _getLang($rider)
+	{
+		$riderLang = $rider->lang;
+		$accepted = self::getAcceptedLanguages();
+		$supported = explode(',', self::getConfig()->supportedLanguages);
+		
+		if(in_array($rider->lang, $supported)) {
+			return $rider->lang;
+		}
+		
+		foreach($accepted as $lang => $weight) {
+			if(in_array($lang, $supported)) {
+				return $lang;
+			}
+		}
+		
+		return 'en';
+	}
+	
 	
 	/**
 	 * Returns a representation of the guest user 
 	 */
 	public static function getGuest()
 	{
-		// TODO: return the closest language to the one from the user request
+		$accepted = self::getAcceptedLanguages();
+		
+		
 		$guest = new stdClass();
 		$guest->username = 'guest';
 		$guest->userId = 0;
-		$guest->lang = 'en';
+		$guest->lang = null;
 		return $guest;
 	}
 	
@@ -487,5 +509,39 @@ class Globals
 		}
 		
 		return $sessionId;
-	} 
+	}
+	
+	public static function getAcceptedLanguages()
+	{
+		$langs = array();
+
+		if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+		    // break up string into pieces (languages and q factors)
+		    preg_match_all('/([a-z]{1,8}(-[a-z]{1,8})?)\s*(;\s*q\s*=\s*(1|0\.[0-9]+))?/i', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $lang_parse);
+		
+		    if (count($lang_parse[1])) {
+		        // create a list like "en" => 0.8
+		        $langs = array_combine($lang_parse[1], $lang_parse[4]);
+		    	
+		        // set default to 1 for any without q factor
+		        foreach ($langs as $lang => $val) {
+		            if ($val === '') $langs[$lang] = 1;
+		        }
+		
+		        // sort list based on value	
+		        arsort($langs, SORT_NUMERIC);
+		    }
+		}
+		
+		return $langs;
+		
+		// look through sorted list and use first one that matches our languages
+		foreach ($langs as $lang => $val) {
+			if (strpos($lang, 'de') === 0) {
+				// show German site
+			} else if (strpos($lang, 'en') === 0) {
+				// show English site
+			} 
+		}	
+	}
 }

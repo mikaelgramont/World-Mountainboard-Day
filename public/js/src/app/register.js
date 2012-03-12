@@ -13,11 +13,13 @@ define([], function(){
 		// Whether to use debug methods
 		debug: false,
 		// The language currently being used
-		lang: 'en',
+		lang: null,
 		// The rider object
 		rider: {},
 		// The name of the GET parameter for session management
-		apiSessionKey: 'PHPSESSID'
+		apiSessionKey: null,
+		// The pubsub module
+		pubsub: null
 	};
 	
 	var apiResourceUrls = {
@@ -25,32 +27,41 @@ define([], function(){
 		'session': 'sessions'
 	};
 	
+	var	set = function(key, value) {
+		data[key] = value;
+	};
+	
+	var get = function(key) {
+		return data[key];
+	};
+
+	
 	/**************************************************************************
 	 * MODULE INTERFACE 
 	 *************************************************************************/
 	return {
-		set: function(key, value) {
-			data[key] = value;
-		},
-		
-		get: function(key) {
-			return data[key];
-		},
-		
 		getApiSessionId: function() {
-			return data.apiSessionId;
+			return get('apiSessionId');
 		},
 		
 		setApiSessionId: function(id) {
-			this.set('apiSessionId', id);
+			set('apiSessionId', id);
+		},
+		
+		getApiSessionKey: function() {
+			return get('apiSessionKey');
+		},
+		
+		setApiSessionKey: function(key) {
+			set('apiSessionKey', key);
 		},
 		
 		getApiUrl: function() {
-			return data.apiUrl;
+			return get('apiUrl');
 		},
 		
 		setApiUrl: function(url) {
-			this.set('apiUrl', url);
+			set('apiUrl', url);
 		},
 		
 		getApiResourceUrl: function(resource, params, id) {
@@ -69,7 +80,7 @@ define([], function(){
 			}
 			
 			if(this.getApiSessionId()) {
-				params[this.get('apiSessionKey')] = this.getApiSessionId();
+				params[get('apiSessionKey')] = get('apiSessionId');
 			}
 			
 			var querystring = [];
@@ -88,29 +99,35 @@ define([], function(){
 		},
 		
 		isDebug: function() {
-			return data.debug;
+			return get('debug');
 		},
 		
 		setDebug: function(bool) {
-			this.set('debug', !!bool);
+			set('debug', !!bool);
 		},
-		
+
 		getLang: function() {
-			return data.lang;
+			return get('lang');
 		},
 		
 		setLang: function(lang) {
-			this.set('lang', lang);
+			set('lang', lang);
 		},
 		
 		getRider: function() {
-			return data.rider;
+			return get('rider');
 		},
 		
 		setRider: function(rider) {
-			this.set('rider', rider);
+			set('rider', rider);
 		},
 		
-		data: data
+		getPubsub: function() {
+			return get('pubsub');
+		},
+		
+		setPubsub: function(pubsub) {
+			set('pubsub', pubsub);
+		}
 	};
 });
