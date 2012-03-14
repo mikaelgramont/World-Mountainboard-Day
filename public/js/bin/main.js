@@ -12312,11 +12312,15 @@ define('../src/app/register',[], function(){
 		// Whether to use debug methods
 		debug: false,
 		// The language currently being used
-		lang: 'en',
+		lang: null,
 		// The rider object
 		rider: {},
 		// The name of the GET parameter for session management
-		apiSessionKey: 'PHPSESSID'
+		apiSessionKey: null,
+		// The pubsub module
+		pubsub: null,
+		// The translations
+		i18n: {}
 	};
 	
 	var apiResourceUrls = {
@@ -12324,35 +12328,44 @@ define('../src/app/register',[], function(){
 		'session': 'sessions'
 	};
 	
+	var	set = function(key, value) {
+		data[key] = value;
+	};
+	
+	var get = function(key) {
+		return data[key];
+	};
+
+	
 	/**************************************************************************
 	 * MODULE INTERFACE 
 	 *************************************************************************/
 	return {
-		set: function(key, value) {
-			data[key] = value;
-		},
-		
-		get: function(key) {
-			return data[key];
-		},
-		
 		getApiSessionId: function() {
-			return data.apiSessionId;
+			return get('apiSessionId');
 		},
 		
 		setApiSessionId: function(id) {
-			this.set('apiSessionId', id);
+			set('apiSessionId', id);
+		},
+		
+		getApiSessionKey: function() {
+			return get('apiSessionKey');
+		},
+		
+		setApiSessionKey: function(key) {
+			set('apiSessionKey', key);
 		},
 		
 		getApiUrl: function() {
-			return data.apiUrl;
+			return get('apiUrl');
 		},
 		
 		setApiUrl: function(url) {
-			this.set('apiUrl', url);
+			set('apiUrl', url);
 		},
 		
-		getApiResourceUrl: function(resource, params) {
+		getApiResourceUrl: function(resource, params, id) {
 			if(typeof params == 'undefined') {
 				params = {};
 			}
@@ -12363,8 +12376,12 @@ define('../src/app/register',[], function(){
 			
 			var url = '//' + this.getApiUrl() + '/' + apiResourceUrls[resource] + '/';
 			
+			if(id) {
+				url += id + '/';
+			}
+			
 			if(this.getApiSessionId()) {
-				params[this.get('apiSessionKey')] = this.getApiSessionId();
+				params[get('apiSessionKey')] = get('apiSessionId');
 			}
 			
 			var querystring = [];
@@ -12383,31 +12400,86 @@ define('../src/app/register',[], function(){
 		},
 		
 		isDebug: function() {
-			return data.debug;
+			return get('debug');
 		},
 		
 		setDebug: function(bool) {
-			this.set('debug', !!bool);
+			set('debug', !!bool);
 		},
-		
+
 		getLang: function() {
-			return data.lang;
+			return get('lang');
 		},
 		
 		setLang: function(lang) {
-			this.set('lang', lang);
+			set('lang', lang);
+		},
+		
+		getI18n: function(lang) {
+			lang = lang || this.getLang();
+			return get('i18n')[lang];
+		},
+		
+		setI18n: function(lang, hash) {
+			i18n = get('i18n') || {};
+			i18n[lang] = hash;
+			// TODO: attach a bunch of methods to 18n so that they're available to mustache templates
+			i18n.uc = function() {
+				console.log('returnin uc!', arguments);
+				return function(text, render) {
+					console.log('inside uc!', arguments);
+					return render(text.toUpperCase());
+				};
+			};
+			set('i18n', i18n);
 		},
 		
 		getRider: function() {
-			return data.rider;
+			return get('rider');
 		},
 		
 		setRider: function(rider) {
-			this.set('rider', rider);
+			set('rider', rider);
 		},
 		
-		data: data
+		getPubsub: function() {
+			return get('pubsub');
+		},
+		
+		setPubsub: function(pubsub) {
+			set('pubsub', pubsub);
+		}
 	};
+});
+/******************************************************************************
+ * js/src/app/pubsub.js
+ *
+ * Pubsub module to share events across the application
+ *****************************************************************************/
+define('../src/app/pubsub',[
+        // Libraries
+        'backbone',
+        
+    	// Application modules
+    	'../app/register'
+        
+    ], function(Backbone, register){
+	
+	return Backbone.Model.extend({
+		publish: function() {
+			if(register.isDebug()) {
+				console.info('pubsub - publishing', arguments);
+			}
+			return this.trigger.apply(this, arguments);
+		},
+		
+		subscribe: function() {
+			if(register.isDebug()) {
+				console.info('pubsub - subscribing', arguments);
+			}
+			return this.bind.apply(this, arguments);
+		}
+	});
 });
 /**
  * @license RequireJS text 1.0.7 Copyright (c) 2010-2011, The Dojo Foundation All Rights Reserved.
@@ -12748,11 +12820,13 @@ define('../src/app/register',[], function(){
 
 define("jquery.cookie", function(){});
 
-define('text!templates/session/corner-logged-in.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n\t<div class="username">\n\t\t{{ username }}\n\t</div>\n\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t\t<li class="fr"><a href="#">FR</a></li>\n    \t\t<li class="en"><a href="#">EN</a></li>\n    \t\t<li class="es"><a href="#">ES</a></li>\n    \t</ul>\n    </div>\n\t\n    <div class="btn-group logout-btn-group">\n    \t<a id="logout-btn" class="btn" href="/user/logout/">Logout</a>\n    </div>\t\n</nav>';});
+define('text!templates/session/corner-logged-in.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n\t<div class="username">\n\t\t{{ rider.username }}\n\t</div>\n\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t\t<li><a href="#" class="lang fr">fr</a></li>\n    \t\t<li><a href="#" class="lang en">en</a></li>\n    \t\t<li><a href="#" class="lang es">es</a></li>\n    \t</ul>\n    </div>\n\t\n    <div class="btn-group logout-btn-group">\n    \t<a id="logout-btn" class="btn" href="/user/logout/">{{ i18n.Logout }}</a>\n    </div>\t\n</nav>';});
 
-define('text!templates/session/corner-logged-out.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t\t<li class="fr"><a href="#">FR</a></li>\n    \t\t<li class="en"><a href="#">EN</a></li>\n    \t\t<li class="es"><a href="#">ES</a></li>\n    \t</ul>\n    </div>\n\t\n    <div class="btn-group login-btn-group">\n    \t<a id="login-btn" class="btn" href="/user/login/">Login</a>\n    \t<a class="btn" href="/user/register/">Register</a>\n    </div>\t\n</nav>';});
+define('text!templates/session/corner-logged-out.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t\t<li><a href="#" class="lang fr">fr</a></li>\n    \t\t<li><a href="#" class="lang en">en</a></li>\n    \t\t<li><a href="#" class="lang es">es</a></li>\n    \t</ul>\n    </div>\n\t\n    <div class="btn-group login-btn-group">\n    \t<a id="login-btn" class="btn" href="/user/login/">{{ i18n.Login }}</a>\n    \t<a class="btn" href="/user/register/">\n    \t\t{{#i18n.uc}}\n    \t\t\ta{{ i18n.Register }}a\n    \t\t{{/i18n.uc}}\n    \t</a>\n    </div>\t\n</nav>';});
 
-define('text!templates/session/login-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>Login</h3>\n</div>\n<form action="/user/login/" method="post" id="login-form">\n\t<div class="modal-body session-login-form">\n\t\t<input type="text" id="userN" name="userN" class="whole-row" placeholder="username"/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="password"/>\n\n\t\t<input type="checkbox" id="userR" name="userR" value="1" class="checkbox"/>\n\t\t<label for="userR" class="for-checkbox">_remember me?</label>\n\t</div>\n\t<div class="modal-footer">\n\t\t<button id="login-form-cancel" class="btn" data-dismiss="modal">_cancel_</button>\n\t\t<input type="submit" id="login-form-submit" class="btn btn-primary" value="_login_"/>\n\t</div>\n</form>';});
+define('text!templates/session/login-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>Login</h3>\n</div>\n<form action="/user/login/" method="post" id="login-form">\n\t<div class="modal-body">\n\t\t<span class="control-group error">\n\t\t\t<span class="help-inline">{{ error }}</span>\n\t\t</span>\n\t\t<input type="text" id="userN" name="userN" class="whole-row" placeholder="username" value="{{ rider.username }}"/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="password"/>\n\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="userR" name="userR"/> remember me next time\n        </label>\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="login-form-cancel" class="btn" data-dismiss="modal" value="Cancel" tabIndex="1"/>\n\t\t<input type="submit" id="login-form-submit" class="btn btn-primary" value="Login" tabindex="0" />\n\t</div>\n</form>';});
+
+define('text!templates/session/logout-message.tpl',[],function () { return '<div class="modal-header">\n\t<h3>Logout</h3>\n</div>\n<div class="modal-body">\n\t<span class="control-group error hide" id="session-logout-error">\n\t\t<span class="help-inline">{{ error }}</span>\n\t</span>\n\t<span id="session-logout-message">\n\t\t{{ status }}\n\t</span>\n\t<div class="modal-footer">\n\t\t<input type="button" id="session-logout-close" class="btn" data-dismiss="modal" value="Close" disabled="disabled"/>\n\t</div>\n</div>\n';});
 
 /* ============================================================
  * bootstrap-dropdown.js v2.0.0
@@ -12849,7 +12923,7 @@ define('text!templates/session/login-form.tpl',[],function () { return '<div cla
 ;
 define("bootstrap/bootstrap-dropdown", function(){});
 
-define('text!templates/rider/username.tpl',[],function () { return '<h2>\n\t<a href="/riders/{{ userId }}/" class="rider">\n\t\t{{ username }}\n\t</a>\n</h2>';});
+define('text!templates/rider/username.tpl',[],function () { return '<h2>\n\t<a href="/riders/{{ userId }}/" class="rider">\n\t\t{{ username }}\n\t</a>\n</h2>\n<p>{{ i18n.country }}: {{ country.title }}</p>';});
 
 define('text!templates/rider/modal.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>Name: {{ username }}</h3>\n</div>\n<div class="modal-body">\n{{#country}}\n\t<p class="country">Country: <a href="/countries/{{ id }}">{{ title }}</a></p>\n{{/country}}\n</div>\n<div class="modal-footer">\n\t<a href="#" class="btn">Close</a>\n</div>';});
 
@@ -13098,9 +13172,11 @@ define('../src/app/rider',[
 
 	// Bootstrap  plugins
 	'order!bootstrap/bootstrap-modal'
-	
+
 	], function($, _, Backbone, mustache, register, usernameTpl, modalTpl, bootstrapModal){
 
+	var pubsub;
+	
 	/**************************************************************************
 	 * MODEL 
 	 *************************************************************************/
@@ -13115,12 +13191,13 @@ define('../src/app/rider',[
 		
 		initialize: function(initialValues) {
 			if(register.isDebug()) {
-				//console.log('rider - initialize', initialValues);
+				//console.info('rider - initialize', initialValues);
 			}
+			pubsub = register.getPubsub();
 		},
 		
 		isLoggedIn: function() {
-			return !!this.attributes.userId;
+			return !!(parseInt(this.get('userId'), 10));
 		},
 		
 		events: {
@@ -13184,7 +13261,7 @@ define('../src/app/rider',[
 		// Re-render the contents of the item
 		render: function() {
 			$(this.el).html(
-				this.template(this.model.toJSON())
+				this.template(_.extend(this.model.toJSON(), {i18n: register.getI18n()}))
 			);
 			return this;
 		},
@@ -13235,41 +13312,58 @@ define('../src/app/session',[
 	'text!templates/session/corner-logged-in.tpl',
 	'text!templates/session/corner-logged-out.tpl',
 	'text!templates/session/login-form.tpl',
+	'text!templates/session/logout-message.tpl',
 
 	// Bootstrap plugins
 	'order!bootstrap/bootstrap-dropdown'
 	
-	], function($, cookie, _, Backbone, mustache, register, riderModule, cornerLoggedInTpl, cornerLoggedOutTpl, loginFormTpl, dropdownPlugin){
+	], function($, cookie, _, Backbone, mustache, register, riderModule, cornerLoggedInTpl, cornerLoggedOutTpl, loginFormTpl, logoutMessageTpl, dropdownPlugin){
 
-	var corner, modal;
-
+	// View instances
+	var sessionCorner, loginLogout;
+	// Debug flag
+	var debug = false;
+	// Pubsub instance
+	var pubsub;
 	
 	/**************************************************************************
 	 * MODEL 
 	 *************************************************************************/
 	var Session = Backbone.Model.extend({
-		errors: [], // form errors
-		
+		/**********************************************************************
+		 * Standard Backbone methods
+		 *********************************************************************/
 		defaults: function(){
 			return {
 				// The rider object
-				rider: null
+				rider: null,
+				// Form error
+				error: null,
+				// The language used in the application
+				lang: null
 			}
 		},
 		
 		initialize: function() {
-			//this.savePersistingIdentityParams('plainuser', '123456789', true);
 			this.loadPersistingIdentityParams();
 			
 			this.url = register.getApiResourceUrl('session');
-			this.set('rider', register.getRider());
+			this.set({
+				rider: register.getRider(),
+				lang: register.getLang()
+			});
 
-			corner = new SessionCornerView(this);
+			sessionCorner = new SessionCornerView(this);
+			loginLogout = new LoginLogoutView(this);
+			debug = register.isDebug();
+			pubsub = register.getPubsub();
 		},
 		
 		events: {
 			change: function() {
-				console.log('session - model - change', arguments);
+				if(debug) {
+					console.info('session - model - change', arguments);
+				}
 			}
 		},
 		
@@ -13277,86 +13371,67 @@ define('../src/app/session',[
 			return !!register.getRider().isLoggedIn();			
 		},
 		
-		login: function(formValues, formValuesAsArray) {
-			console.log('login', formValues);
-			
-			var onLoginSuccess = _.bind(function(data, status){
-				//TOOD: clear any errors
-				
-				register.setApiSessionId(data.sessionId);
-				this.url = register.getApiResourceUrl('session');
+		/**********************************************************************
+		 * Business logic
+		 *********************************************************************/
+		onLoginLogoutSuccess: function(params, data, status){
+			register.setApiSessionId(data.sessionId);
+			this.url = register.getApiResourceUrl('session');
 
-				this.attributes.rider.set(data.rider);
-				this.trigger('change');
-				
-				// Does not remvoe the background:
-				$("#modal").hide().trigger('hidden');
-				
-				this.savePersistingIdentityParams(formValuesAsArray);
-			}, this);
+			this.attributes.rider.set(data.rider);
+			register.setRider(this.attributes.rider);
+			this.trigger('change');
 			
-			var onLoginError =  _.bind(function(jqXHR, textStatus, errorThrown) {
-				console.log('session - login ajax error', arguments);
-				// TODO: update the UI to show errors
-			}, this);
-			
+			loginLogout.remove();
+			if(params.isLogin) {
+				pubsub.publish('session.login.success');
+				this.savePersistingIdentityParams(params.formValuesAsArray);
+			} else {
+				pubsub.publish('session.logout.success');
+				this.clearPersistingIdentityParams();
+			}
+		},
+		
+		onLoginLogoutError: function(isLogin, jqXHR, textStatus, errorThrown) {
+			var response = JSON.parse(jqXHR.responseText);
+			this.set({error: response.errorId});
+
+			if(!isLogin) {
+				loginLogout.displayLogoutMessage();
+				loginLogout.showLogoutError();
+			}
+		},
+		
+		login: function(formValues, formValuesAsArray) {
+			this.resetError();
 			$.ajax({
 				url: this.url,
 				type: 'POST',
 				dataType: 'json',
 				data: formValues,
-				success: onLoginSuccess,
-				error: onLoginError 
+				success: _.bind(this.onLoginLogoutSuccess, this, {isLogin: true, formValuesAsArray: formValuesAsArray}),
+				error: _.bind(this.onLoginLogoutError, this, true) 
 			});
 		},
 		
 		logout: function() {
-			console.log('session - logout', arguments);
-
-			var onLogoutSuccess = _.bind(function(data, status){
-				//TOOD: clear any errors
-				
-				register.setApiSessionId(data.sessionId);
-				this.url = register.getApiResourceUrl('session');
-
-				this.attributes.rider.set(data.rider);
-				this.trigger('change');
-				
-				this.clearPersistingIdentityParams();
-			}, this);
-			
-			var onLogoutError =  _.bind(function(jqXHR, textStatus, errorThrown) {
-				console.log('session - login ajax error', arguments);
-				// TODO: update the UI to show errors
-			}, this);			
-
-			var url = '//' + register.getApiUrl() + '/sessions/' + register.getApiSessionId() + '/' +'?PHPSESSID=' + register.getApiSessionId();
-			console.log('delete url', url);
-			
+			this.resetError();
 			$.ajax({
-				url: url,
+				url: register.getApiResourceUrl('session', {}, register.getApiSessionId()),
 				type: 'DELETE',
 				dataType: 'json',
-				success: onLogoutSuccess,
-				error: onLogoutError 
+				success: _.bind(this.onLoginLogoutSuccess, this, {isLogin: false}),
+				error: _.bind(this.onLoginLogoutError, this, false) 
 			});
-			
-			/**
-			 * TODO: call this method when the logout form is submitted
-			 * - reset model data
-			 * - prepare and send a DELETE ajax request to the api: /sessions/
-			 * - use the result of that:
-			 *   - in case of success: 
-			 *     - clear errors
-			 *     - save the new userId (0)
-			 *     - clear parameters in LS
-			 *     - send a 'logout' event 
-			 *   - in case of error
-			 *     - update the UI to show errors
-			 */
 		},
 		
-		// The following reflect login cookies
+		resetError: function() {
+			this.set({'error': null}, {silent: true});
+		},
+		
+		/**********************************************************************
+		 * Login cookies
+		 *********************************************************************/
 		persistingIdentityParams: {
 			userN: null, // username
 			userP: null, // user password
@@ -13368,8 +13443,8 @@ define('../src/app/session',[
 				this.persistingIdentityParams[element] = $.cookie(element);
 			}, this);
 			
-			if(register.isDebug()) {
-				console.log('session - loadPersistingIdentityParams', this.persistingIdentityParams);
+			if(debug) {
+				console.info('session - loadPersistingIdentityParams', this.persistingIdentityParams);
 			}
 		},
 		
@@ -13379,25 +13454,24 @@ define('../src/app/session',[
 				$.cookie(element, null);
 			}, this);
 			
-			if(register.isDebug()) {
-				console.log('session - clearPersistingIdentityParams', this.persistingIdentityParams);
+			if(debug) {
+				console.info('session - clearPersistingIdentityParams', this.persistingIdentityParams);
 			}
 		},
 		
 		savePersistingIdentityParams: function(params) {
-			var ret = false;
+			if(debug) {
+				console.info('session - savePersistingIdentityParams', params);
+			}
+			var cookieParams = null;
 			_.each(params, function(param){
 				if(param.name == 'userR' && param.value == '1') {
-					ret = true;
+					cookieParams = {expires: 30};
 				}
 			});
 			
-			if(!ret) {
-				return;
-			}
-			
 			_.each(params, function(param){
-				$.cookie(param.name, param.value, {expires: 30});
+				$.cookie(param.name, param.value, cookieParams);
 			});
 		}
 	});
@@ -13405,6 +13479,10 @@ define('../src/app/session',[
 	
 	/**************************************************************************
 	 * VIEWS 
+	 *************************************************************************/
+
+	/**************************************************************************
+	 * Session corner 
 	 *************************************************************************/
 	var SessionCornerView = Backbone.View.extend({
 		initialize: function(session) {
@@ -13416,65 +13494,87 @@ define('../src/app/session',[
 		el: $('#session-corner'),
 
 		render: function() {
-			var rider = this.model.get('rider');
-			
-			console.log('session - corner view - render');
 			var templateFile = this.model.isLoggedIn() ? cornerLoggedInTpl : cornerLoggedOutTpl;
 			this.template = mustache.compile(templateFile);
 			
-			$(this.el).html(
-				this.template(rider.toJSON())
-			);
+			$(this.el).html(this.template(this.getDataForRender()));
 			return this;
+		},
+		
+		getDataForRender: function() {
+			return {
+				lang: this.model.get('lang'),
+				error: this.model.get('error'),
+				rider: this.model.get('rider').attributes,
+				i18n: register.getI18n()
+			};
 		},
 		
 		events: {
 			click: function(e){
-				var handled = true;
-				var session = this.model;
-
 				if(e.target.id == 'logout-btn') {
-					session.logout();
+					this.model.logout();
 				} else if (e.target.id == 'login-btn') {
-					$("#modal").addClass('login-form').html(
-						new LoginFormView(session).render()
-					).modal();
-					
-				} else {
-					handled = false;
-				}
-				
-				if(handled) {
-					e.preventDefault();
-					e.stopPropagation();
+					loginLogout.displayLoginForm();
 				}
 			}
 		}
 	}); 
 	
-	// The login form
-	var LoginFormView = Backbone.View.extend({
+	/**************************************************************************
+	 * Login/logout modal
+	 *************************************************************************/
+	var LoginLogoutView = Backbone.View.extend({
 		initialize: function(model) {
 			this.model = model;
+			this.model.bind('change', this.render, this);
 		},
 		
 		el: $('#modal'),
 		
 		template: mustache.compile(loginFormTpl),
 
+		displayLoginForm: function() {
+			this.model.resetError();
+			this.render();
+			$(this.el).addClass('session-login-form').modal();
+		},
+		
+		displayLogoutMessage: function() {
+			$(this.el).addClass('session-logout-message').modal();	
+		},
+		
+		remove: function() {
+			$(this.el).removeClass('session-login-form session-logout-message')
+			          .modal('hide');
+		},
+		
 		render: function() {
-			console.log('session - LoginFormView render()', arguments);
-			return this.template(this.model.toJSON());
+			var templateFile = this.model.isLoggedIn() ? logoutMessageTpl : loginFormTpl;
+			this.template = mustache.compile(templateFile);
+			
+			$(this.el).html(
+				this.template(this.model.toJSON())
+			);
+			return this.el;
+		},
+		
+		showLogoutError: function() {
+			this.render();
+			
+			$(this.el).find('#session-logout-error').show().end()
+			          .find('#session-logout-message').hide().end()
+			          .find('#session-logout-close').removeAttr('disabled');
 		},
 		
 		events: {
 			'submit': function(e){
-				console.log('session - LoginModalView - submit', arguments);
 				var form = e.target;
 				this.model.login($(form).serialize(), $(form).serializeArray());
 			}
 		}
 	}); 
+
 	/**************************************************************************
 	 * MODULE INTERFACE 
 	 *************************************************************************/
@@ -13482,7 +13582,7 @@ define('../src/app/session',[
 		model: Session,
 		views: {
 			sessionCorner: SessionCornerView,
-			loginForm: LoginFormView
+			loginLogout: LoginLogoutView
 		}
 	};
 });
@@ -13513,6 +13613,8 @@ define('../src/app/temp',[
 	
 	], function($, _, Backbone, mustache, register, riderModule, modalTpl, bootstrapModal){
 
+	var pubsub;
+	
 	/**************************************************************************
 	 * VIEWS 
 	 *************************************************************************/
@@ -13531,17 +13633,31 @@ define('../src/app/temp',[
 		el: $("#main"),
 		
 		initialize: function(riders) {
+			pubsub = register.getPubsub();
+
 			this.riders = riders;
 			this.riders.bind('add', this.addOne, this);
 			this.riders.bind('reset', this.addAll, this);
 			this.riders.fetch();
+			
+			pubsub.subscribe('session.lang.change', _.bind(this.redraw, this));
+		},
+		
+		redraw: function() {
+			if(register.isDebug()) {
+				console.log('temp - render');
+			}
+			this.$("#rider-list").html('');
+			this.addAll();
 		},
 		
 		events: {
 			click: function() {
 				var view = new ModalView({model: this.model});
 				$("#modal").html(view.render().getHtml()).modal();
-				console.log('temp - click');				
+				if(register.isDebug()) {
+					console.log('temp - click');
+				}
 			}
 		},
 		
@@ -13576,12 +13692,12 @@ require([
 
 	// Application modules
 	'../src/app/register',
+	'../src/app/pubsub',
 	'../src/app/session',
 	'../src/app/rider',
 	'../src/app/temp',
 	
-	
-], function($, _, Backbone, mustache, register, sessionModule, riderModule, tempModule){
+], function($, _, Backbone, mustache, register, pubsub, sessionModule, riderModule, tempModule){
 	var preventDefaultActions = function(e, type) {
 		// makes sure we don't follow links and form submissions
 		if(e.type !== type) {
@@ -13608,14 +13724,18 @@ require([
 	
 	var AppView = Backbone.View.extend({
 		initialize: function(config) {
-			if(appConfig.sessionData.debug) {
+			if(config.sessionData.debug) {
 				console.log('main - initialize', appConfig);
 			}
 
+			register.setPubsub(new pubsub);
+
 			register.setApiSessionId(config.sessionData.sessionId);
+			register.setApiSessionKey(config.sessionData.apiSessionKey);
 			register.setApiUrl(config.apiUrl);
 			register.setDebug(config.sessionData.debug);
 			register.setLang(config.sessionData.lang);
+			register.setI18n(config.sessionData.lang, config.translations);
 			register.setRider(new riderModule.model(config.sessionData.rider));
 			
 			var session = new sessionModule.model();

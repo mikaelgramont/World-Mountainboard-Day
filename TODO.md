@@ -1,17 +1,10 @@
 # Client-side TODO
 Build a backend helper to render views that does this
 - render($template, $data) and that uses a global mustache object, injects $data and the relevant i18n, and returns the rendered html
-Lang files:
-	In Globals:
-		Add constants for the path to translation files
-		Build translations by merging english and others
-		Cache translations on the backend
-		Add a method to output files into AMD-compatible files into js/lib/i18n
-	Create a php file that will run the lang build system 
-Rake:
-	Create a task that calls the php file to build lang
 
-Look into an architecture for i18n, see https://github.com/SlexAxton/messageformat.js
+I18n:
+- add AMD wrapping to compiled lang files so that they can be loaded directly by require.js when users change lang
+- look into see https://github.com/SlexAxton/messageformat.js
 
 Connect lang dropdown changes to register, and trigger a change site wide through pubsub?
 setup a router in order to deal with local urls

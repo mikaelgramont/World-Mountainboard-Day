@@ -8,7 +8,7 @@ $config = Globals::getConfig();
 $templates = Globals::getTemplates('js/lib/templates/');
 $cdnUrl = $config->cdnProtocol . $config->cdnUrl;
 $sessionData = Globals::getApiSessionData($_COOKIE);
-$i18n = Globals::getTranslations($sessionData->lang);
+$translations = Globals::getTranslation($sessionData->lang);
 $m = new Mustache;
 $bundles = Globals::getApplicableVersionnedBundles(
 	$config->minify,
@@ -44,7 +44,7 @@ $bundles = Globals::getApplicableVersionnedBundles(
 <?php
 	$corner = 'session/corner-' . ($sessionData->rider->userId ? 'logged-in' : 'logged-out'). '.tpl';
 	$cornerData = $sessionData;
-	$cornerData->i18n = $i18n;
+	$cornerData->i18n = $translations;
 	echo $m->render($templates[$corner], $sessionData);
 ?>			
 		</div>
@@ -105,7 +105,7 @@ $bundles = Globals::getApplicableVersionnedBundles(
 			cdnUrl: <?php echo json_encode($cdnUrl) ?>,
 			images: <?php echo json_encode(Globals::getApplicableImagePaths($config->versioning)) ?>,
 			sessionData: <?php echo json_encode($sessionData) ?>,
-			i18n: <?php echo json_encode($i18n) ?>
+			translations: <?php echo json_encode($translations) ?>
 			
 		};
   	</script>

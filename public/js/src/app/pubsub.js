@@ -12,7 +12,7 @@ define([
         
     ], function(Backbone, register){
 	
-	var pubsub = Backbone.Model.extend({
+	return Backbone.Model.extend({
 		publish: function() {
 			if(register.isDebug()) {
 				console.info('pubsub - publishing', arguments);
@@ -27,6 +27,4 @@ define([
 			return this.bind.apply(this, arguments);
 		}
 	});
-	
-	return pubsub;
 });

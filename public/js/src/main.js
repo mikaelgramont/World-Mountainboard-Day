@@ -55,7 +55,7 @@ require([
 			register.setApiUrl(config.apiUrl);
 			register.setDebug(config.sessionData.debug);
 			register.setLang(config.sessionData.lang);
-			register.setI18n(config.sessionData.lang, config.i18n);
+			register.setI18n(config.sessionData.lang, config.translations);
 			register.setRider(new riderModule.model(config.sessionData.rider));
 			
 			var session = new sessionModule.model();

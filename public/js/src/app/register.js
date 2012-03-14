@@ -124,6 +124,14 @@ define([], function(){
 		setI18n: function(lang, hash) {
 			i18n = get('i18n') || {};
 			i18n[lang] = hash;
+			// TODO: attach a bunch of methods to 18n so that they're available to mustache templates
+			i18n.uc = function() {
+				console.log('returnin uc!', arguments);
+				return function(text, render) {
+					console.log('inside uc!', arguments);
+					return render(text.toUpperCase());
+				};
+			};
 			set('i18n', i18n);
 		},
 		

@@ -16,6 +16,7 @@ end
 
 desc 'Runs all javascript and css related jobs'
 task :default do
+  Rake::Task['lang'].invoke
   Rake::Task['css'].invoke
   Rake::Task['js'].invoke
   puts "==== DONE ===="
@@ -41,6 +42,11 @@ task :jshint do
   end
 end
 
+task :lang do
+  puts "---> Building compiled lang files"
+  `cd php; php -f langbuilder.php`
+end
+
 desc 'Compiles, and concatenates javascript and coffeescript'
 task :js do
   if FileList["#{JS_SRC}/*.js"].any?
@@ -51,7 +57,7 @@ task :js do
   Dir["#{JS_SRC}/*/"].each do |d|
     if FileList["#{d}*.js"].any?
       dname = d.strip.split("/")[-1]
-      puts "---> Building optimized bundle for require.js"
+      puts "---> Building optimized bundle for require.js in #{dname}"
       #`cat #{d}*.js > #{JS_BIN}/#{dname}.js`
       `r.js -o name=../src/main out=#{JS_BIN}/main.min.js baseUrl=public/js/lib`
       `r.js -o name=../src/main out=#{JS_BIN}/main.js baseUrl=public/js/lib optimize=none`

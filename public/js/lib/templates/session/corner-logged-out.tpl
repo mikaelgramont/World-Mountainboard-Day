@@ -14,6 +14,10 @@
 	
     <div class="btn-group login-btn-group">
     	<a id="login-btn" class="btn" href="/user/login/">{{ i18n.Login }}</a>
-    	<a class="btn" href="/user/register/">{{ i18n.Register }}</a>
+    	<a class="btn" href="/user/register/">
+    		{{#i18n.uc}}
+    			a{{ i18n.Register }}a
+    		{{/i18n.uc}}
+    	</a>
     </div>	
 </nav>

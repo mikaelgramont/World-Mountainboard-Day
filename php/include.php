@@ -23,6 +23,10 @@ class Globals
 	const JS_BIN = 'js/bin/';
 	const CSS_BIN = 'css/bin/';
 	
+	// These paths are relative to the php folder:
+	const LANG_RAW = '../public/js/rawi18n/';
+	const LANG_COMPILED = '../public/js/src/i18n-';
+	
 	const IMG = 'img/';
 	
 	const COOKIE_USER_REMEMBER = 'userR';
@@ -175,7 +179,13 @@ class Globals
 	 */
 	public static function getApplicableVersionnedBundles($minify, $versioning, $cdnUrl)
 	{
-		$bundles = self::getConfig()->jsBundles;
+		$config = self::getConfig();
+		$bundles = $config->jsBundles;
+		$supportedLang = explode(',', $config->supportedLanguages);
+		foreach($supportedLang as $lang) {
+			$bundles .= ',i18n-' . $lang;
+		}
+		
 		$revisions = self::getBundleRevisions($bundles);
 		
 		$return = array();
@@ -184,6 +194,10 @@ class Globals
 				$bundle .= '.min';
 			}
 			if($versioning) {
+				if(!isset($revisions[$bundle])) {
+					error_log("'$bundle' bundle not versionned");
+					continue;
+				}
 				$return[$bundle] = $cdnUrl.self::JS_BIN . $revisions[$bundle];
 			} else {	
 				$return[$bundle] = $cdnUrl.self::JS_BIN . $bundle;
@@ -486,8 +500,6 @@ class Globals
 	 */
 	protected static function _getInitialSessionId()
 	{
-		error_log('_getInitialSessionId');
-		
 		$sessionId = null;
 		$config = self::getConfig();
 		$client = new Zend_Http_Client();
@@ -545,10 +557,89 @@ class Globals
 		}	
 	}
 	
-	public static function getTranslations($lang)
+	public static function buildLang()
 	{
-		$translations = file_get_contents('js/src/i18n/'.$lang.'.js');
-		$translation = json_decode($translations);
-		return $translation;
+		$en = self::_loadRawLang('en');
+		$en = self::_sortTranslations($en);
+		self::_writeCompiledLang	('en', $en);
+		
+		$supported = explode(',', self::getConfig()->supportedLanguages);
+		foreach($supported as $lang) {
+			if($lang == 'en') {
+				// Already don
+				continue;
+			}
+			
+			$translation = self::_loadRawLang($lang);
+			foreach($en as $k => $v) {
+				if(!isset($translation->$k)) {
+					// Adding untranslated strings
+					$translation->$k = $v;
+				}
+			}
+			
+			$translation = self::_sortTranslations($translation);
+			self::_writeCompiledLang($lang, $translation);
+		}
+	}
+	
+	protected static function _sortTranslations($in)
+	{
+		$out = array();
+		foreach($in as $k => $v) {
+			$out[$k] = $v;
+ 		}
+ 		ksort($out);
+ 		return $out;
+	}
+	
+	protected static function _loadRawLang($lang)
+	{
+		return json_decode(file_get_contents(self::LANG_RAW.$lang.'.js'));
+	}
+	
+	protected static function _loadCompiledLang($lang)
+	{
+		$file = fopen(self::LANG_COMPILED.$lang.'.js', 'r');
+		$lines = array();
+		while(($line = fgets($file)) !== false) {
+			$lines[] = $line;
+		}
+		fclose($file);
+		array_shift($lines);
+		array_pop($lines);
+		
+		return json_decode(implode(PHP_EOL, $lines));
+	}
+	
+	protected static function _writeCompiledLang($lang, $hash)
+	{
+		$content = 'define([], function(){'.PHP_EOL;
+		$content .= "\t".json_encode($hash).PHP_EOL;
+		$content .= '});'.PHP_EOL;
+		
+		file_put_contents(self::LANG_COMPILED.$lang.'.js', $content);
+	}
+	
+	public static function getTranslations()
+	{
+		if($translations = self::getCache()->load('translations')) {
+			return $translations;
+		};
+		
+		$supported = explode(',', self::getConfig()->supportedLanguages);
+		$translations = array();
+		foreach($supported as $lang) {
+			$translations[$lang] = self::_loadCompiledLang($lang);
+		}
+		
+		self::getCache()->save($translations, 'translations');
+		return $translations;
+	}
+	
+	public static function getTranslation($lang)
+	{
+		$translations = self::getTranslations();
+		return $translations[$lang];	
 	}
 }
