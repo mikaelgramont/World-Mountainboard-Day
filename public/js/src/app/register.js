@@ -36,6 +36,19 @@ define([], function(){
 	var get = function(key) {
 		return data[key];
 	};
+	
+	// Takes an i18n hash as input, and adds a number of
+	// functions to allow text manipulation in mustache templates
+	var decorateWithTextFunctions = function(i18n) {
+		// uc = uppercase
+		i18n.uc = function() {
+			return function(text, render) {
+				return render(text.toUpperCase());
+			};
+		};
+		
+		return i18n;
+	};
 
 	
 	/**************************************************************************
@@ -113,25 +126,39 @@ define([], function(){
 		},
 		
 		setLang: function(lang) {
-			set('lang', lang);
+			var i18n = get('i18n');
+			var that = this; 
+			var onLangReady = function(downloadedTranslations) {
+				if(downloadedTranslations) {
+					that.setI18n(lang, downloadedTranslations);
+				}
+				set('lang', lang);
+				that.getPubsub().publish('app.lang.ready');
+			};
+			
+			if(i18n[lang]) {
+				if(this.isDebug()) {
+					console.log("existing i18n-" + lang);
+				}
+				onLangReady();
+			} else {
+				if(this.isDebug()) {
+					console.log("requiring i18n-" + lang);
+				}
+				require(['i18n-' + lang], onLangReady);
+			}
 		},
 		
-		getI18n: function(lang) {
-			lang = lang || this.getLang();
-			return get('i18n')[lang];
+		getI18n: function() {
+			var i18n = get('i18n');
+			var lang = this.getLang();
+			return i18n[lang];
 		},
 		
 		setI18n: function(lang, hash) {
-			i18n = get('i18n') || {};
-			i18n[lang] = hash;
-			// TODO: attach a bunch of methods to 18n so that they're available to mustache templates
-			i18n.uc = function() {
-				console.log('returnin uc!', arguments);
-				return function(text, render) {
-					console.log('inside uc!', arguments);
-					return render(text.toUpperCase());
-				};
-			};
+			var decoratedHash = decorateWithTextFunctions(hash);
+			var i18n = get('i18n');
+			i18n[lang] = decoratedHash;
 			set('i18n', i18n);
 		},
 		

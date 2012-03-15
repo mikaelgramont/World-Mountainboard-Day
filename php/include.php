@@ -608,14 +608,14 @@ class Globals
 		fclose($file);
 		array_shift($lines);
 		array_pop($lines);
-		
-		return json_decode(implode(PHP_EOL, $lines));
+		$lines = substr(implode(PHP_EOL, $lines), 8);
+		return json_decode($lines);
 	}
 	
 	protected static function _writeCompiledLang($lang, $hash)
 	{
 		$content = 'define([], function(){'.PHP_EOL;
-		$content .= "\t".json_encode($hash).PHP_EOL;
+		$content .= "\t return".json_encode($hash).PHP_EOL;
 		$content .= '});'.PHP_EOL;
 		
 		file_put_contents(self::LANG_COMPILED.$lang.'.js', $content);

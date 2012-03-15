@@ -3,7 +3,7 @@ Build a backend helper to render views that does this
 - render($template, $data) and that uses a global mustache object, injects $data and the relevant i18n, and returns the rendered html
 
 I18n:
-- add AMD wrapping to compiled lang files so that they can be loaded directly by require.js when users change lang
+- rewrite Rakefile js task to loop over all files of the format of main.js or i18n-en.js (not main.min.js) and compile them twice
 - look into see https://github.com/SlexAxton/messageformat.js
 
 Connect lang dropdown changes to register, and trigger a change site wide through pubsub?

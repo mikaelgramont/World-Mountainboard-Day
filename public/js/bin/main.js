@@ -12416,8 +12416,24 @@ define('../src/app/register',[], function(){
 		},
 		
 		getI18n: function(lang) {
-			lang = lang || this.getLang();
-			return get('i18n')[lang];
+			var i18n = get('i18n');
+
+			if(!lang) {
+				// Default case, just fetching the current language
+				return i18n[lang];
+			}
+			
+			// Getting a specific language: switching to a new one
+			var pubsub = this.getPubsub(); 
+			var onLangReady = function() {
+				pubsub.publish('app.lang.ready');
+			}
+			
+			if(i18n[lang]) {
+				onLangReady();
+			} else {
+				require(['i18n-' + lang], onLangReady);
+			}
 		},
 		
 		setI18n: function(lang, hash) {

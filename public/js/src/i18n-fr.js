@@ -1,3 +1,3 @@
 define([], function(){
-	{"Login":"Connexion","Logout":"Deconnexion","Register":"S'enregistrer","country":"pays","untranslated":"untranslated"}
+	 return{"Login":"Connexion","Logout":"Deconnexion","Register":"S'enregistrer","country":"pays","untranslated":"untranslated"}
 });
