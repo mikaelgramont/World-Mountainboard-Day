@@ -12335,6 +12335,19 @@ define('../src/app/register',[], function(){
 	var get = function(key) {
 		return data[key];
 	};
+	
+	// Takes an i18n hash as input, and adds a number of
+	// functions to allow text manipulation in mustache templates
+	var decorateWithTextFunctions = function(i18n) {
+		// uc = uppercase
+		i18n.uc = function() {
+			return function(text, render) {
+				return render(text.toUpperCase());
+			};
+		};
+		
+		return i18n;
+	};
 
 	
 	/**************************************************************************
@@ -12412,41 +12425,39 @@ define('../src/app/register',[], function(){
 		},
 		
 		setLang: function(lang) {
-			set('lang', lang);
-		},
-		
-		getI18n: function(lang) {
 			var i18n = get('i18n');
-
-			if(!lang) {
-				// Default case, just fetching the current language
-				return i18n[lang];
-			}
-			
-			// Getting a specific language: switching to a new one
-			var pubsub = this.getPubsub(); 
-			var onLangReady = function() {
-				pubsub.publish('app.lang.ready');
-			}
+			var that = this; 
+			var onLangReady = function(downloadedTranslations) {
+				if(downloadedTranslations) {
+					that.setI18n(lang, downloadedTranslations);
+				}
+				set('lang', lang);
+				that.getPubsub().publish('app.lang.ready');
+			};
 			
 			if(i18n[lang]) {
+				if(this.isDebug()) {
+					console.log("existing i18n-" + lang);
+				}
 				onLangReady();
 			} else {
+				if(this.isDebug()) {
+					console.log("requiring i18n-" + lang);
+				}
 				require(['i18n-' + lang], onLangReady);
 			}
 		},
 		
+		getI18n: function() {
+			var i18n = get('i18n');
+			var lang = this.getLang();
+			return i18n[lang];
+		},
+		
 		setI18n: function(lang, hash) {
-			i18n = get('i18n') || {};
-			i18n[lang] = hash;
-			// TODO: attach a bunch of methods to 18n so that they're available to mustache templates
-			i18n.uc = function() {
-				console.log('returnin uc!', arguments);
-				return function(text, render) {
-					console.log('inside uc!', arguments);
-					return render(text.toUpperCase());
-				};
-			};
+			var decoratedHash = decorateWithTextFunctions(hash);
+			var i18n = get('i18n');
+			i18n[lang] = decoratedHash;
 			set('i18n', i18n);
 		},
 		
@@ -13270,6 +13281,7 @@ define('../src/app/rider',[
 		// The RiderView listens for changes to its model, re-rendering.
 		initialize: function() {
 			this.model.bind('destroy', this.remove, this);
+			pubsub.subscribe('app.lang.ready', _.bind(this.render, this));
 		},
 		
 		template: mustache.compile(usernameTpl),
@@ -13750,8 +13762,8 @@ require([
 			register.setApiSessionKey(config.sessionData.apiSessionKey);
 			register.setApiUrl(config.apiUrl);
 			register.setDebug(config.sessionData.debug);
-			register.setLang(config.sessionData.lang);
 			register.setI18n(config.sessionData.lang, config.translations);
+			register.setLang(config.sessionData.lang);
 			register.setRider(new riderModule.model(config.sessionData.rider));
 			
 			var session = new sessionModule.model();

@@ -49,20 +49,27 @@ end
 
 desc 'Compiles, and concatenates javascript and coffeescript'
 task :js do
-  if FileList["#{JS_SRC}/*.js"].any?
-    puts "---> Copying over raw javascript files"
-    `cp #{JS_SRC}/*.js #{JS_BIN}/`
-  end
-
-  Dir["#{JS_SRC}/*/"].each do |d|
-    if FileList["#{d}*.js"].any?
-      dname = d.strip.split("/")[-1]
-      puts "---> Building optimized bundle for require.js in #{dname}"
-      #`cat #{d}*.js > #{JS_BIN}/#{dname}.js`
-      `r.js -o name=../src/main out=#{JS_BIN}/main.min.js baseUrl=public/js/lib`
-      `r.js -o name=../src/main out=#{JS_BIN}/main.js baseUrl=public/js/lib optimize=none`
+  if FileList["#{JS_SRC}/*.js"].exclude("*.min.js").any?
+  	FileList["#{JS_SRC}/*.js"].exclude("*.min.js").each do |f|
+      fname = f.strip.split("/")[-1]
+      puts "---> Copying #{fname} from src to bin folder"
+      `cp #{JS_SRC}/#{fname} #{JS_BIN}/`
     end
   end
+
+  FileList["#{JS_SRC}/*.js"].exclude("*.min.js").each do |f|
+    fullname = f.strip.split("/")[-1]
+    modulename = fullname.split(".")[0]
+    minname = modulename + ".min.js"
+    
+    puts "---> Building require.js optimized bundle for #{fullname}"
+    `r.js -o name=../src/#{modulename} out=#{JS_BIN}/#{fullname} baseUrl=public/js/lib optimize=none`
+    puts "---> Building require.js optimized and minified bundle for #{fullname}"
+    `r.js -o name=../src/#{modulename} out=#{JS_BIN}/#{minname} baseUrl=public/js/lib`
+  end
+
+  #`r.js -o name=../src/main out=#{JS_BIN}/main.min.js baseUrl=public/js/lib`
+  #`r.js -o name=../src/main out=#{JS_BIN}/main.js baseUrl=public/js/lib optimize=none`
 end
 
 desc 'Compiles, concatenates, and minifies css, less, and sass'

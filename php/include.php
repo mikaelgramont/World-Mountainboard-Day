@@ -8,6 +8,7 @@ require_once 'Zend/Cache.php';
 require_once 'Zend/Http/Client.php';
 require_once 'MustacheLoader.php';
 require_once 'Mustache.php';
+require_once 'MyMustache.php';
 
 if(APPLICATION_ENV != 'production') {
 	error_reporting(E_ALL|E_STRICT);

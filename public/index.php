@@ -9,7 +9,7 @@ $templates = Globals::getTemplates('js/lib/templates/');
 $cdnUrl = $config->cdnProtocol . $config->cdnUrl;
 $sessionData = Globals::getApiSessionData($_COOKIE);
 $translations = Globals::getTranslation($sessionData->lang);
-$m = new Mustache;
+$m = new MyMustache;
 $bundles = Globals::getApplicableVersionnedBundles(
 	$config->minify,
 	$config->versioning,
