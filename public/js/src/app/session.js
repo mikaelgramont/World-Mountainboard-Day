@@ -194,8 +194,9 @@ define([
 	var SessionCornerView = Backbone.View.extend({
 		initialize: function(session) {
 			this.model = session;
-			
 			this.model.bind('change', this.render, this);
+
+			register.getPubsub().subscribe('app.lang.ready', _.bind(this.render, this));
 		},
 		
 		el: $('#session-corner'),
