@@ -63,13 +63,10 @@ task :js do
     minname = modulename + ".min.js"
     
     puts "---> Building require.js optimized bundle for #{fullname}"
-    `r.js -o name=../src/#{modulename} out=#{JS_BIN}/#{fullname} baseUrl=public/js/lib optimize=none`
+    `r.js -o name=../bin/#{modulename} out=#{JS_BIN}/#{fullname} baseUrl=public/js/lib optimize=none`
     puts "---> Building require.js optimized and minified bundle for #{fullname}"
-    `r.js -o name=../src/#{modulename} out=#{JS_BIN}/#{minname} baseUrl=public/js/lib`
+    `r.js -o name=../bin/#{modulename} out=#{JS_BIN}/#{minname} baseUrl=public/js/lib`
   end
-
-  #`r.js -o name=../src/main out=#{JS_BIN}/main.min.js baseUrl=public/js/lib`
-  #`r.js -o name=../src/main out=#{JS_BIN}/main.js baseUrl=public/js/lib optimize=none`
 end
 
 desc 'Compiles, concatenates, and minifies css, less, and sass'

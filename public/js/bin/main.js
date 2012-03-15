@@ -13791,4 +13791,4 @@ require([
 	
 	var appView = new AppView(appConfig);
 });
-define("../src/main", function(){});
+define("../bin/main", function(){});

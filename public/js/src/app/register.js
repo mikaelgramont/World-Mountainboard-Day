@@ -145,7 +145,7 @@ define([], function(){
 				if(this.isDebug()) {
 					console.log("requiring i18n-" + lang);
 				}
-				require(['i18n-' + lang], onLangReady);
+				require(['../bin/i18n-' + lang], onLangReady);
 			}
 		},
 		
