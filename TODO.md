@@ -1,15 +1,13 @@
-can access i18n.Register from inside #i18n section
-cannot access i18n.Login, or lang directly (same issue: no access to toplevel object)
-
-
 # Client-side TODO
-Build a backend helper to render views that does this
-- render($template, $data) and that uses a global mustache object, injects $data and the relevant i18n, and returns the rendered html
+Create a lowlevel decoratedmustache object
+The toplevel one will instantiate a lowlevel one for i18n
+
 
 I18n:
 - look into see https://github.com/SlexAxton/messageformat.js
 
 Connect lang dropdown changes to register, and trigger a change site wide through pubsub?
+when lang change => rerender corner too (no circular dependency should occur)
 setup a router in order to deal with local urls
 
 

@@ -1,7 +1,9 @@
 <nav class="session-corner" id="session-corner">
     <div class="btn-group lang-selector">
     	<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">
-    		{{ lang }}
+    		{{#uc}}
+    			{{ lang }}
+    		{{/uc}}
     		<span class="caret"></span>
     	</a>
     	<ul class="dropdown-menu">
@@ -16,7 +18,7 @@
     	<a id="login-btn" class="btn" href="/user/login/">{{ i18n.Login }}</a>
     	<a class="btn" href="/user/register/">
     		{{#i18n.uc}}
-    			{{ i18n.Register }}
+    			{{ Register }}
     		{{/i18n.uc}}
     	</a>
     </div>	

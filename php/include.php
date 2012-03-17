@@ -8,7 +8,7 @@ require_once 'Zend/Cache.php';
 require_once 'Zend/Http/Client.php';
 require_once 'MustacheLoader.php';
 require_once 'Mustache.php';
-require_once 'MyMustache.php';
+require_once 'DecoratedMustache.php';
 
 if(APPLICATION_ENV != 'production') {
 	error_reporting(E_ALL|E_STRICT);
@@ -40,6 +40,8 @@ class Globals
 	 */
 	protected static $_config;
 
+	protected static $_mustache;
+	
 	/**
 	 * Cache object
 	 * @var Zend_Cache_Core
@@ -73,6 +75,15 @@ class Globals
 	{
 		return new Zend_Config_Ini('../config.ini', APPLICATION_ENV);
 	}
+	
+	public static function getMustache($translations=null)
+	{
+		if(!self::$_mustache) {
+			self::$_mustache = new DecoratedMustache($translations);
+		}
+		return self::$_mustache;		
+	}
+	
 
 	public static function getCache()
 	{

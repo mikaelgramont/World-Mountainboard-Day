@@ -680,5 +680,4 @@ nav.main{float:left;}
 header nav li,footer nav li{float:left;height:50px;margin:5px;font-size:16px;line-height:50px;}
 aside.main{display:none;}
 @media (min-width:480px){.container{width:300px;} .main section{float:left;clear:both;} aside.main{display:block;}}@media (min-width:1008px){.container{width:970px;} .main section{float:left;margin-right:20px;width:750px;} aside.main{float:right;width:200px;}}@media (max-width:320px){}.session-login-form,.session-logout-message{width:250px;}
-.session-corner a.lang{text-transform:uppercase;}
 li.rider{float:left;width:200px;margin:5px;}

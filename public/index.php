@@ -9,7 +9,7 @@ $templates = Globals::getTemplates('js/lib/templates/');
 $cdnUrl = $config->cdnProtocol . $config->cdnUrl;
 $sessionData = Globals::getApiSessionData($_COOKIE);
 $translations = Globals::getTranslation($sessionData->lang);
-$m = new MyMustache;
+$m = Globals::getMustache($translations);
 $bundles = Globals::getApplicableVersionnedBundles(
 	$config->minify,
 	$config->versioning,
@@ -42,10 +42,9 @@ $bundles = Globals::getApplicableVersionnedBundles(
 				</ul>
 			</nav>
 <?php
-	$corner = 'session/corner-' . ($sessionData->rider->userId ? 'logged-in' : 'logged-out'). '.tpl';
+	$cornerTpl = 'session/corner-' . ($sessionData->rider->userId ? 'logged-in' : 'logged-out'). '.tpl';
 	$cornerData = $sessionData;
-	$cornerData->i18n = $translations;
-	echo $m->render($templates[$corner], $cornerData);
+	echo $m->render($templates[$cornerTpl], $cornerData);
 ?>			
 		</div>
 	</header>
