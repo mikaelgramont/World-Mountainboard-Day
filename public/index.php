@@ -45,7 +45,7 @@ $bundles = Globals::getApplicableVersionnedBundles(
 	$corner = 'session/corner-' . ($sessionData->rider->userId ? 'logged-in' : 'logged-out'). '.tpl';
 	$cornerData = $sessionData;
 	$cornerData->i18n = $translations;
-	echo $m->render($templates[$corner], $sessionData);
+	echo $m->render($templates[$corner], $cornerData);
 ?>			
 		</div>
 	</header>

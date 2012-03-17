@@ -1,3 +1,7 @@
+can access i18n.Register from inside #i18n section
+cannot access i18n.Login, or lang directly (same issue: no access to toplevel object)
+
+
 # Client-side TODO
 Build a backend helper to render views that does this
 - render($template, $data) and that uses a global mustache object, injects $data and the relevant i18n, and returns the rendered html
