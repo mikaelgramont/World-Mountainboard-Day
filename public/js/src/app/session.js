@@ -196,11 +196,16 @@ define([
 			this.model = session;
 			this.model.bind('change', this.render, this);
 
-			register.getPubsub().subscribe('app.lang.ready', _.bind(this.render, this));
+			register.getPubsub().subscribe('app.lang.ready', _.bind(this.onLangChange, this));
 		},
 		
 		el: $('#session-corner'),
 
+		onLangChange: function(lang) {
+			this.model.set({lang: lang});
+			this.render();
+		},
+		
 		render: function() {
 			var templateFile = this.model.isLoggedIn() ? cornerLoggedInTpl : cornerLoggedOutTpl;
 			this.template = mustache.compile(templateFile);
@@ -210,12 +215,12 @@ define([
 		},
 		
 		getDataForRender: function() {
-			return {
+			return register.decorateForMustache({
 				lang: this.model.get('lang'),
 				error: this.model.get('error'),
 				rider: this.model.get('rider').attributes,
 				i18n: register.getI18n()
-			};
+			});
 		},
 		
 		events: {

@@ -37,20 +37,6 @@ define([], function(){
 		return data[key];
 	};
 	
-	// Takes an i18n hash as input, and adds a number of
-	// functions to allow text manipulation in mustache templates
-	var decorateWithTextFunctions = function(i18n) {
-		// uc = uppercase
-		i18n.uc = function() {
-			return function(text, render) {
-				return render(text.toUpperCase());
-			};
-		};
-		
-		return i18n;
-	};
-
-	
 	/**************************************************************************
 	 * MODULE INTERFACE 
 	 *************************************************************************/
@@ -133,7 +119,7 @@ define([], function(){
 					that.setI18n(lang, downloadedTranslations);
 				}
 				set('lang', lang);
-				that.getPubsub().publish('app.lang.ready');
+				that.getPubsub().publish('app.lang.ready', lang);
 			};
 			
 			if(i18n[lang]) {
@@ -156,10 +142,23 @@ define([], function(){
 		},
 		
 		setI18n: function(lang, hash) {
-			var decoratedHash = decorateWithTextFunctions(hash);
+			var decoratedHash = this.decorateForMustache(hash);
 			var i18n = get('i18n');
 			i18n[lang] = decoratedHash;
 			set('i18n', i18n);
+		},
+		
+		// Takes a hash as input, and adds a number of
+		// functions to allow text manipulation in mustache templates
+		decorateForMustache: function(obj) {
+			// uc = uppercase
+			obj.uc = function() {
+				return function(text, render) {
+					return render(text.toUpperCase());
+				};
+			};
+			
+			return obj;
 		},
 		
 		getRider: function() {

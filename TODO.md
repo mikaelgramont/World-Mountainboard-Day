@@ -1,7 +1,11 @@
 # Client-side TODO
-Create a lowlevel decoratedmustache object
-The toplevel one will instantiate a lowlevel one for i18n
-
+js understands
+   			{{ lang }}
+    		
+but not
+    		{{#uc}}
+    			{{ lang }}
+    		{{/uc}}
 
 I18n:
 - look into see https://github.com/SlexAxton/messageformat.js
