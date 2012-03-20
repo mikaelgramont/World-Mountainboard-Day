@@ -12532,6 +12532,375 @@ define('../src/app/pubsub',[
 		}
 	});
 });
+/*!
+ * jQuery Cookie Plugin
+ * https://github.com/carhartl/jquery-cookie
+ *
+ * Copyright 2011, Klaus Hartl
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://www.opensource.org/licenses/mit-license.php
+ * http://www.opensource.org/licenses/GPL-2.0
+ */
+(function($) {
+    $.cookie = function(key, value, options) {
+
+        // key and at least value given, set cookie...
+        if (arguments.length > 1 && (!/Object/.test(Object.prototype.toString.call(value)) || value === null || value === undefined)) {
+            options = $.extend({}, options);
+
+            if (value === null || value === undefined) {
+                options.expires = -1;
+            }
+
+            if (typeof options.expires === 'number') {
+                var days = options.expires, t = options.expires = new Date();
+                t.setDate(t.getDate() + days);
+            }
+
+            value = String(value);
+
+            return (document.cookie = [
+                encodeURIComponent(key), '=', options.raw ? value : encodeURIComponent(value),
+                options.expires ? '; expires=' + options.expires.toUTCString() : '', // use expires attribute, max-age is not supported by IE
+                options.path    ? '; path=' + options.path : '',
+                options.domain  ? '; domain=' + options.domain : '',
+                options.secure  ? '; secure' : ''
+            ].join(''));
+        }
+
+        // key and possibly options given, get cookie...
+        options = value || {};
+        var decode = options.raw ? function(s) { return s; } : decodeURIComponent;
+
+        var pairs = document.cookie.split('; ');
+        for (var i = 0, pair; pair = pairs[i] && pairs[i].split('='); i++) {
+            if (decode(pair[0]) === key) return decode(pair[1] || ''); // IE saves cookies with empty string as "c; ", e.g. without "=" as opposed to EOMB, thus pair[1] may be undefined
+        }
+        return null;
+    };
+})(jQuery);
+
+define("jquery.cookie", function(){});
+
+/* ============================================================
+ * bootstrap-dropdown.js v2.0.0
+ * http://twitter.github.com/bootstrap/javascript.html#dropdowns
+ * ============================================================
+ * Copyright 2012 Twitter, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ============================================================ */
+
+
+!function( $ ){
+
+  "use strict"
+
+ /* DROPDOWN CLASS DEFINITION
+  * ========================= */
+
+  var toggle = '[data-toggle="dropdown"]'
+    , Dropdown = function ( element ) {
+        var $el = $(element).on('click.dropdown.data-api', this.toggle)
+        $('html').on('click.dropdown.data-api', function () {
+          $el.parent().removeClass('open')
+        })
+      }
+
+  Dropdown.prototype = {
+
+    constructor: Dropdown
+
+  , toggle: function ( e ) {
+      var $this = $(this)
+        , selector = $this.attr('data-target')
+        , $parent
+        , isActive
+
+      if (!selector) {
+        selector = $this.attr('href')
+        selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') //strip for ie7
+      }
+
+      $parent = $(selector)
+      $parent.length || ($parent = $this.parent())
+
+      isActive = $parent.hasClass('open')
+
+      clearMenus()
+      !isActive && $parent.toggleClass('open')
+
+      return false
+    }
+
+  }
+
+  function clearMenus() {
+    $(toggle).parent().removeClass('open')
+  }
+
+
+  /* DROPDOWN PLUGIN DEFINITION
+   * ========================== */
+
+  $.fn.dropdown = function ( option ) {
+    return this.each(function () {
+      var $this = $(this)
+        , data = $this.data('dropdown')
+      if (!data) $this.data('dropdown', (data = new Dropdown(this)))
+      if (typeof option == 'string') data[option].call($this)
+    })
+  }
+
+  $.fn.dropdown.Constructor = Dropdown
+
+
+  /* APPLY TO STANDARD DROPDOWN ELEMENTS
+   * =================================== */
+
+  $(function () {
+    $('html').on('click.dropdown.data-api', clearMenus)
+    $('body').on('click.dropdown.data-api', toggle, Dropdown.prototype.toggle)
+  })
+
+}( window.jQuery )
+;
+define("bootstrap/bootstrap-dropdown", function(){});
+
+/* =========================================================
+ * bootstrap-modal.js v2.0.0
+ * http://twitter.github.com/bootstrap/javascript.html#modals
+ * =========================================================
+ * Copyright 2012 Twitter, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================= */
+
+
+!function( $ ){
+
+  "use strict"
+
+ /* MODAL CLASS DEFINITION
+  * ====================== */
+
+  var Modal = function ( content, options ) {
+    this.options = $.extend({}, $.fn.modal.defaults, options)
+    this.$element = $(content)
+      .delegate('[data-dismiss="modal"]', 'click.dismiss.modal', $.proxy(this.hide, this))
+      
+    this.$element.on('shown', $.proxy(this.refresh, this));
+  }
+
+  Modal.prototype = {
+
+      constructor: Modal
+
+    , toggle: function () {
+        return this[!this.isShown ? 'show' : 'hide']()
+      }
+
+    , show: function () {
+        var that = this
+
+        if (this.isShown) return
+
+        $('body').addClass('modal-open')
+
+        this.isShown = true
+        this.$element.trigger('show')
+
+        escape.call(this)
+        backdrop.call(this, function () {
+          var transition = $.support.transition && that.$element.hasClass('fade')
+
+          !that.$element.parent().length && that.$element.appendTo(document.body) //don't move modals dom position
+
+          that.$element
+            .show()
+
+          if (transition) {
+            that.$element[0].offsetWidth // force reflow
+          }
+
+          that.$element.addClass('in')
+
+          transition ?
+            that.$element.one($.support.transition.end, function () { that.$element.trigger('shown') }) :
+            that.$element.trigger('shown')
+
+        })
+      }
+
+    , hide: function ( e ) {
+        e && e.preventDefault()
+
+        if (!this.isShown) return
+
+        var that = this
+        this.isShown = false
+
+        $('body').removeClass('modal-open')
+
+        escape.call(this)
+
+        this.$element
+          .trigger('hide')
+          .removeClass('in')
+
+        $.support.transition && this.$element.hasClass('fade') ?
+          hideWithTransition.call(this) :
+          hideModal.call(this)
+      }
+
+    , refresh: function (e) {
+    	// mikael - https://github.com/twitter/bootstrap/issues/452
+    	e && e.preventDefault()
+    	var modal = this.$element
+	    	modal.css('margin-top',(modal.outerHeight()/2)*-1)
+	    	     .css('margin-left',(modal.outerWidth()/2)*-1)
+    	return this
+      }
+    
+  }
+  
+
+
+ /* MODAL PRIVATE METHODS
+  * ===================== */
+
+  function hideWithTransition() {
+    var that = this
+      , timeout = setTimeout(function () {
+          that.$element.off($.support.transition.end)
+          hideModal.call(that)
+        }, 500)
+
+    this.$element.one($.support.transition.end, function () {
+      clearTimeout(timeout)
+      hideModal.call(that)
+    })
+  }
+
+  function hideModal( that ) {
+    this.$element
+      .hide()
+      .trigger('hidden')
+
+    backdrop.call(this)
+  }
+
+  function backdrop( callback ) {
+    var that = this
+      , animate = this.$element.hasClass('fade') ? 'fade' : ''
+
+    if (this.isShown && this.options.backdrop) {
+      var doAnimate = $.support.transition && animate
+
+      this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
+        .appendTo(document.body)
+
+      if (this.options.backdrop != 'static') {
+        this.$backdrop.click($.proxy(this.hide, this))
+      }
+
+      if (doAnimate) this.$backdrop[0].offsetWidth // force reflow
+
+      this.$backdrop.addClass('in')
+
+      doAnimate ?
+        this.$backdrop.one($.support.transition.end, callback) :
+        callback()
+
+    } else if (!this.isShown && this.$backdrop) {
+      this.$backdrop.removeClass('in')
+
+      $.support.transition && this.$element.hasClass('fade')?
+        this.$backdrop.one($.support.transition.end, $.proxy(removeBackdrop, this)) :
+        removeBackdrop.call(this)
+
+    } else if (callback) {
+      callback()
+    }
+  }
+
+  function removeBackdrop() {
+    this.$backdrop.remove()
+    this.$backdrop = null
+  }
+
+  function escape() {
+    var that = this
+    if (this.isShown && this.options.keyboard) {
+      $(document).on('keyup.dismiss.modal', function ( e ) {
+        e.which == 27 && that.hide()
+      })
+    } else if (!this.isShown) {
+      $(document).off('keyup.dismiss.modal')
+    }
+  }
+
+
+ /* MODAL PLUGIN DEFINITION
+  * ======================= */
+
+  $.fn.modal = function ( option ) {
+    return this.each(function () {
+      var $this = $(this)
+        , data = $this.data('modal')
+        , options = typeof option == 'object' && option
+      if (!data) $this.data('modal', (data = new Modal(this, options)))
+      if (typeof option == 'string') data[option]()
+      else data.show()
+    })
+  }
+
+  $.fn.modal.defaults = {
+      backdrop: true
+    , keyboard: true
+  }
+
+  $.fn.modal.Constructor = Modal
+
+
+ /* MODAL DATA-API
+  * ============== */
+
+  $(function () {
+    $('body').on('click.modal.data-api', '[data-toggle="modal"]', function ( e ) {
+      var $this = $(this), href
+        , $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7
+        , option = $target.data('modal') ? 'toggle' : $.extend({}, $target.data(), $this.data())
+
+      e.preventDefault()
+      $target.modal(option)
+    })
+  })
+
+}( window.jQuery )
+;
+define("bootstrap/bootstrap-modal", function(){});
+
 /**
  * @license RequireJS text 1.0.7 Copyright (c) 2010-2011, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
@@ -12821,55 +13190,9 @@ define('../src/app/pubsub',[
     });
 }());
 
-/*!
- * jQuery Cookie Plugin
- * https://github.com/carhartl/jquery-cookie
- *
- * Copyright 2011, Klaus Hartl
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.opensource.org/licenses/GPL-2.0
- */
-(function($) {
-    $.cookie = function(key, value, options) {
+define('text!templates/layout/nav-primary.tpl',[],function () { return '<nav class="main" id="nav-primary">\n\t<ul>\n\t\t<li><a href="/locations/">{{#ucfirst}}{{ i18n.locations }}{{/ucfirst}}</a></li>\n\t\t<li><a href="/riders/">{{#ucfirst}}{{ i18n.riders }}{{/ucfirst}}</a></li>\n\t\t<li><a href="/sessions/">{{#ucfirst}}{{ i18n.sessions }}{{/ucfirst}}</a></li>\n\t</ul>\n</nav>\n';});
 
-        // key and at least value given, set cookie...
-        if (arguments.length > 1 && (!/Object/.test(Object.prototype.toString.call(value)) || value === null || value === undefined)) {
-            options = $.extend({}, options);
-
-            if (value === null || value === undefined) {
-                options.expires = -1;
-            }
-
-            if (typeof options.expires === 'number') {
-                var days = options.expires, t = options.expires = new Date();
-                t.setDate(t.getDate() + days);
-            }
-
-            value = String(value);
-
-            return (document.cookie = [
-                encodeURIComponent(key), '=', options.raw ? value : encodeURIComponent(value),
-                options.expires ? '; expires=' + options.expires.toUTCString() : '', // use expires attribute, max-age is not supported by IE
-                options.path    ? '; path=' + options.path : '',
-                options.domain  ? '; domain=' + options.domain : '',
-                options.secure  ? '; secure' : ''
-            ].join(''));
-        }
-
-        // key and possibly options given, get cookie...
-        options = value || {};
-        var decode = options.raw ? function(s) { return s; } : decodeURIComponent;
-
-        var pairs = document.cookie.split('; ');
-        for (var i = 0, pair; pair = pairs[i] && pairs[i].split('='); i++) {
-            if (decode(pair[0]) === key) return decode(pair[1] || ''); // IE saves cookies with empty string as "c; ", e.g. without "=" as opposed to EOMB, thus pair[1] may be undefined
-        }
-        return null;
-    };
-})(jQuery);
-
-define("jquery.cookie", function(){});
+define('text!templates/layout/nav-secondary.tpl',[],function () { return '<nav id="nav-secondary">\n\t<ul>\n\t\t<li><a href="/about/">{{#ucfirst}}{{ i18n.about }}{{/ucfirst}}</a></li>\n\t\t<li><a href="/ridedb/">RideDB</a></li>\n\t\t<li><a href="/contact/">{{#ucfirst}}{{ i18n.contact }}{{/ucfirst}}</a></li>\n\t</ul>\n</nav>\n';});
 
 define('text!templates/session/corner-logged-in.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n\t<div class="username">\n\t\t{{ rider.username }}\n\t</div>\n\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t<ul class="dropdown-menu" id="lang-picker">\n    \t\t<!-- dropdown menu links -->\n    \t\t{{#languages}}\n    \t\t<li><a href="#" data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>\n    \t\t{{/languages}}\n\t    </ul>\n    </div>\n\t\n    <div class="btn-group logout-btn-group">\n    \t<a id="logout-btn" class="btn" href="/user/logout/">{{#ucfirst}}{{ i18n.logout }}{{/ucfirst}}</a>\n    </div>\t\n</nav>';});
 
@@ -12881,328 +13204,9 @@ define('text!templates/session/logout-message.tpl',[],function () { return '<div
 
 define('text!templates/session/register-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/register/" method="post" id="register-form">\n\t<div class="modal-body">\n\t\t<span class="control-group error">\n\t\t\t<span class="help-inline">{{ error }}</span>\n\t\t</span>\n\t\t<input type="text" id="userN" name="userN" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>\n\t\t<input type="email" id="email" name="email" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.email }}{{/ucfirst}}" value=""/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\t\t<input type="password" id="userPC" name="userPC" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.passwordConf }}{{/ucfirst}}"/>\n\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="register-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="register-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
 
-/* ============================================================
- * bootstrap-dropdown.js v2.0.0
- * http://twitter.github.com/bootstrap/javascript.html#dropdowns
- * ============================================================
- * Copyright 2012 Twitter, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * ============================================================ */
-
-
-!function( $ ){
-
-  "use strict"
-
- /* DROPDOWN CLASS DEFINITION
-  * ========================= */
-
-  var toggle = '[data-toggle="dropdown"]'
-    , Dropdown = function ( element ) {
-        var $el = $(element).on('click.dropdown.data-api', this.toggle)
-        $('html').on('click.dropdown.data-api', function () {
-          $el.parent().removeClass('open')
-        })
-      }
-
-  Dropdown.prototype = {
-
-    constructor: Dropdown
-
-  , toggle: function ( e ) {
-      var $this = $(this)
-        , selector = $this.attr('data-target')
-        , $parent
-        , isActive
-
-      if (!selector) {
-        selector = $this.attr('href')
-        selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') //strip for ie7
-      }
-
-      $parent = $(selector)
-      $parent.length || ($parent = $this.parent())
-
-      isActive = $parent.hasClass('open')
-
-      clearMenus()
-      !isActive && $parent.toggleClass('open')
-
-      return false
-    }
-
-  }
-
-  function clearMenus() {
-    $(toggle).parent().removeClass('open')
-  }
-
-
-  /* DROPDOWN PLUGIN DEFINITION
-   * ========================== */
-
-  $.fn.dropdown = function ( option ) {
-    return this.each(function () {
-      var $this = $(this)
-        , data = $this.data('dropdown')
-      if (!data) $this.data('dropdown', (data = new Dropdown(this)))
-      if (typeof option == 'string') data[option].call($this)
-    })
-  }
-
-  $.fn.dropdown.Constructor = Dropdown
-
-
-  /* APPLY TO STANDARD DROPDOWN ELEMENTS
-   * =================================== */
-
-  $(function () {
-    $('html').on('click.dropdown.data-api', clearMenus)
-    $('body').on('click.dropdown.data-api', toggle, Dropdown.prototype.toggle)
-  })
-
-}( window.jQuery )
-;
-define("bootstrap/bootstrap-dropdown", function(){});
-
 define('text!templates/rider/username.tpl',[],function () { return '<h2>\n\t<a href="/riders/{{ userId }}/" class="rider">\n\t\t{{ username }}\n\t</a>\n</h2>\n<p>{{ i18n.country }}: {{ country.title }}</p>';});
 
 define('text!templates/rider/modal.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>Name: {{ username }}</h3>\n</div>\n<div class="modal-body">\n{{#country}}\n\t<p class="country">Country: <a href="/countries/{{ id }}">{{ title }}</a></p>\n{{/country}}\n</div>\n<div class="modal-footer">\n\t<a href="#" class="btn">Close</a>\n</div>';});
-
-/* =========================================================
- * bootstrap-modal.js v2.0.0
- * http://twitter.github.com/bootstrap/javascript.html#modals
- * =========================================================
- * Copyright 2012 Twitter, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * ========================================================= */
-
-
-!function( $ ){
-
-  "use strict"
-
- /* MODAL CLASS DEFINITION
-  * ====================== */
-
-  var Modal = function ( content, options ) {
-    this.options = $.extend({}, $.fn.modal.defaults, options)
-    this.$element = $(content)
-      .delegate('[data-dismiss="modal"]', 'click.dismiss.modal', $.proxy(this.hide, this))
-      
-    this.$element.on('shown', $.proxy(this.refresh, this));
-  }
-
-  Modal.prototype = {
-
-      constructor: Modal
-
-    , toggle: function () {
-        return this[!this.isShown ? 'show' : 'hide']()
-      }
-
-    , show: function () {
-        var that = this
-
-        if (this.isShown) return
-
-        $('body').addClass('modal-open')
-
-        this.isShown = true
-        this.$element.trigger('show')
-
-        escape.call(this)
-        backdrop.call(this, function () {
-          var transition = $.support.transition && that.$element.hasClass('fade')
-
-          !that.$element.parent().length && that.$element.appendTo(document.body) //don't move modals dom position
-
-          that.$element
-            .show()
-
-          if (transition) {
-            that.$element[0].offsetWidth // force reflow
-          }
-
-          that.$element.addClass('in')
-
-          transition ?
-            that.$element.one($.support.transition.end, function () { that.$element.trigger('shown') }) :
-            that.$element.trigger('shown')
-
-        })
-      }
-
-    , hide: function ( e ) {
-        e && e.preventDefault()
-
-        if (!this.isShown) return
-
-        var that = this
-        this.isShown = false
-
-        $('body').removeClass('modal-open')
-
-        escape.call(this)
-
-        this.$element
-          .trigger('hide')
-          .removeClass('in')
-
-        $.support.transition && this.$element.hasClass('fade') ?
-          hideWithTransition.call(this) :
-          hideModal.call(this)
-      }
-
-    , refresh: function (e) {
-    	// mikael - https://github.com/twitter/bootstrap/issues/452
-    	e && e.preventDefault()
-    	var modal = this.$element
-	    	modal.css('margin-top',(modal.outerHeight()/2)*-1)
-	    	     .css('margin-left',(modal.outerWidth()/2)*-1)
-    	return this
-      }
-    
-  }
-  
-
-
- /* MODAL PRIVATE METHODS
-  * ===================== */
-
-  function hideWithTransition() {
-    var that = this
-      , timeout = setTimeout(function () {
-          that.$element.off($.support.transition.end)
-          hideModal.call(that)
-        }, 500)
-
-    this.$element.one($.support.transition.end, function () {
-      clearTimeout(timeout)
-      hideModal.call(that)
-    })
-  }
-
-  function hideModal( that ) {
-    this.$element
-      .hide()
-      .trigger('hidden')
-
-    backdrop.call(this)
-  }
-
-  function backdrop( callback ) {
-    var that = this
-      , animate = this.$element.hasClass('fade') ? 'fade' : ''
-
-    if (this.isShown && this.options.backdrop) {
-      var doAnimate = $.support.transition && animate
-
-      this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
-        .appendTo(document.body)
-
-      if (this.options.backdrop != 'static') {
-        this.$backdrop.click($.proxy(this.hide, this))
-      }
-
-      if (doAnimate) this.$backdrop[0].offsetWidth // force reflow
-
-      this.$backdrop.addClass('in')
-
-      doAnimate ?
-        this.$backdrop.one($.support.transition.end, callback) :
-        callback()
-
-    } else if (!this.isShown && this.$backdrop) {
-      this.$backdrop.removeClass('in')
-
-      $.support.transition && this.$element.hasClass('fade')?
-        this.$backdrop.one($.support.transition.end, $.proxy(removeBackdrop, this)) :
-        removeBackdrop.call(this)
-
-    } else if (callback) {
-      callback()
-    }
-  }
-
-  function removeBackdrop() {
-    this.$backdrop.remove()
-    this.$backdrop = null
-  }
-
-  function escape() {
-    var that = this
-    if (this.isShown && this.options.keyboard) {
-      $(document).on('keyup.dismiss.modal', function ( e ) {
-        e.which == 27 && that.hide()
-      })
-    } else if (!this.isShown) {
-      $(document).off('keyup.dismiss.modal')
-    }
-  }
-
-
- /* MODAL PLUGIN DEFINITION
-  * ======================= */
-
-  $.fn.modal = function ( option ) {
-    return this.each(function () {
-      var $this = $(this)
-        , data = $this.data('modal')
-        , options = typeof option == 'object' && option
-      if (!data) $this.data('modal', (data = new Modal(this, options)))
-      if (typeof option == 'string') data[option]()
-      else data.show()
-    })
-  }
-
-  $.fn.modal.defaults = {
-      backdrop: true
-    , keyboard: true
-  }
-
-  $.fn.modal.Constructor = Modal
-
-
- /* MODAL DATA-API
-  * ============== */
-
-  $(function () {
-    $('body').on('click.modal.data-api', '[data-toggle="modal"]', function ( e ) {
-      var $this = $(this), href
-        , $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7
-        , option = $target.data('modal') ? 'toggle' : $.extend({}, $target.data(), $this.data())
-
-      e.preventDefault()
-      $target.modal(option)
-    })
-  })
-
-}( window.jQuery )
-;
-define("bootstrap/bootstrap-modal", function(){});
 
 /******************************************************************************
  * js/src/app/rider.js
@@ -13793,7 +13797,12 @@ require([
 	'../src/app/rider',
 	'../src/app/temp',
 	
-], function($, _, Backbone, mustache, register, pubsub, sessionModule, riderModule, tempModule){
+	// Templates
+	'text!templates/layout/nav-primary.tpl',
+	'text!templates/layout/nav-secondary.tpl',
+	
+	
+], function($, _, Backbone, mustache, register, pubsub, sessionModule, riderModule, tempModule, navPrimaryTpl, navSecondaryTpl){
 	var preventDefaultActions = function(e, type) {
 		// makes sure we don't follow links and form submissions
 		if(e.type !== type) {
@@ -13801,27 +13810,102 @@ require([
 		}
 
 		var t = e.target;
-		var detailedDebug = 0;
-		
-		if(register.isDebug() && detailedDebug) {
-			console.log('main - ' + type +' event on', t);
-		}		
+		var detailedDebug = 1;
 		
 		//TODO: allow external links to be opened
 		if(type == 'click' && t.tagName == 'A'||
 		   type == 'submit' && t.tagName == 'FORM') {
 			if(register.isDebug() && detailedDebug) {
-				console.log('main - stopping ' + type +' event');
+				console.log('main - stopping ' + type +' event on', t);
 			}
 			e.preventDefault();
 			e.stopPropagation();
+			return;
 		}
+
+		if(register.isDebug() && detailedDebug) {
+			console.log('main - ' + type +' event on', t);
+		}		
 	};
 	
+	// This view manages the content of the document
+	var MainView = Backbone.View.extend({
+		section: null,
+		aside: null,
+		
+		el: $('#main'),
+		
+		initialize: function(){
+			if(register.isDebug()) {
+				console.log('main - mainView - initialize', appConfig);
+			}
+		},
+	
+		render: function(){
+		}
+	});
+	
+	var NavPrimaryView = Backbone.View.extend({
+		el: $('#nav-primary'),
+		
+		template: mustache.compile(navPrimaryTpl),
+		
+		initialize: function (){
+			if(register.isDebug()) {
+				console.log('main - NavPrimaryView - initialize');
+			}
+			register.getPubsub().subscribe('register.lang.ready', _.bind(this.render, this));
+		},
+		
+		render: function (){
+			$(this.el).html(this.template(this.getDataForRender()));
+			return this.el;
+		},
+		
+		getDataForRender: function() {
+			return register.decorateForMustache({
+				i18n: register.getI18n()
+			});
+		}
+		
+		// No close method because this view is always there
+	});
+
+	var NavSecondaryView = Backbone.View.extend({
+		el: $('#nav-secondary'),
+		
+		template: mustache.compile(navSecondaryTpl),
+		
+		initialize: function (){
+			if(register.isDebug()) {
+				console.log('main - NavSecondaryView - initialize');
+			}
+			register.getPubsub().subscribe('register.lang.ready', _.bind(this.render, this));
+		},
+		
+		render: function (){
+			$(this.el).html(this.template(this.getDataForRender()));
+			return this.el;
+		},
+		
+		getDataForRender: function() {
+			return register.decorateForMustache({
+				i18n: register.getI18n()
+			});
+		}
+		
+		// No close method because this view is always there
+	});
+	
+	
+	// This view is the main entry point of the application
 	var AppView = Backbone.View.extend({
+		navPrimary: null,
+		navSecondary: null,
+		
 		initialize: function(config) {
 			if(config.sessionData.debug) {
-				console.log('main - initialize', appConfig);
+				console.log('main - appView - initialize', appConfig);
 			}
 
 			register.setPubsub(new pubsub);
@@ -13840,6 +13924,9 @@ require([
 				window.session = session;
 				window.register = register;
 			}
+			
+			this.navPrimary = new NavPrimaryView();
+			this.navSecondary = new NavSecondaryView();
 			
 			var tempView = new tempModule.views.temp(new riderModule.collection());
 		},
