@@ -12320,7 +12320,9 @@ define('../src/app/register',[], function(){
 		// The pubsub module
 		pubsub: null,
 		// The translations
-		i18n: {}
+		i18n: {},
+		// The languages supported
+		languages: {}
 	};
 	
 	var apiResourceUrls = {
@@ -12335,20 +12337,6 @@ define('../src/app/register',[], function(){
 	var get = function(key) {
 		return data[key];
 	};
-	
-	// Takes an i18n hash as input, and adds a number of
-	// functions to allow text manipulation in mustache templates
-	var decorateWithTextFunctions = function(i18n) {
-		// uc = uppercase
-		i18n.uc = function() {
-			return function(text, render) {
-				return render(text.toUpperCase());
-			};
-		};
-		
-		return i18n;
-	};
-
 	
 	/**************************************************************************
 	 * MODULE INTERFACE 
@@ -12432,20 +12420,22 @@ define('../src/app/register',[], function(){
 					that.setI18n(lang, downloadedTranslations);
 				}
 				set('lang', lang);
-				that.getPubsub().publish('app.lang.ready');
+				that.getPubsub().publish('register.lang.ready', lang);
 			};
 			
 			if(i18n[lang]) {
-				if(this.isDebug()) {
-					console.log("existing i18n-" + lang);
-				}
 				onLangReady();
 			} else {
-				if(this.isDebug()) {
-					console.log("requiring i18n-" + lang);
-				}
-				require(['i18n-' + lang], onLangReady);
+				require(['../bin/i18n-' + lang], onLangReady);
 			}
+		},
+		
+		setAvailableLanguages: function(languages) {
+			set('languages', languages);
+		},
+		
+		getAvailableLanguages: function() {
+			return get('languages');
 		},
 		
 		getI18n: function() {
@@ -12455,10 +12445,37 @@ define('../src/app/register',[], function(){
 		},
 		
 		setI18n: function(lang, hash) {
-			var decoratedHash = decorateWithTextFunctions(hash);
+			var decoratedHash = this.decorateForMustache(hash);
 			var i18n = get('i18n');
 			i18n[lang] = decoratedHash;
 			set('i18n', i18n);
+		},
+		
+		// Takes a hash as input, and adds a number of
+		// functions to allow text manipulation in mustache templates
+		decorateForMustache: function(obj) {
+			// uc = uppercase
+			obj.uc = function() {
+				return function(text, render) {
+					return render(text.toUpperCase());
+				};
+			};
+			
+			obj.lc = function() {
+				return function(text, render) {
+					return render(text.toLowerCase());
+				};
+			};
+			
+			obj.ucfirst = function() {
+				return function(text, render) {
+					var ret = text.charAt(0).toUpperCase();
+				    return ret + text.substr(1);
+				    return render(ret);
+				};
+			};
+			
+			return obj;
 		},
 		
 		getRider: function() {
@@ -12505,6 +12522,13 @@ define('../src/app/pubsub',[
 				console.info('pubsub - subscribing', arguments);
 			}
 			return this.bind.apply(this, arguments);
+		},
+		
+		unsubscribe: function() {
+			if(register.isDebug()) {
+				console.info('pubsub - unsubscribing', arguments);
+			}
+			return this.unbind.apply(this, arguments);
 		}
 	});
 });
@@ -12847,13 +12871,15 @@ define('../src/app/pubsub',[
 
 define("jquery.cookie", function(){});
 
-define('text!templates/session/corner-logged-in.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n\t<div class="username">\n\t\t{{ rider.username }}\n\t</div>\n\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t\t<li><a href="#" class="lang fr">fr</a></li>\n    \t\t<li><a href="#" class="lang en">en</a></li>\n    \t\t<li><a href="#" class="lang es">es</a></li>\n    \t</ul>\n    </div>\n\t\n    <div class="btn-group logout-btn-group">\n    \t<a id="logout-btn" class="btn" href="/user/logout/">{{ i18n.Logout }}</a>\n    </div>\t\n</nav>';});
+define('text!templates/session/corner-logged-in.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n\t<div class="username">\n\t\t{{ rider.username }}\n\t</div>\n\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t<ul class="dropdown-menu" id="lang-picker">\n    \t\t<!-- dropdown menu links -->\n    \t\t{{#languages}}\n    \t\t<li><a href="#" data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>\n    \t\t{{/languages}}\n\t    </ul>\n    </div>\n\t\n    <div class="btn-group logout-btn-group">\n    \t<a id="logout-btn" class="btn" href="/user/logout/">{{#ucfirst}}{{ i18n.logout }}{{/ucfirst}}</a>\n    </div>\t\n</nav>';});
 
-define('text!templates/session/corner-logged-out.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t\t<li><a href="#" class="lang fr">fr</a></li>\n    \t\t<li><a href="#" class="lang en">en</a></li>\n    \t\t<li><a href="#" class="lang es">es</a></li>\n    \t</ul>\n    </div>\n\t\n    <div class="btn-group login-btn-group">\n    \t<a id="login-btn" class="btn" href="/user/login/">{{ i18n.Login }}</a>\n    \t<a class="btn" href="/user/register/">\n    \t\t{{#i18n.uc}}\n    \t\t\ta{{ i18n.Register }}a\n    \t\t{{/i18n.uc}}\n    \t</a>\n    </div>\t\n</nav>';});
+define('text!templates/session/corner-logged-out.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n   \t\t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu" id="lang-picker">\n    \t\t<!-- dropdown menu links -->\n    \t\t{{#languages}}\n    \t\t<li><a href="#" data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>\n    \t\t{{/languages}}\n\t    </ul>\n    </div>\n\t\n    <div class="btn-group login-btn-group">\n    \t<a id="login-btn" class="btn" href="/user/login/">{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}</a>\n    \t<a class="btn" href="/user/register/">\n    \t\t{{#i18n}}\n    \t\t\t{{#ucfirst}}{{ register }}{{/ucfirst}}\n    \t\t{{/i18n}}\n    \t</a>\n    </div>\t\n</nav>';});
 
-define('text!templates/session/login-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>Login</h3>\n</div>\n<form action="/user/login/" method="post" id="login-form">\n\t<div class="modal-body">\n\t\t<span class="control-group error">\n\t\t\t<span class="help-inline">{{ error }}</span>\n\t\t</span>\n\t\t<input type="text" id="userN" name="userN" class="whole-row" placeholder="username" value="{{ rider.username }}"/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="password"/>\n\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="userR" name="userR"/> remember me next time\n        </label>\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="login-form-cancel" class="btn" data-dismiss="modal" value="Cancel" tabIndex="1"/>\n\t\t<input type="submit" id="login-form-submit" class="btn btn-primary" value="Login" tabindex="0" />\n\t</div>\n</form>';});
+define('text!templates/session/login-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/login/" method="post" id="login-form">\n\t<div class="modal-body">\n\t\t<span class="control-group error">\n\t\t\t<span class="help-inline">{{ error }}</span>\n\t\t</span>\n\t\t<input type="text" id="userN" name="userN" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="userR" name="userR"/>{{#ucfirst}}{{ i18n.rememberMeNextTime }}{{/ucfirst}}\n        </label>\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="login-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="login-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
 
-define('text!templates/session/logout-message.tpl',[],function () { return '<div class="modal-header">\n\t<h3>Logout</h3>\n</div>\n<div class="modal-body">\n\t<span class="control-group error hide" id="session-logout-error">\n\t\t<span class="help-inline">{{ error }}</span>\n\t</span>\n\t<span id="session-logout-message">\n\t\t{{ status }}\n\t</span>\n\t<div class="modal-footer">\n\t\t<input type="button" id="session-logout-close" class="btn" data-dismiss="modal" value="Close" disabled="disabled"/>\n\t</div>\n</div>\n';});
+define('text!templates/session/logout-message.tpl',[],function () { return '<div class="modal-header">\n\t<h3>Logout</h3>\n</div>\n<div class="modal-body">\n\t<span class="control-group error hide" id="session-logout-error">\n\t\t<span class="help-inline">{{#ucfirst}}{{ error }}{{/ucfirst}}</span>\n\t</span>\n\t<div class="modal-footer">\n\t\t<input type="button" id="session-logout-close" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.close }}{{/ucfirst}}" disabled="disabled"/>\n\t</div>\n</div>\n';});
+
+define('text!templates/session/register-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/register/" method="post" id="register-form">\n\t<div class="modal-body">\n\t\t<span class="control-group error">\n\t\t\t<span class="help-inline">{{ error }}</span>\n\t\t</span>\n\t\t<input type="text" id="userN" name="userN" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>\n\t\t<input type="email" id="email" name="email" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.email }}{{/ucfirst}}" value=""/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\t\t<input type="password" id="userPC" name="userPC" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.passwordConf }}{{/ucfirst}}"/>\n\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="register-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="register-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
 
 /* ============================================================
  * bootstrap-dropdown.js v2.0.0
@@ -13281,7 +13307,13 @@ define('../src/app/rider',[
 		// The RiderView listens for changes to its model, re-rendering.
 		initialize: function() {
 			this.model.bind('destroy', this.remove, this);
-			pubsub.subscribe('app.lang.ready', _.bind(this.render, this));
+			pubsub.subscribe('register.lang.ready', _.bind(this.render, this));
+		},
+		
+		close: function() {
+			this.model.unbind();
+			register.getPubsub().unsubscribe('register.lang.ready', _.bind(this.render, this));
+			this.remove();
 		},
 		
 		template: mustache.compile(usernameTpl),
@@ -13341,6 +13373,7 @@ define('../src/app/session',[
 	'text!templates/session/corner-logged-out.tpl',
 	'text!templates/session/login-form.tpl',
 	'text!templates/session/logout-message.tpl',
+	'text!templates/session/register-form.tpl',
 
 	// Bootstrap plugins
 	'order!bootstrap/bootstrap-dropdown'
@@ -13513,14 +13546,25 @@ define('../src/app/session',[
 	 * Session corner 
 	 *************************************************************************/
 	var SessionCornerView = Backbone.View.extend({
-		initialize: function(session) {
-			this.model = session;
-			
-			this.model.bind('change', this.render, this);
-		},
-		
 		el: $('#session-corner'),
 
+		initialize: function(session) {
+			this.model = session;
+			this.model.bind('change', this.render, this);
+
+			register.getPubsub().subscribe('register.lang.ready', _.bind(this.onLangChange, this));
+		},
+		
+		close: function() {
+			this.model.unbind();
+			register.getPubsub().unsubscribe('register.lang.ready', _.bind(this.onLangChange, this));
+		},
+		
+		onLangChange: function(lang) {
+			this.model.set({lang: lang});
+			this.render();
+		},
+		
 		render: function() {
 			var templateFile = this.model.isLoggedIn() ? cornerLoggedInTpl : cornerLoggedOutTpl;
 			this.template = mustache.compile(templateFile);
@@ -13530,35 +13574,46 @@ define('../src/app/session',[
 		},
 		
 		getDataForRender: function() {
-			return {
+			return register.decorateForMustache({
+				languages: register.getAvailableLanguages(),
 				lang: this.model.get('lang'),
 				error: this.model.get('error'),
 				rider: this.model.get('rider').attributes,
 				i18n: register.getI18n()
-			};
+			});
 		},
 		
 		events: {
 			click: function(e){
-				if(e.target.id == 'logout-btn') {
+				var $el = $(e.target);
+				
+				if($el.is('#logout-btn')) {
 					this.model.logout();
-				} else if (e.target.id == 'login-btn') {
+				} else if($el.is('#login-btn')) {
 					loginLogout.displayLoginForm();
+				} else if ($el.is('#lang-picker a')) {
+					$el.parent().parent().removeClass('open');
+					register.setLang($el.data('lang'));
 				}
 			}
 		}
+		
 	}); 
 	
 	/**************************************************************************
 	 * Login/logout modal
 	 *************************************************************************/
 	var LoginLogoutView = Backbone.View.extend({
+		el: $('#modal'),
+		
 		initialize: function(model) {
 			this.model = model;
 			this.model.bind('change', this.render, this);
 		},
-		
-		el: $('#modal'),
+
+		close: function() {
+			this.model.unbind();
+		},
 		
 		template: mustache.compile(loginFormTpl),
 
@@ -13576,13 +13631,21 @@ define('../src/app/session',[
 			$(this.el).removeClass('session-login-form session-logout-message')
 			          .modal('hide');
 		},
+
+		getDataForRender: function() {
+			return register.decorateForMustache({
+				rider: this.model.get('rider').attributes,
+				i18n: register.getI18n(),
+				error: register.getI18n()[this.model.get('error')]
+			});
+		},
 		
 		render: function() {
 			var templateFile = this.model.isLoggedIn() ? logoutMessageTpl : loginFormTpl;
 			this.template = mustache.compile(templateFile);
 			
 			$(this.el).html(
-				this.template(this.model.toJSON())
+				this.template(this.getDataForRender())
 			);
 			return this.el;
 		},
@@ -13668,7 +13731,11 @@ define('../src/app/temp',[
 			this.riders.bind('reset', this.addAll, this);
 			this.riders.fetch();
 			
-			pubsub.subscribe('session.lang.change', _.bind(this.redraw, this));
+			pubsub.subscribe('register.lang.ready', _.bind(this.redraw, this));
+		},
+		
+		close: function() {
+			register.getPubsub().unsubscribe('register.lang.ready', _.bind(this.redraw, this));
 		},
 		
 		redraw: function() {
@@ -13686,6 +13753,7 @@ define('../src/app/temp',[
 				if(register.isDebug()) {
 					console.log('temp - click');
 				}
+				this.close();
 			}
 		},
 		
@@ -13764,6 +13832,7 @@ require([
 			register.setDebug(config.sessionData.debug);
 			register.setI18n(config.sessionData.lang, config.translations);
 			register.setLang(config.sessionData.lang);
+			register.setAvailableLanguages(config.languages);
 			register.setRider(new riderModule.model(config.sessionData.rider));
 			
 			var session = new sessionModule.model();

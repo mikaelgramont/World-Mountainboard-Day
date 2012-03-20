@@ -21,7 +21,9 @@ define([], function(){
 		// The pubsub module
 		pubsub: null,
 		// The translations
-		i18n: {}
+		i18n: {},
+		// The languages supported
+		languages: {}
 	};
 	
 	var apiResourceUrls = {
@@ -119,20 +121,22 @@ define([], function(){
 					that.setI18n(lang, downloadedTranslations);
 				}
 				set('lang', lang);
-				that.getPubsub().publish('app.lang.ready', lang);
+				that.getPubsub().publish('register.lang.ready', lang);
 			};
 			
 			if(i18n[lang]) {
-				if(this.isDebug()) {
-					console.log("existing i18n-" + lang);
-				}
 				onLangReady();
 			} else {
-				if(this.isDebug()) {
-					console.log("requiring i18n-" + lang);
-				}
 				require(['../bin/i18n-' + lang], onLangReady);
 			}
+		},
+		
+		setAvailableLanguages: function(languages) {
+			set('languages', languages);
+		},
+		
+		getAvailableLanguages: function() {
+			return get('languages');
 		},
 		
 		getI18n: function() {
@@ -155,6 +159,20 @@ define([], function(){
 			obj.uc = function() {
 				return function(text, render) {
 					return render(text.toUpperCase());
+				};
+			};
+			
+			obj.lc = function() {
+				return function(text, render) {
+					return render(text.toLowerCase());
+				};
+			};
+			
+			obj.ucfirst = function() {
+				return function(text, render) {
+					var ret = text.charAt(0).toUpperCase();
+				    return ret + text.substr(1);
+				    return render(ret);
 				};
 			};
 			

@@ -1,17 +1,23 @@
 # Client-side TODO
-js understands
-   			{{ lang }}
-    		
-but not
-    		{{#uc}}
-    			{{ lang }}
-    		{{/uc}}
+make page re-render completely when language changes:
+app
+  - nav-main
+  - main
+    - section
+    - aside
+  - nav-footer
+
+have a script tag in head that contains code that rewrites all links with a class of dyn: move link targets to a data-href, replace href with #
+
+User creation modal
+Use lukew's design patterns to determine a strategy for responsiveness http://www.lukew.com/ff/entry.asp?1514
+Have constants in config file to determine size thresholds, and have events fire when window is resized, and initially too
 
 I18n:
 - look into see https://github.com/SlexAxton/messageformat.js
+how to fit plurals and i18n?
+plurals need to be fed translated strings. or it could do it on its own.
 
-Connect lang dropdown changes to register, and trigger a change site wide through pubsub?
-when lang change => rerender corner too (no circular dependency should occur)
 setup a router in order to deal with local urls
 
 

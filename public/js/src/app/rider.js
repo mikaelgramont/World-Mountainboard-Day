@@ -101,7 +101,13 @@ define([
 		// The RiderView listens for changes to its model, re-rendering.
 		initialize: function() {
 			this.model.bind('destroy', this.remove, this);
-			pubsub.subscribe('app.lang.ready', _.bind(this.render, this));
+			pubsub.subscribe('register.lang.ready', _.bind(this.render, this));
+		},
+		
+		close: function() {
+			this.model.unbind();
+			register.getPubsub().unsubscribe('register.lang.ready', _.bind(this.render, this));
+			this.remove();
 		},
 		
 		template: mustache.compile(usernameTpl),

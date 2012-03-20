@@ -1,26 +1,22 @@
 <nav class="session-corner" id="session-corner">
     <div class="btn-group lang-selector">
     	<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">
-    		{{#uc}}
-    			{{ lang }}
-    		{{/uc}}
+   			{{ lang }}
     		<span class="caret"></span>
     	</a>
-    	<ul class="dropdown-menu">
+    	<ul class="dropdown-menu" id="lang-picker">
     		<!-- dropdown menu links -->
-    		<li><a href="#" class="lang fr">fr</a></li>
-    		<li><a href="#" class="lang en">en</a></li>
-    		<li><a href="#" class="lang es">es</a></li>
-    	</ul>
+    		{{#languages}}
+    		<li><a href="#" data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>
+    		{{/languages}}
+	    </ul>
     </div>
 	
     <div class="btn-group login-btn-group">
-    	<a id="login-btn" class="btn" href="/user/login/">{{ i18n.Login }}</a>
+    	<a id="login-btn" class="btn" href="/user/login/">{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}</a>
     	<a class="btn" href="/user/register/">
     		{{#i18n}}
-    			{{#uc}}
-    				{{ Register }}
-    			{{/uc}}
+    			{{#ucfirst}}{{ register }}{{/ucfirst}}
     		{{/i18n}}
     	</a>
     </div>	

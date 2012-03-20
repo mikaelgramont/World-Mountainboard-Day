@@ -5,6 +5,7 @@
 set_include_path('../php/'.PATH_SEPARATOR.get_include_path());
 require_once 'include.php';
 $config = Globals::getConfig();
+$languages = explode(',', $config->supportedLanguages);
 $templates = Globals::getTemplates('js/lib/templates/');
 $cdnUrl = $config->cdnProtocol . $config->cdnUrl;
 $sessionData = Globals::getApiSessionData($_COOKIE);
@@ -34,29 +35,34 @@ $bundles = Globals::getApplicableVersionnedBundles(
 	<header>
 		<div class="container">
 			<h1>World Mountainboard Day</h1>
-			<nav class="main">
-				<ul>
-					<li><a href="/locations/">Locations</a></li>
-					<li><a href="/riders/">Riders</a></li>
-					<li><a href="/sessions/">Sessions</a></li>
-				</ul>
-			</nav>
 <?php
-	$cornerTpl = 'session/corner-' . ($sessionData->rider->userId ? 'logged-in' : 'logged-out'). '.tpl';
+	// Main navigation
+	echo $m->render($templates['layout/nav-primary.tpl'], $sessionData).PHP_EOL;
+
+	// Session corner
+	$cornerTpl = 'session/corner-' . ($sessionData->rider->userId ? 'logged-in'
+	  : 'logged-out'). '.tpl';
 	$cornerData = $sessionData;
-	echo $m->render($templates[$cornerTpl], $cornerData);
+	$cornerData->languages = $languages;
+	echo $m->render($templates[$cornerTpl], $cornerData).PHP_EOL;
 ?>			
 		</div>
 	</header>
 		
-	<div id="main" role="main" class="main container">
-		<section id="riders">
+<?php
+	// Main section
+	$sectionData = new stdClass;
+	$sectionData->id = 'riders';
+	$sectionData->content = <<<SECTION
 			<h1>Riders</h1>
 			<ul id="rider-list"></ul>
-			<!-- Here, insert icons to represent actions the user might want to take -->
-		</section>
-		<aside class="main">
-			<!-- Here, insert things that will be shown on desktop, but not on mobile -->
+			<!-- Here, insert icons to represent actions the user might want to take -->	
+SECTION;
+	$section = $m->render($templates['layout/main-section.tpl'], $sectionData).PHP_EOL;
+	
+	// Aside
+	$asideData = new stdClass;
+	$asideData->content = <<<ASIDE
 			<article>
 				<h3>Latest spot</h3>
 				<a href="/spots/1/" class="spot">_Atlanta_</a>
@@ -77,18 +83,22 @@ $bundles = Globals::getApplicableVersionnedBundles(
 					Our database currently has <a href="/checkins/now/">84 spots</a> in <a href="/countries/">16 countries!</a>
 				</p>
 			</figure>
-		</aside>
-	</div>
+	
+ASIDE;
+	$aside = $m->render($templates['layout/main-aside.tpl'], $asideData).PHP_EOL;
+	
+	// Main div
+	$mainData = new stdClass;
+	$mainData->content = $section.$aside;
+	echo $m->render($templates['layout/main.tpl'], $mainData).PHP_EOL;
+?>			
 	
 	<footer>
 		<div class="container">
-			<nav>
-				<ul>
-					<li><a href="/about/">About</a></li>
-					<li><a href="/ridedb/">RideDB</a></li>
-					<li><a href="/contact/">Contact</a></li>
-				</ul>
-			</nav>
+<?php
+	// Footer navigation
+	echo $m->render($templates['layout/nav-secondary.tpl'], $sessionData).PHP_EOL;
+?>
 		</div>
 	</footer>
     
@@ -102,8 +112,10 @@ $bundles = Globals::getApplicableVersionnedBundles(
 		}, appConfig = {
 			apiUrl: <?php echo json_encode($config->apiUrl) ?>,
 			cdnUrl: <?php echo json_encode($cdnUrl) ?>,
-			images: <?php echo json_encode(Globals::getApplicableImagePaths($config->versioning)) ?>,
+			images: <?php echo json_encode(Globals::getApplicableImagePaths(
+			  $config->versioning)) ?>,
 			sessionData: <?php echo json_encode($sessionData) ?>,
+			languages: <?php echo json_encode($languages) ?>,
 			translations: <?php echo json_encode($translations) ?>
 			
 		};

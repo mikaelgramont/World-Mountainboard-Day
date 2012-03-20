@@ -20,6 +20,7 @@ define([
 	'text!templates/session/corner-logged-out.tpl',
 	'text!templates/session/login-form.tpl',
 	'text!templates/session/logout-message.tpl',
+	'text!templates/session/register-form.tpl',
 
 	// Bootstrap plugins
 	'order!bootstrap/bootstrap-dropdown'
@@ -192,15 +193,20 @@ define([
 	 * Session corner 
 	 *************************************************************************/
 	var SessionCornerView = Backbone.View.extend({
+		el: $('#session-corner'),
+
 		initialize: function(session) {
 			this.model = session;
 			this.model.bind('change', this.render, this);
 
-			register.getPubsub().subscribe('app.lang.ready', _.bind(this.onLangChange, this));
+			register.getPubsub().subscribe('register.lang.ready', _.bind(this.onLangChange, this));
 		},
 		
-		el: $('#session-corner'),
-
+		close: function() {
+			this.model.unbind();
+			register.getPubsub().unsubscribe('register.lang.ready', _.bind(this.onLangChange, this));
+		},
+		
 		onLangChange: function(lang) {
 			this.model.set({lang: lang});
 			this.render();
@@ -216,6 +222,7 @@ define([
 		
 		getDataForRender: function() {
 			return register.decorateForMustache({
+				languages: register.getAvailableLanguages(),
 				lang: this.model.get('lang'),
 				error: this.model.get('error'),
 				rider: this.model.get('rider').attributes,
@@ -225,25 +232,35 @@ define([
 		
 		events: {
 			click: function(e){
-				if(e.target.id == 'logout-btn') {
+				var $el = $(e.target);
+				
+				if($el.is('#logout-btn')) {
 					this.model.logout();
-				} else if (e.target.id == 'login-btn') {
+				} else if($el.is('#login-btn')) {
 					loginLogout.displayLoginForm();
+				} else if ($el.is('#lang-picker a')) {
+					$el.parent().parent().removeClass('open');
+					register.setLang($el.data('lang'));
 				}
 			}
 		}
+		
 	}); 
 	
 	/**************************************************************************
 	 * Login/logout modal
 	 *************************************************************************/
 	var LoginLogoutView = Backbone.View.extend({
+		el: $('#modal'),
+		
 		initialize: function(model) {
 			this.model = model;
 			this.model.bind('change', this.render, this);
 		},
-		
-		el: $('#modal'),
+
+		close: function() {
+			this.model.unbind();
+		},
 		
 		template: mustache.compile(loginFormTpl),
 
@@ -261,13 +278,21 @@ define([
 			$(this.el).removeClass('session-login-form session-logout-message')
 			          .modal('hide');
 		},
+
+		getDataForRender: function() {
+			return register.decorateForMustache({
+				rider: this.model.get('rider').attributes,
+				i18n: register.getI18n(),
+				error: register.getI18n()[this.model.get('error')]
+			});
+		},
 		
 		render: function() {
 			var templateFile = this.model.isLoggedIn() ? logoutMessageTpl : loginFormTpl;
 			this.template = mustache.compile(templateFile);
 			
 			$(this.el).html(
-				this.template(this.model.toJSON())
+				this.template(this.getDataForRender())
 			);
 			return this.el;
 		},

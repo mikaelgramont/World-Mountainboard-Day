@@ -49,7 +49,11 @@ define([
 			this.riders.bind('reset', this.addAll, this);
 			this.riders.fetch();
 			
-			pubsub.subscribe('session.lang.change', _.bind(this.redraw, this));
+			pubsub.subscribe('register.lang.ready', _.bind(this.redraw, this));
+		},
+		
+		close: function() {
+			register.getPubsub().unsubscribe('register.lang.ready', _.bind(this.redraw, this));
 		},
 		
 		redraw: function() {
@@ -67,6 +71,7 @@ define([
 				if(register.isDebug()) {
 					console.log('temp - click');
 				}
+				this.close();
 			}
 		},
 		

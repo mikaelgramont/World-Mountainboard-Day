@@ -1,8 +1,28 @@
 {
+	"untranslated": "untranslated",
+		
 	"country": "country",
-	"Login": "Login",
-	"Logout": "Logout",
-	"Register": "Register",
 	
-	"untranslated": "untranslated"
+	"login": "login",
+	"logout": "logout",
+	"register": "register",
+	
+	"username": "username",
+	"password": "password",
+	"keepMeLoggedIn": "keep me logged-in",
+	
+	"cancel": "cancel",
+	"close": "close",
+
+	"missingValue": "one or several fields are missing",
+	"failedToLogin": "your email and/or password is incorrect",
+	"loginSystemError": "the system failed to log you in",
+	"logoutSystemError": "the system failed to log you out",
+
+	"locations": "locations",
+	"riders": "riders",
+	"sessions": "sessions",
+	"about": "about",
+	"contact": "contact"
+	
 }

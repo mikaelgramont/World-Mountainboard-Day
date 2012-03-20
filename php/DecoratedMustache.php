@@ -22,7 +22,6 @@ class LowLevelDecoratedMustache extends Mustache
 {
 	public function __isset($k)
 	{
-		error_log("looking for ".$k);
 		if(isset($this->_context[0]->$k)){
 			return true;
 		}
@@ -32,29 +31,33 @@ class LowLevelDecoratedMustache extends Mustache
 	
 	public function __get($k)
 	{
-		error_log("returning value for ".$k);
 		return $this->_context[0]->$k;
 	}
 	
 	public function uc()
 	{
-		error_log('uc');
 		$m = $this;
 		return function($tag) use ($m) {
 			$ret = $m->render($tag);
-			error_log("uc - '$tag', '$ret'");
 			return strtoupper($ret);
 		};
 	}
 	
 	public function lc()
 	{
-		error_log('lc');
 		$m = $this;
 		return function($tag) use ($m) {
 			$ret = $m->render($tag);
-			error_log("lc - '$tag', '$ret'");
 			return strtolower($ret);
+		};
+	}
+	
+	public function ucfirst()
+	{
+		$m = $this;
+		return function($tag) use ($m) {
+			$ret = $m->render($tag);
+			return ucfirst($ret);
 		};
 	}
 }

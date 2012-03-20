@@ -489,8 +489,6 @@ class Globals
 	 */
 	protected static function _getRidersOwnData($userId, $sessionId)
 	{
-		error_log('_getRidersOwnData');
-		
 		$config = self::getConfig();
 		$client = new Zend_Http_Client();
 		$client->setUri($config->apiScheme . '://' . $config->apiUrl . '/riders/' . $userId);
@@ -578,7 +576,7 @@ class Globals
 		$supported = explode(',', self::getConfig()->supportedLanguages);
 		foreach($supported as $lang) {
 			if($lang == 'en') {
-				// Already don
+				// Already done
 				continue;
 			}
 			
@@ -607,7 +605,8 @@ class Globals
 	
 	protected static function _loadRawLang($lang)
 	{
-		return json_decode(file_get_contents(self::LANG_RAW.$lang.'.js'));
+		$content = file_get_contents(self::LANG_RAW.$lang.'.js');
+		return json_decode($content);
 	}
 	
 	protected static function _loadCompiledLang($lang)

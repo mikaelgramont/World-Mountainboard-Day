@@ -10,13 +10,15 @@
     	</a>
     	<ul class="dropdown-menu">
     		<!-- dropdown menu links -->
-    		<li><a href="#" class="lang fr">fr</a></li>
-    		<li><a href="#" class="lang en">en</a></li>
-    		<li><a href="#" class="lang es">es</a></li>
-    	</ul>
+    	<ul class="dropdown-menu" id="lang-picker">
+    		<!-- dropdown menu links -->
+    		{{#languages}}
+    		<li><a href="#" data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>
+    		{{/languages}}
+	    </ul>
     </div>
 	
     <div class="btn-group logout-btn-group">
-    	<a id="logout-btn" class="btn" href="/user/logout/">{{ i18n.Logout }}</a>
+    	<a id="logout-btn" class="btn" href="/user/logout/">{{#ucfirst}}{{ i18n.logout }}{{/ucfirst}}</a>
     </div>	
 </nav>

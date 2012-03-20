@@ -25,6 +25,13 @@ define([
 				console.info('pubsub - subscribing', arguments);
 			}
 			return this.bind.apply(this, arguments);
+		},
+		
+		unsubscribe: function() {
+			if(register.isDebug()) {
+				console.info('pubsub - unsubscribing', arguments);
+			}
+			return this.unbind.apply(this, arguments);
 		}
 	});
 });
