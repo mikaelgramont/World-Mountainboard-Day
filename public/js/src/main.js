@@ -59,12 +59,42 @@ require([
 			if(register.isDebug()) {
 				console.log('main - mainView - initialize', appConfig);
 			}
+			register.getPubsub().subscribe('register.content.ready', _.bind(this.onContentReady, this));
 		},
 	
+		// When a content ready event is triggered, this updates the main view
+		onContentReady: function(sectionView, asideView) {
+			if(register.isDebug()) {
+				console.log('main - MainView - onContentReady', arguments);
+			}
+			if(this.section && this.section.close){
+				this.section.close();
+			}
+			if(this.section && this.section.close){
+				this.aside.close();
+			}
+			
+			if(tempView) {
+				tempView.close();
+				tempView = null;
+			}
+			
+			this.section = sectionView;
+			this.aside = asideView;
+			
+			this.render();
+		},
+		
 		render: function(){
+			var s = this.section.render();
+			$(this.el).find('section').html(s);
+
+			var a = this.aside.render();
+			$(this.el).find('aside').html(a);
 		}
 	});
 	
+	// This view manages the primary navigation bar
 	var NavPrimaryView = Backbone.View.extend({
 		el: $('#nav-primary'),
 		
@@ -91,6 +121,7 @@ require([
 		// No close method because this view is always there
 	});
 
+	// This view manages the secondary navigation bar
 	var NavSecondaryView = Backbone.View.extend({
 		el: $('#nav-secondary'),
 		
@@ -148,7 +179,7 @@ require([
 			this.navPrimary = new NavPrimaryView();
 			this.navSecondary = new NavSecondaryView();
 			
-			var tempView = new tempModule.views.temp(new riderModule.collection());
+			tempView = new tempModule.views.temp(new riderModule.collection());
 		},
 		
 		el: $('#app'),
@@ -166,4 +197,6 @@ require([
 	});
 	
 	var appView = new AppView(appConfig);
+	var mainView = new MainView();
+	var tempView;
 });

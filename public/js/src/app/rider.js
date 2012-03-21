@@ -100,7 +100,7 @@ define([
 	
 		// The RiderView listens for changes to its model, re-rendering.
 		initialize: function() {
-			this.model.bind('destroy', this.remove, this);
+			this.model.bind('destroy', this.close, this);
 			pubsub.subscribe('register.lang.ready', _.bind(this.render, this));
 		},
 		
@@ -114,6 +114,9 @@ define([
 	
 		// Re-render the contents of the item
 		render: function() {
+			if(register.isDebug()) {
+				console.log('rider - usernameview - render');
+			}
 			$(this.el).html(
 				this.template(_.extend(this.model.toJSON(), {i18n: register.getI18n()}))
 			);

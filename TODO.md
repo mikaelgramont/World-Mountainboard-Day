@@ -1,11 +1,11 @@
 # Client-side TODO
-make page re-render completely when language changes:
 app
-  - nav-main
-  - main
+  x nav-main
+  x main
     - section
     - aside
-  - nav-footer
+  x nav-footer
+write some fake code, and two fake views to test content change
 
 have a script tag in head that contains code that rewrites all links with a class of dyn: move link targets to a data-href, replace href with #
 

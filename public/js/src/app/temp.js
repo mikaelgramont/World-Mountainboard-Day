@@ -15,12 +15,14 @@ define([
 	'../app/rider',
 	
 	// Templates
-	'text!templates/modal.tpl',
+	'text!templates/temp/modal.tpl',
+	'text!templates/temp/section.tpl',
+	'text!templates/temp/aside.tpl',
 
 	// Bootstrap plugins
 	'order!bootstrap/bootstrap-modal'
 	
-	], function($, _, Backbone, mustache, register, riderModule, modalTpl, bootstrapModal){
+	], function($, _, Backbone, mustache, register, riderModule, modalTpl, sectionTpl, asideTpl, bootstrapModal){
 
 	var pubsub;
 	
@@ -28,13 +30,47 @@ define([
 	 * VIEWS 
 	 *************************************************************************/
 	var ModalView = Backbone.View.extend({
+		el: $('#modal'),
+		
 		template: mustache.compile(modalTpl),
+		
 		render: function(){
 			$(this.el).html(this.template());
 			return this;
 		},
+		
 		getHtml: function() {
 			return $(this.el).html();
+		},
+		
+		events: {
+			click: function(e) {
+				if(!$(e.target).is('p.modalClick')){
+					return;
+				}
+				var s = new SectionView(),
+				    a = new AsideView();
+				pubsub.publish('register.content.ready', s, a);
+			}
+		},
+		
+		close: function() {
+			this.model.unbind();
+			this.remove();
+		}
+	});
+	
+	var SectionView = Backbone.View.extend({
+		template: mustache.compile(sectionTpl),
+		render: function(){
+			return this.template();
+		}
+	});
+	
+	var AsideView = Backbone.View.extend({
+		template: mustache.compile(asideTpl),
+		render: function(){
+			return this.template();
 		}
 	});
 	
@@ -42,10 +78,13 @@ define([
 		el: $("#main"),
 		
 		initialize: function(riders) {
+			if(register.isDebug()) {
+				console.log('temp - initialize');
+			}
+			
 			pubsub = register.getPubsub();
 
 			this.riders = riders;
-			this.riders.bind('add', this.addOne, this);
 			this.riders.bind('reset', this.addAll, this);
 			this.riders.fetch();
 			
@@ -53,15 +92,19 @@ define([
 		},
 		
 		close: function() {
+			if(register.isDebug()) {
+				console.log('temp - close');
+			}
+			this.riders.unbind();
+			this.riders.reset();
 			register.getPubsub().unsubscribe('register.lang.ready', _.bind(this.redraw, this));
 		},
 		
 		redraw: function() {
 			if(register.isDebug()) {
-				console.log('temp - render');
+				console.log('temp - redraw');
 			}
-			this.$("#rider-list").html('');
-			this.addAll();
+			this.riders.reset();
 		},
 		
 		events: {
@@ -71,11 +114,11 @@ define([
 				if(register.isDebug()) {
 					console.log('temp - click');
 				}
-				this.close();
 			}
 		},
 		
 		addOne: function(rider) {
+			console.log('addOne');
 			var view = new riderModule.views.username({model: rider});
 			this.$("#rider-list").append(view.render().el);
 		},
