@@ -48,6 +48,22 @@ require([
 		}		
 	};
 	
+	var Router = Backbone.Router.extend({
+		routes: {
+			"": 		"index",
+			"riders/":	"riders"
+		},
+		
+		index: function() {
+			console.log('Calling the index route', arguments);
+		},
+		
+		riders: function(){
+			console.log('Calling the riders route', arguments);
+		}
+		
+	});
+	
 	// This view manages the content of the document
 	var MainView = Backbone.View.extend({
 		section: null,
@@ -180,13 +196,21 @@ require([
 			this.navSecondary = new NavSecondaryView();
 			
 			tempView = new tempModule.views.temp(new riderModule.collection());
+			
+			router = new Router();
+			Backbone.history.start({pushState: true});
 		},
 		
 		el: $('#app'),
 
 		events: {
 			'click': function(e) {
-				preventDefaultActions(e, 'click');
+				var $e = $(e.target);
+				if($e.is('.dyn-link')){
+					router.navigate($e.data('href'), {trigger: true});
+					e.preventDefault();
+					e.stopPropagation();
+				}
 			},
 			
 			'submit': function(e) {
@@ -194,9 +218,12 @@ require([
 			}
 			
 		}
+
+		// No close method because this view is always there
 	});
 	
 	var appView = new AppView(appConfig);
 	var mainView = new MainView();
 	var tempView;
+	var router;
 });

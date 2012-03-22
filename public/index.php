@@ -21,13 +21,13 @@ $bundles = Globals::getApplicableVersionnedBundles(
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
+	<meta charset="utf-8">
 
-  <title>World Mountainboard Day 2012</title>
-  <meta name="description" content="">
+	<title>World Mountainboard Day 2012</title>
+	<meta name="description" content="">
 
-  <meta name="viewport" content="width=device-width">
-  <link rel="stylesheet" href="<?php echo Globals::getApplicableCSS(
+	<meta name="viewport" content="width=device-width">
+	<link rel="stylesheet" href="<?php echo Globals::getApplicableCSS(
 	'styles.css', $config->minify, $config->versioning, $cdnUrl) ?>">
 </head>
 
@@ -105,6 +105,12 @@ ASIDE;
     <div class="modal" id="modal" style="display: none"></div>
     
 	<script>
+		var links = document.getElementsByClassName('dyn-link');
+		for(var i=0, l = links.length; i <l; i++){
+			links[i].setAttribute('data-href', links[i].getAttribute('href'));
+			links[i].href = '#' + links[i].getAttribute('href').substr(1);
+		}
+	
 		var require = {
 			baseUrl: <?php echo json_encode($cdnUrl.'js/lib') ?>,
 			paths: <?php echo json_encode($bundles) ?>

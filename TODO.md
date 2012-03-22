@@ -1,14 +1,4 @@
 # Client-side TODO
-app
-  x nav-main
-  x main
-    - section
-    - aside
-  x nav-footer
-write some fake code, and two fake views to test content change
-
-have a script tag in head that contains code that rewrites all links with a class of dyn: move link targets to a data-href, replace href with #
-
 User creation modal
 Use lukew's design patterns to determine a strategy for responsiveness http://www.lukew.com/ff/entry.asp?1514
 Have constants in config file to determine size thresholds, and have events fire when window is resized, and initially too
@@ -19,6 +9,7 @@ how to fit plurals and i18n?
 plurals need to be fed translated strings. or it could do it on its own.
 
 setup a router in order to deal with local urls
+once the app starts, if there is a url fragment that looks like #goto-(.*), load that url
 
 
 Build controllers to proxy the API calls, plus some other ones like /user/logout/
