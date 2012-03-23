@@ -20,9 +20,12 @@ require([
 	// Templates
 	'text!templates/layout/nav-primary.tpl',
 	'text!templates/layout/nav-secondary.tpl',
+	'text!templates/layout/modal.tpl',
 	
+	// Bootstrap plugins
+	'order!bootstrap/bootstrap-modal'
 	
-], function($, _, Backbone, mustache, register, pubsub, sessionModule, riderModule, tempModule, navPrimaryTpl, navSecondaryTpl){
+], function($, _, Backbone, mustache, register, pubsub, sessionModule, riderModule, tempModule, navPrimaryTpl, navSecondaryTpl, modalTpl, bootstrapModal){
 	var preventDefaultActions = function(e, type) {
 		// makes sure we don't follow links and form submissions
 		if(e.type !== type) {
@@ -50,18 +53,48 @@ require([
 	
 	var Router = Backbone.Router.extend({
 		routes: {
-			"": 		"index",
-			"riders/":	"riders"
+			"": 			"index",
+			"locations/":	"locations",
+			"riders/":		"riders",
+			"sessions/":	"sessions"
 		},
 		
 		index: function() {
 			console.log('Calling the index route', arguments);
 		},
 		
+		locations: function(){
+			console.log('Calling the locations route', arguments);
+		},
+		
 		riders: function(){
 			console.log('Calling the riders route', arguments);
+		},
+		
+		sessions: function(){
+			console.log('Calling the sessions route', arguments);
 		}
 		
+	});
+	
+	var ModalView = Backbone.View.extend({
+		el: $('#modal'),
+		
+		template: mustache.compile(modalTpl),
+		
+		render: function(){
+			$(this.el).html(this.template());
+			return this;
+		},
+		
+		getHtml: function() {
+			return $(this.el).html();
+		},
+		
+		close: function() {
+			this.model.unbind();
+			this.remove();
+		}
 	});
 	
 	// This view manages the content of the document
@@ -196,6 +229,8 @@ require([
 			this.navSecondary = new NavSecondaryView();
 			
 			tempView = new tempModule.views.temp(new riderModule.collection());
+			modalView = new ModalView();
+			register.setModal(modalView);
 			
 			router = new Router();
 			Backbone.history.start({pushState: true});
@@ -224,6 +259,7 @@ require([
 	
 	var appView = new AppView(appConfig);
 	var mainView = new MainView();
+	var modalView;
 	var tempView;
 	var router;
 });

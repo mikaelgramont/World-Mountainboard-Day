@@ -23,7 +23,9 @@ define([], function(){
 		// The translations
 		i18n: {},
 		// The languages supported
-		languages: {}
+		languages: {},
+		// The only modal dialog instance
+		modal: null
 	};
 	
 	var apiResourceUrls = {
@@ -193,6 +195,14 @@ define([], function(){
 		
 		setPubsub: function(pubsub) {
 			set('pubsub', pubsub);
+		},
+		
+		getModal: function() {
+			return get('modal');
+		},
+		
+		setModal: function(modal) {
+			set('modal', modal);
 		}
 	};
 });

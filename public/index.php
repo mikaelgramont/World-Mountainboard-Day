@@ -34,7 +34,7 @@ $bundles = Globals::getApplicableVersionnedBundles(
 <body id="app">
 	<header>
 		<div class="container">
-			<h1>World Mountainboard Day</h1>
+			<h1><a href="/">World Mountainboard Day</a></h1>
 <?php
 	// Main navigation
 	echo $m->render($templates['layout/nav-primary.tpl'], $sessionData).PHP_EOL;
