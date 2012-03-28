@@ -1,4 +1,7 @@
 # Client-side TODO
+how to call close on the username views when the collection is reset?
+maybe the right thing to do is to have the temp view (parent) listen to the app events and tell the collection to update
+
 User creation modal
 Use lukew's design patterns to determine a strategy for responsiveness http://www.lukew.com/ff/entry.asp?1514
 Have constants in config file to determine size thresholds, and have events fire when window is resized, and initially too
@@ -19,6 +22,10 @@ Determine timezone based on location: 0-new Date().getTimezoneOffset()/60
 Fix jslint task to output to console
 Replace jQuery with zepto.js or ender.js <= jQuery is a hard dependency for bootstrap plugins
 Maybe replace requirejs with browserify to see if it's any better
+http://jhollingworth.github.com/bootstrap-wysihtml5/?utm_source=hackernewsletter&utm_medium=email
+
+Later:
+	download templates asynchronously, right before rendering them
 
 # Architecture
 

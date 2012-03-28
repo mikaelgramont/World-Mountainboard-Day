@@ -15,24 +15,24 @@ define([
 	'../app/rider',
 	
 	// Templates
-	'text!templates/temp/modal.tpl',
+	'text!templates/temp/modal-content.tpl',
 	'text!templates/temp/section.tpl',
 	'text!templates/temp/aside.tpl',
 
 	// Bootstrap plugins
 	'order!bootstrap/bootstrap-modal'
 	
-	], function($, _, Backbone, mustache, register, riderModule, modalTpl, sectionTpl, asideTpl, bootstrapModal){
+	], function($, _, Backbone, mustache, register, riderModule, modalContentTpl, sectionTpl, asideTpl, bootstrapModal){
 
 	var pubsub;
 	
 	/**************************************************************************
 	 * VIEWS 
 	 *************************************************************************/
-	var ModalView = Backbone.View.extend({
+	var ModalContentView = Backbone.View.extend({
 		el: $('#modal'),
 		
-		template: mustache.compile(modalTpl),
+		template: mustache.compile(modalContentTpl),
 		
 		render: function(){
 			$(this.el).html(this.template());
@@ -50,7 +50,7 @@ define([
 				}
 				var s = new SectionView(),
 				    a = new AsideView();
-				pubsub.publish('register.content.ready', s, a);
+				register.getPubsub().publish('register.content.ready', s, a);
 			}
 		},
 		
@@ -82,13 +82,11 @@ define([
 				console.log('temp - initialize');
 			}
 			
-			pubsub = register.getPubsub();
-
 			this.riders = riders;
 			this.riders.bind('reset', this.addAll, this);
 			this.riders.fetch();
-			
-			pubsub.subscribe('register.lang.ready', _.bind(this.redraw, this));
+
+			register.getPubsub().subscribe('register.lang.ready', this.redraw, this);
 		},
 		
 		close: function() {
@@ -96,21 +94,34 @@ define([
 				console.log('temp - close');
 			}
 			this.riders.unbind();
-			this.riders.reset();
-			register.getPubsub().unsubscribe('register.lang.ready', _.bind(this.redraw, this));
+			this.riders = null;
+
+			console.log('temp - unsubscribing');
+			register.getPubsub().unsubscribe('register.lang.ready', this.redraw, this);
 		},
 		
 		redraw: function() {
 			if(register.isDebug()) {
 				console.log('temp - redraw');
 			}
-			this.riders.reset();
+			// How to force the collection to be re-rendered?
+			this.riders.each(function(rider, index){
+				rider.trigger('render')
+			});
 		},
 		
 		events: {
 			click: function() {
-				var view = new ModalView({model: this.model});
-				$("#modal").html(view.render().getHtml()).modal();
+				var modalContent = new ModalContentView({model: this.model});
+				var modal = register.getModal();
+				
+				modal.addDataForRender({
+					title: 'myTitle',
+					contentHtml: modalContent.render().getHtml()
+				});
+				modal.render();
+				$(modal.el).modal();
+				
 				if(register.isDebug()) {
 					console.log('temp - click');
 				}
@@ -130,7 +141,7 @@ define([
 	
 	return {
 		views: {
-			modal: ModalView,
+			modal: ModalContentView,
 			temp: TempView
 		}
 	};

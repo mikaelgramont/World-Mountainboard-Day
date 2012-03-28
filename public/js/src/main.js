@@ -50,7 +50,10 @@ require([
 			console.log('main - ' + type +' event on', t);
 		}		
 	};
-	
+
+	/**************************************************************************
+	 * Application router
+	 *************************************************************************/
 	var Router = Backbone.Router.extend({
 		routes: {
 			"": 			"index",
@@ -77,27 +80,47 @@ require([
 		
 	});
 	
+	/**************************************************************************
+	 * Application modal dialog view
+	 * Only one instance allowed. Accessed through the register.
+	 *************************************************************************/
 	var ModalView = Backbone.View.extend({
+		dataForRender: {
+			title: '',
+			contentHtml: ''
+		},
+		
 		el: $('#modal'),
 		
 		template: mustache.compile(modalTpl),
-		
-		render: function(){
-			$(this.el).html(this.template());
+
+		render: function() {
+			$(this.el).html(this.template(this.getDataForRender()));
 			return this;
 		},
 		
-		getHtml: function() {
-			return $(this.el).html();
+		addDataForRender: function(hash) {
+			this.dataForRender = _.extend(this.dataForRender, hash);
+		},
+		
+		resetData: function() {
+			this.dataForRender = {};
+			this.addDataForRender({i18n: register.getI18n()});
+		},
+		
+		getDataForRender: function() {
+			return register.decorateForMustache(this.dataForRender);
 		},
 		
 		close: function() {
+			this.resetData();
 			this.model.unbind();
-			this.remove();
 		}
 	});
-	
-	// This view manages the content of the document
+
+	/**************************************************************************
+	 * Main view. Manages the content of the document
+	 *************************************************************************/
 	var MainView = Backbone.View.extend({
 		section: null,
 		aside: null,
@@ -143,7 +166,9 @@ require([
 		}
 	});
 	
-	// This view manages the primary navigation bar
+	/**************************************************************************
+	 * Primary navigation view
+	 *************************************************************************/
 	var NavPrimaryView = Backbone.View.extend({
 		el: $('#nav-primary'),
 		
@@ -170,7 +195,9 @@ require([
 		// No close method because this view is always there
 	});
 
-	// This view manages the secondary navigation bar
+	/**************************************************************************
+	 * Secondary navigation view
+	 *************************************************************************/
 	var NavSecondaryView = Backbone.View.extend({
 		el: $('#nav-secondary'),
 		
@@ -197,8 +224,10 @@ require([
 		// No close method because this view is always there
 	});
 	
-	
-	// This view is the main entry point of the application
+	/**************************************************************************
+	 * Application view
+	 * This view is the main entry point of the application
+	 *************************************************************************/
 	var AppView = Backbone.View.extend({
 		navPrimary: null,
 		navSecondary: null,
