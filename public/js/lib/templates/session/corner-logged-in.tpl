@@ -13,12 +13,12 @@
     	<ul class="dropdown-menu" id="lang-picker">
     		<!-- dropdown menu links -->
     		{{#languages}}
-    		<li><a href="#" data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>
+    		<li><a href="#" data-lang="{{.}}" class="dyn-link lang {{.}}">{{.}}</a></li>
     		{{/languages}}
 	    </ul>
     </div>
 	
     <div class="btn-group logout-btn-group">
-    	<a id="logout-btn" class="btn" href="/user/logout/">{{#ucfirst}}{{ i18n.logout }}{{/ucfirst}}</a>
+    	<a id="logout-btn" class="btn dyn-link" href="/user/logout/">{{#ucfirst}}{{ i18n.logout }}{{/ucfirst}}</a>
     </div>	
 </nav>

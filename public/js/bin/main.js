@@ -9456,6 +9456,230 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 })( window );
 
+/* =========================================================
+ * bootstrap-modal.js v2.0.0
+ * http://twitter.github.com/bootstrap/javascript.html#modals
+ * =========================================================
+ * Copyright 2012 Twitter, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================= */
+
+
+!function( $ ){
+
+  "use strict"
+
+ /* MODAL CLASS DEFINITION
+  * ====================== */
+
+  var Modal = function ( content, options ) {
+    this.options = $.extend({}, $.fn.modal.defaults, options)
+    this.$element = $(content)
+      .delegate('[data-dismiss="modal"]', 'click.dismiss.modal', $.proxy(this.hide, this))
+      
+    this.$element.on('shown', $.proxy(this.refresh, this));
+  }
+
+  Modal.prototype = {
+
+      constructor: Modal
+
+    , toggle: function () {
+        return this[!this.isShown ? 'show' : 'hide']()
+      }
+
+    , show: function () {
+        var that = this
+
+        if (this.isShown) return
+
+        $('body').addClass('modal-open')
+
+        this.isShown = true
+        this.$element.trigger('show')
+
+        escape.call(this)
+        backdrop.call(this, function () {
+          var transition = $.support.transition && that.$element.hasClass('fade')
+
+          !that.$element.parent().length && that.$element.appendTo(document.body) //don't move modals dom position
+
+          that.$element
+            .show()
+
+          if (transition) {
+            that.$element[0].offsetWidth // force reflow
+          }
+
+          that.$element.addClass('in')
+
+          transition ?
+            that.$element.one($.support.transition.end, function () { that.$element.trigger('shown') }) :
+            that.$element.trigger('shown')
+
+        })
+      }
+
+    , hide: function ( e ) {
+        e && e.preventDefault()
+
+        if (!this.isShown) return
+
+        var that = this
+        this.isShown = false
+
+        $('body').removeClass('modal-open')
+
+        escape.call(this)
+
+        this.$element
+          .trigger('hide')
+          .removeClass('in')
+
+        $.support.transition && this.$element.hasClass('fade') ?
+          hideWithTransition.call(this) :
+          hideModal.call(this)
+      }
+
+    , refresh: function (e) {
+    	// mikael - https://github.com/twitter/bootstrap/issues/452
+    	e && e.preventDefault()
+    	var modal = this.$element
+	    	modal.css('margin-top',(modal.outerHeight()/2)*-1)
+	    	     .css('margin-left',(modal.outerWidth()/2)*-1)
+    	return this
+      }
+    
+  }
+  
+
+
+ /* MODAL PRIVATE METHODS
+  * ===================== */
+
+  function hideWithTransition() {
+    var that = this
+      , timeout = setTimeout(function () {
+          that.$element.off($.support.transition.end)
+          hideModal.call(that)
+        }, 500)
+
+    this.$element.one($.support.transition.end, function () {
+      clearTimeout(timeout)
+      hideModal.call(that)
+    })
+  }
+
+  function hideModal( that ) {
+    this.$element
+      .hide()
+      .trigger('hidden')
+
+    backdrop.call(this)
+  }
+
+  function backdrop( callback ) {
+    var that = this
+      , animate = this.$element.hasClass('fade') ? 'fade' : ''
+
+    if (this.isShown && this.options.backdrop) {
+      var doAnimate = $.support.transition && animate
+
+      this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
+        .appendTo(document.body)
+
+      if (this.options.backdrop != 'static') {
+        this.$backdrop.click($.proxy(this.hide, this))
+      }
+
+      if (doAnimate) this.$backdrop[0].offsetWidth // force reflow
+
+      this.$backdrop.addClass('in')
+
+      doAnimate ?
+        this.$backdrop.one($.support.transition.end, callback) :
+        callback()
+
+    } else if (!this.isShown && this.$backdrop) {
+      this.$backdrop.removeClass('in')
+
+      $.support.transition && this.$element.hasClass('fade')?
+        this.$backdrop.one($.support.transition.end, $.proxy(removeBackdrop, this)) :
+        removeBackdrop.call(this)
+
+    } else if (callback) {
+      callback()
+    }
+  }
+
+  function removeBackdrop() {
+    this.$backdrop.remove()
+    this.$backdrop = null
+  }
+
+  function escape() {
+    var that = this
+    if (this.isShown && this.options.keyboard) {
+      $(document).on('keyup.dismiss.modal', function ( e ) {
+        e.which == 27 && that.hide()
+      })
+    } else if (!this.isShown) {
+      $(document).off('keyup.dismiss.modal')
+    }
+  }
+
+
+ /* MODAL PLUGIN DEFINITION
+  * ======================= */
+
+  $.fn.modal = function ( option ) {
+    return this.each(function () {
+      var $this = $(this)
+        , data = $this.data('modal')
+        , options = typeof option == 'object' && option
+      if (!data) $this.data('modal', (data = new Modal(this, options)))
+      if (typeof option == 'string') data[option]()
+      else data.show()
+    })
+  }
+
+  $.fn.modal.defaults = {
+      backdrop: true
+    , keyboard: true
+  }
+
+  $.fn.modal.Constructor = Modal
+
+
+ /* MODAL DATA-API
+  * ============== */
+
+  $(function () {
+    $('body').on('click.modal.data-api', '[data-toggle="modal"]', function ( e ) {
+      var $this = $(this), href
+        , $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7
+        , option = $target.data('modal') ? 'toggle' : $.extend({}, $target.data(), $this.data())
+
+      e.preventDefault()
+      $target.modal(option)
+    })
+  })
+
+}( window.jQuery )
+;
+define("bootstrap/bootstrap-modal", function(){});
+
 //     Underscore.js 1.3.1
 //     (c) 2009-2012 Jeremy Ashkenas, DocumentCloud Inc.
 //     Underscore is freely distributable under the MIT license.
@@ -12322,7 +12546,9 @@ define('../src/app/register',[], function(){
 		// The translations
 		i18n: {},
 		// The languages supported
-		languages: {}
+		languages: {},
+		// The only modal dialog instance
+		modal: null
 	};
 	
 	var apiResourceUrls = {
@@ -12492,6 +12718,14 @@ define('../src/app/register',[], function(){
 		
 		setPubsub: function(pubsub) {
 			set('pubsub', pubsub);
+		},
+		
+		getModal: function() {
+			return get('modal');
+		},
+		
+		setModal: function(modal) {
+			set('modal', modal);
 		}
 	};
 });
@@ -12676,230 +12910,6 @@ define("jquery.cookie", function(){});
 }( window.jQuery )
 ;
 define("bootstrap/bootstrap-dropdown", function(){});
-
-/* =========================================================
- * bootstrap-modal.js v2.0.0
- * http://twitter.github.com/bootstrap/javascript.html#modals
- * =========================================================
- * Copyright 2012 Twitter, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * ========================================================= */
-
-
-!function( $ ){
-
-  "use strict"
-
- /* MODAL CLASS DEFINITION
-  * ====================== */
-
-  var Modal = function ( content, options ) {
-    this.options = $.extend({}, $.fn.modal.defaults, options)
-    this.$element = $(content)
-      .delegate('[data-dismiss="modal"]', 'click.dismiss.modal', $.proxy(this.hide, this))
-      
-    this.$element.on('shown', $.proxy(this.refresh, this));
-  }
-
-  Modal.prototype = {
-
-      constructor: Modal
-
-    , toggle: function () {
-        return this[!this.isShown ? 'show' : 'hide']()
-      }
-
-    , show: function () {
-        var that = this
-
-        if (this.isShown) return
-
-        $('body').addClass('modal-open')
-
-        this.isShown = true
-        this.$element.trigger('show')
-
-        escape.call(this)
-        backdrop.call(this, function () {
-          var transition = $.support.transition && that.$element.hasClass('fade')
-
-          !that.$element.parent().length && that.$element.appendTo(document.body) //don't move modals dom position
-
-          that.$element
-            .show()
-
-          if (transition) {
-            that.$element[0].offsetWidth // force reflow
-          }
-
-          that.$element.addClass('in')
-
-          transition ?
-            that.$element.one($.support.transition.end, function () { that.$element.trigger('shown') }) :
-            that.$element.trigger('shown')
-
-        })
-      }
-
-    , hide: function ( e ) {
-        e && e.preventDefault()
-
-        if (!this.isShown) return
-
-        var that = this
-        this.isShown = false
-
-        $('body').removeClass('modal-open')
-
-        escape.call(this)
-
-        this.$element
-          .trigger('hide')
-          .removeClass('in')
-
-        $.support.transition && this.$element.hasClass('fade') ?
-          hideWithTransition.call(this) :
-          hideModal.call(this)
-      }
-
-    , refresh: function (e) {
-    	// mikael - https://github.com/twitter/bootstrap/issues/452
-    	e && e.preventDefault()
-    	var modal = this.$element
-	    	modal.css('margin-top',(modal.outerHeight()/2)*-1)
-	    	     .css('margin-left',(modal.outerWidth()/2)*-1)
-    	return this
-      }
-    
-  }
-  
-
-
- /* MODAL PRIVATE METHODS
-  * ===================== */
-
-  function hideWithTransition() {
-    var that = this
-      , timeout = setTimeout(function () {
-          that.$element.off($.support.transition.end)
-          hideModal.call(that)
-        }, 500)
-
-    this.$element.one($.support.transition.end, function () {
-      clearTimeout(timeout)
-      hideModal.call(that)
-    })
-  }
-
-  function hideModal( that ) {
-    this.$element
-      .hide()
-      .trigger('hidden')
-
-    backdrop.call(this)
-  }
-
-  function backdrop( callback ) {
-    var that = this
-      , animate = this.$element.hasClass('fade') ? 'fade' : ''
-
-    if (this.isShown && this.options.backdrop) {
-      var doAnimate = $.support.transition && animate
-
-      this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
-        .appendTo(document.body)
-
-      if (this.options.backdrop != 'static') {
-        this.$backdrop.click($.proxy(this.hide, this))
-      }
-
-      if (doAnimate) this.$backdrop[0].offsetWidth // force reflow
-
-      this.$backdrop.addClass('in')
-
-      doAnimate ?
-        this.$backdrop.one($.support.transition.end, callback) :
-        callback()
-
-    } else if (!this.isShown && this.$backdrop) {
-      this.$backdrop.removeClass('in')
-
-      $.support.transition && this.$element.hasClass('fade')?
-        this.$backdrop.one($.support.transition.end, $.proxy(removeBackdrop, this)) :
-        removeBackdrop.call(this)
-
-    } else if (callback) {
-      callback()
-    }
-  }
-
-  function removeBackdrop() {
-    this.$backdrop.remove()
-    this.$backdrop = null
-  }
-
-  function escape() {
-    var that = this
-    if (this.isShown && this.options.keyboard) {
-      $(document).on('keyup.dismiss.modal', function ( e ) {
-        e.which == 27 && that.hide()
-      })
-    } else if (!this.isShown) {
-      $(document).off('keyup.dismiss.modal')
-    }
-  }
-
-
- /* MODAL PLUGIN DEFINITION
-  * ======================= */
-
-  $.fn.modal = function ( option ) {
-    return this.each(function () {
-      var $this = $(this)
-        , data = $this.data('modal')
-        , options = typeof option == 'object' && option
-      if (!data) $this.data('modal', (data = new Modal(this, options)))
-      if (typeof option == 'string') data[option]()
-      else data.show()
-    })
-  }
-
-  $.fn.modal.defaults = {
-      backdrop: true
-    , keyboard: true
-  }
-
-  $.fn.modal.Constructor = Modal
-
-
- /* MODAL DATA-API
-  * ============== */
-
-  $(function () {
-    $('body').on('click.modal.data-api', '[data-toggle="modal"]', function ( e ) {
-      var $this = $(this), href
-        , $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7
-        , option = $target.data('modal') ? 'toggle' : $.extend({}, $target.data(), $this.data())
-
-      e.preventDefault()
-      $target.modal(option)
-    })
-  })
-
-}( window.jQuery )
-;
-define("bootstrap/bootstrap-modal", function(){});
 
 /**
  * @license RequireJS text 1.0.7 Copyright (c) 2010-2011, The Dojo Foundation All Rights Reserved.
@@ -13190,19 +13200,21 @@ define("bootstrap/bootstrap-modal", function(){});
     });
 }());
 
-define('text!templates/layout/nav-primary.tpl',[],function () { return '<nav class="main" id="nav-primary">\n\t<ul>\n\t\t<li><a href="/locations/">{{#ucfirst}}{{ i18n.locations }}{{/ucfirst}}</a></li>\n\t\t<li><a href="/riders/">{{#ucfirst}}{{ i18n.riders }}{{/ucfirst}}</a></li>\n\t\t<li><a href="/sessions/">{{#ucfirst}}{{ i18n.sessions }}{{/ucfirst}}</a></li>\n\t</ul>\n</nav>\n';});
+define('text!templates/layout/nav-primary.tpl',[],function () { return '<nav class="main" id="nav-primary">\n\t<ul>\n\t\t<li><a href="/locations/" class="dyn-link">{{#ucfirst}}{{ i18n.locations }}{{/ucfirst}}</a></li>\n\t\t<li><a href="/riders/" class="dyn-link">{{#ucfirst}}{{ i18n.riders }}{{/ucfirst}}</a></li>\n\t\t<li><a href="/sessions/" class="dyn-link">{{#ucfirst}}{{ i18n.sessions }}{{/ucfirst}}</a></li>\n\t</ul>\n</nav>\n';});
 
 define('text!templates/layout/nav-secondary.tpl',[],function () { return '<nav id="nav-secondary">\n\t<ul>\n\t\t<li><a href="/about/">{{#ucfirst}}{{ i18n.about }}{{/ucfirst}}</a></li>\n\t\t<li><a href="/ridedb/">RideDB</a></li>\n\t\t<li><a href="/contact/">{{#ucfirst}}{{ i18n.contact }}{{/ucfirst}}</a></li>\n\t</ul>\n</nav>\n';});
 
-define('text!templates/session/corner-logged-in.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n\t<div class="username">\n\t\t{{ rider.username }}\n\t</div>\n\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t<ul class="dropdown-menu" id="lang-picker">\n    \t\t<!-- dropdown menu links -->\n    \t\t{{#languages}}\n    \t\t<li><a href="#" data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>\n    \t\t{{/languages}}\n\t    </ul>\n    </div>\n\t\n    <div class="btn-group logout-btn-group">\n    \t<a id="logout-btn" class="btn" href="/user/logout/">{{#ucfirst}}{{ i18n.logout }}{{/ucfirst}}</a>\n    </div>\t\n</nav>';});
+define('text!templates/layout/modal.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}} {{title}} {{/ucfirst}}</h3>\n</div>\n{{{ contentHtml }}}';});
 
-define('text!templates/session/corner-logged-out.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n   \t\t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu" id="lang-picker">\n    \t\t<!-- dropdown menu links -->\n    \t\t{{#languages}}\n    \t\t<li><a href="#" data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>\n    \t\t{{/languages}}\n\t    </ul>\n    </div>\n\t\n    <div class="btn-group login-btn-group">\n    \t<a id="login-btn" class="btn" href="/user/login/">{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}</a>\n    \t<a class="btn" href="/user/register/">\n    \t\t{{#i18n}}\n    \t\t\t{{#ucfirst}}{{ register }}{{/ucfirst}}\n    \t\t{{/i18n}}\n    \t</a>\n    </div>\t\n</nav>';});
+define('text!templates/session/corner-logged-in.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n\t<div class="username">\n\t\t{{ rider.username }}\n\t</div>\n\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t<ul class="dropdown-menu" id="lang-picker">\n    \t\t<!-- dropdown menu links -->\n    \t\t{{#languages}}\n    \t\t<li><a href="#" data-lang="{{.}}" class="dyn-link lang {{.}}">{{.}}</a></li>\n    \t\t{{/languages}}\n\t    </ul>\n    </div>\n\t\n    <div class="btn-group logout-btn-group">\n    \t<a id="logout-btn" class="btn dyn-link" href="/user/logout/">{{#ucfirst}}{{ i18n.logout }}{{/ucfirst}}</a>\n    </div>\t\n</nav>';});
 
-define('text!templates/session/login-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/login/" method="post" id="login-form">\n\t<div class="modal-body">\n\t\t<span class="control-group error">\n\t\t\t<span class="help-inline">{{ error }}</span>\n\t\t</span>\n\t\t<input type="text" id="userN" name="userN" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="userR" name="userR"/>{{#ucfirst}}{{ i18n.rememberMeNextTime }}{{/ucfirst}}\n        </label>\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="login-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="login-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
+define('text!templates/session/corner-logged-out.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n   \t\t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu" id="lang-picker">\n    \t\t<!-- dropdown menu links -->\n    \t\t{{#languages}}\n    \t\t<li><a href="#" data-lang="{{.}}" class="dyn-link lang {{.}}">{{.}}</a></li>\n    \t\t{{/languages}}\n\t    </ul>\n    </div>\n\t\n    <div class="btn-group login-btn-group">\n    \t<a id="login-btn" class="dyn-link btn" href="/user/login/">{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}</a>\n    \t<a id="registration-btn" class="dyn-link btn" href="/user/register/">\n    \t\t{{#i18n}}\n    \t\t\t{{#ucfirst}}{{ register }}{{/ucfirst}}\n    \t\t{{/i18n}}\n    \t</a>\n    </div>\t\n</nav>';});
+
+define('text!templates/session/login-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/login/" method="post" id="login-form">\n\t<div class="modal-body">\n\t\t<span class="control-group error">\n\t\t\t<span class="help-inline">{{ error }}</span>\n\t\t</span>\n\t\t<input type="text" id="userN" name="userN" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="userR" name="userR"/>{{#ucfirst}}{{ i18n.keepMeLoggedIn }}{{/ucfirst}}\n        </label>\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="login-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="login-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
 
 define('text!templates/session/logout-message.tpl',[],function () { return '<div class="modal-header">\n\t<h3>Logout</h3>\n</div>\n<div class="modal-body">\n\t<span class="control-group error hide" id="session-logout-error">\n\t\t<span class="help-inline">{{#ucfirst}}{{ error }}{{/ucfirst}}</span>\n\t</span>\n\t<div class="modal-footer">\n\t\t<input type="button" id="session-logout-close" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.close }}{{/ucfirst}}" disabled="disabled"/>\n\t</div>\n</div>\n';});
 
-define('text!templates/session/register-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/register/" method="post" id="register-form">\n\t<div class="modal-body">\n\t\t<span class="control-group error">\n\t\t\t<span class="help-inline">{{ error }}</span>\n\t\t</span>\n\t\t<input type="text" id="userN" name="userN" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>\n\t\t<input type="email" id="email" name="email" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.email }}{{/ucfirst}}" value=""/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\t\t<input type="password" id="userPC" name="userPC" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.passwordConf }}{{/ucfirst}}"/>\n\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="register-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="register-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
+define('text!templates/session/registration-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/register/" method="post" id="register-form">\n\t<div class="modal-body">\n\t\t<span class="control-group error">\n\t\t\t<span class="help-inline">{{ error }}</span>\n\t\t</span>\n\t\t<input type="text" id="userN" name="userN" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>\n\t\t<input type="email" id="email" name="email" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.email }}{{/ucfirst}}" value=""/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\t\t<input type="password" id="userPC" name="userPC" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.passwordConf }}{{/ucfirst}}"/>\n\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="register-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="register-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
 
 define('text!templates/rider/username.tpl',[],function () { return '<h2>\n\t<a href="/riders/{{ userId }}/" class="rider">\n\t\t{{ username }}\n\t</a>\n</h2>\n<p>{{ i18n.country }}: {{ country.title }}</p>';});
 
@@ -13310,20 +13322,22 @@ define('../src/app/rider',[
 	
 		// The RiderView listens for changes to its model, re-rendering.
 		initialize: function() {
-			this.model.bind('destroy', this.remove, this);
-			pubsub.subscribe('register.lang.ready', _.bind(this.render, this));
+			this.model.bind('destroy', this.close, this);
+			this.model.bind('render', this.render, this);
 		},
 		
 		close: function() {
+			console.log('rider - usernameview - close', this);
 			this.model.unbind();
-			register.getPubsub().unsubscribe('register.lang.ready', _.bind(this.render, this));
-			this.remove();
 		},
 		
 		template: mustache.compile(usernameTpl),
 	
 		// Re-render the contents of the item
 		render: function() {
+			if(register.isDebug()) {
+				console.log('rider - usernameview - render');
+			}
 			$(this.el).html(
 				this.template(_.extend(this.model.toJSON(), {i18n: register.getI18n()}))
 			);
@@ -13377,12 +13391,13 @@ define('../src/app/session',[
 	'text!templates/session/corner-logged-out.tpl',
 	'text!templates/session/login-form.tpl',
 	'text!templates/session/logout-message.tpl',
-	'text!templates/session/register-form.tpl',
+	'text!templates/session/registration-form.tpl',
 
 	// Bootstrap plugins
 	'order!bootstrap/bootstrap-dropdown'
 	
-	], function($, cookie, _, Backbone, mustache, register, riderModule, cornerLoggedInTpl, cornerLoggedOutTpl, loginFormTpl, logoutMessageTpl, dropdownPlugin){
+	], function($, cookie, _, Backbone, mustache, register, riderModule, cornerLoggedInTpl, cornerLoggedOutTpl, loginFormTpl,
+			logoutMessageTpl, registrationTpl, dropdownPlugin){
 
 	// View instances
 	var sessionCorner, loginLogout;
@@ -13595,6 +13610,8 @@ define('../src/app/session',[
 					this.model.logout();
 				} else if($el.is('#login-btn')) {
 					loginLogout.displayLoginForm();
+				} else if($el.is('#registration-btn')) {
+					loginLogout.displayRegistrationForm();
 				} else if ($el.is('#lang-picker a')) {
 					$el.parent().parent().removeClass('open');
 					register.setLang($el.data('lang'));
@@ -13605,7 +13622,7 @@ define('../src/app/session',[
 	}); 
 	
 	/**************************************************************************
-	 * Login/logout modal
+	 * Login/logout/registration modal
 	 *************************************************************************/
 	var LoginLogoutView = Backbone.View.extend({
 		el: $('#modal'),
@@ -13631,8 +13648,14 @@ define('../src/app/session',[
 			$(this.el).addClass('session-logout-message').modal();	
 		},
 		
+		displayRegistrationForm: function() {
+			this.model.resetError();
+			this.render(true);
+			$(this.el).addClass('session-registration-message').modal();
+		},
+		
 		remove: function() {
-			$(this.el).removeClass('session-login-form session-logout-message')
+			$(this.el).removeClass('session-login-form session-logout-message session-registration-message')
 			          .modal('hide');
 		},
 
@@ -13644,8 +13667,13 @@ define('../src/app/session',[
 			});
 		},
 		
-		render: function() {
-			var templateFile = this.model.isLoggedIn() ? logoutMessageTpl : loginFormTpl;
+		render: function(registration) {
+			var templateFile;
+			if(registration) {
+				templateFile = registrationTpl;
+			} else {
+				templateFile = this.model.isLoggedIn() ? logoutMessageTpl : loginFormTpl;
+			}
 			this.template = mustache.compile(templateFile);
 			
 			$(this.el).html(
@@ -13682,7 +13710,11 @@ define('../src/app/session',[
 	};
 });
 
-define('text!templates/modal.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>Modal</h3>\n</div>\n<div class="modal-body">\n\t<p class="country">Just a modal</p>\n</div>\n<div class="modal-footer">\n\t<a href="#" class="btn" data-dismiss="modal">Close</a>\n</div>';});
+define('text!templates/temp/modal-content.tpl',[],function () { return '<div class="modal-body">\n\t<p class="modalClick">Just a modal</p>\n</div>\n<div class="modal-footer">\n\t<a href="#" class="btn" data-dismiss="modal">Close</a>\n</div>';});
+
+define('text!templates/temp/section.tpl',[],function () { return '<div>Section content</div>';});
+
+define('text!templates/temp/aside.tpl',[],function () { return '<div>aside content</div>';});
 
 /******************************************************************************
  * js/src/app/temp.js
@@ -13701,26 +13733,61 @@ define('../src/app/temp',[
 	'../app/rider',
 	
 	// Templates
-	'text!templates/modal.tpl',
+	'text!templates/temp/modal-content.tpl',
+	'text!templates/temp/section.tpl',
+	'text!templates/temp/aside.tpl',
 
 	// Bootstrap plugins
 	'order!bootstrap/bootstrap-modal'
 	
-	], function($, _, Backbone, mustache, register, riderModule, modalTpl, bootstrapModal){
+	], function($, _, Backbone, mustache, register, riderModule, modalContentTpl, sectionTpl, asideTpl, bootstrapModal){
 
 	var pubsub;
 	
 	/**************************************************************************
 	 * VIEWS 
 	 *************************************************************************/
-	var ModalView = Backbone.View.extend({
-		template: mustache.compile(modalTpl),
+	var ModalContentView = Backbone.View.extend({
+		// This is necessary to keep event handlers working:
+		el: $('#modal'),
+		
+		template: mustache.compile(modalContentTpl),
+		
 		render: function(){
-			$(this.el).html(this.template());
-			return this;
+			return {
+				contentHtml: this.template(),
+				title: 'aTitle'
+			};
 		},
-		getHtml: function() {
-			return $(this.el).html();
+		
+		events: {
+			click: function(e) {
+				if(!$(e.target).is('p.modalClick')){
+					return;
+				}
+				var s = new SectionView(),
+				    a = new AsideView();
+				register.getPubsub().publish('register.content.ready', s, a);
+			}
+		},
+		
+		close: function() {
+			this.model.unbind();
+			this.remove();
+		}
+	});
+	
+	var SectionView = Backbone.View.extend({
+		template: mustache.compile(sectionTpl),
+		render: function(){
+			return this.template();
+		}
+	});
+	
+	var AsideView = Backbone.View.extend({
+		template: mustache.compile(asideTpl),
+		render: function(){
+			return this.template();
 		}
 	});
 	
@@ -13728,40 +13795,55 @@ define('../src/app/temp',[
 		el: $("#main"),
 		
 		initialize: function(riders) {
-			pubsub = register.getPubsub();
-
+			if(register.isDebug()) {
+				console.log('temp - initialize');
+			}
+			
 			this.riders = riders;
-			this.riders.bind('add', this.addOne, this);
 			this.riders.bind('reset', this.addAll, this);
 			this.riders.fetch();
-			
-			pubsub.subscribe('register.lang.ready', _.bind(this.redraw, this));
+
+			register.getPubsub().subscribe('register.lang.ready', this.redraw, this);
 		},
 		
 		close: function() {
-			register.getPubsub().unsubscribe('register.lang.ready', _.bind(this.redraw, this));
+			if(register.isDebug()) {
+				console.log('temp - close');
+			}
+			this.riders.unbind();
+			this.riders = null;
+
+			console.log('temp - unsubscribing');
+			register.getPubsub().unsubscribe('register.lang.ready', this.redraw, this);
 		},
 		
 		redraw: function() {
 			if(register.isDebug()) {
-				console.log('temp - render');
+				console.log('temp - redraw');
 			}
-			this.$("#rider-list").html('');
-			this.addAll();
+			// How to force the collection to be re-rendered?
+			this.riders.each(function(rider, index){
+				rider.trigger('render')
+			});
 		},
 		
 		events: {
 			click: function() {
-				var view = new ModalView({model: this.model});
-				$("#modal").html(view.render().getHtml()).modal();
+				var modalContent = new ModalContentView({model: this.model}).render();
+				var modal = register.getModal();
+				
+				modal.addDataForRender(modalContent);
+				modal.render();
+				$(modal.el).modal();
+				
 				if(register.isDebug()) {
 					console.log('temp - click');
 				}
-				this.close();
 			}
 		},
 		
 		addOne: function(rider) {
+			console.log('addOne');
 			var view = new riderModule.views.username({model: rider});
 			this.$("#rider-list").append(view.render().el);
 		},
@@ -13773,7 +13855,7 @@ define('../src/app/temp',[
 	
 	return {
 		views: {
-			modal: ModalView,
+			modal: ModalContentView,
 			temp: TempView
 		}
 	};
@@ -13800,9 +13882,12 @@ require([
 	// Templates
 	'text!templates/layout/nav-primary.tpl',
 	'text!templates/layout/nav-secondary.tpl',
+	'text!templates/layout/modal.tpl',
 	
+	// Bootstrap plugins
+	'order!bootstrap/bootstrap-modal'
 	
-], function($, _, Backbone, mustache, register, pubsub, sessionModule, riderModule, tempModule, navPrimaryTpl, navSecondaryTpl){
+], function($, _, Backbone, mustache, register, pubsub, sessionModule, riderModule, tempModule, navPrimaryTpl, navSecondaryTpl, modalTpl, bootstrapModal){
 	var preventDefaultActions = function(e, type) {
 		// makes sure we don't follow links and form submissions
 		if(e.type !== type) {
@@ -13827,8 +13912,77 @@ require([
 			console.log('main - ' + type +' event on', t);
 		}		
 	};
+
+	/**************************************************************************
+	 * Application router
+	 *************************************************************************/
+	var Router = Backbone.Router.extend({
+		routes: {
+			"": 			"index",
+			"locations/":	"locations",
+			"riders/":		"riders",
+			"sessions/":	"sessions"
+		},
+		
+		index: function() {
+			console.log('Calling the index route', arguments);
+		},
+		
+		locations: function(){
+			console.log('Calling the locations route', arguments);
+		},
+		
+		riders: function(){
+			console.log('Calling the riders route', arguments);
+		},
+		
+		sessions: function(){
+			console.log('Calling the sessions route', arguments);
+		}
+		
+	});
 	
-	// This view manages the content of the document
+	/**************************************************************************
+	 * Application modal dialog view
+	 * Only one instance allowed. Accessed through the register.
+	 *************************************************************************/
+	var ModalView = Backbone.View.extend({
+		dataForRender: {
+			title: '',
+			contentHtml: ''
+		},
+		
+		el: $('#modal'),
+		
+		template: mustache.compile(modalTpl),
+
+		render: function() {
+			$(this.el).html(this.template(this.getDataForRender()));
+			return this;
+		},
+		
+		addDataForRender: function(hash) {
+			this.dataForRender = _.extend(this.dataForRender, hash);
+		},
+		
+		resetData: function() {
+			this.dataForRender = {};
+			this.addDataForRender({i18n: register.getI18n()});
+		},
+		
+		getDataForRender: function() {
+			return register.decorateForMustache(this.dataForRender);
+		},
+		
+		close: function() {
+			this.resetData();
+			this.model.unbind();
+		}
+	});
+
+	/**************************************************************************
+	 * Main view. Manages the content of the document
+	 *************************************************************************/
 	var MainView = Backbone.View.extend({
 		section: null,
 		aside: null,
@@ -13839,12 +13993,44 @@ require([
 			if(register.isDebug()) {
 				console.log('main - mainView - initialize', appConfig);
 			}
+			register.getPubsub().subscribe('register.content.ready', _.bind(this.onContentReady, this));
 		},
 	
+		// When a content ready event is triggered, this updates the main view
+		onContentReady: function(sectionView, asideView) {
+			if(register.isDebug()) {
+				console.log('main - MainView - onContentReady', arguments);
+			}
+			if(this.section && this.section.close){
+				this.section.close();
+			}
+			if(this.section && this.section.close){
+				this.aside.close();
+			}
+			
+			if(tempView) {
+				tempView.close();
+				tempView = null;
+			}
+			
+			this.section = sectionView;
+			this.aside = asideView;
+			
+			this.render();
+		},
+		
 		render: function(){
+			var s = this.section.render();
+			$(this.el).find('section').html(s);
+
+			var a = this.aside.render();
+			$(this.el).find('aside').html(a);
 		}
 	});
 	
+	/**************************************************************************
+	 * Primary navigation view
+	 *************************************************************************/
 	var NavPrimaryView = Backbone.View.extend({
 		el: $('#nav-primary'),
 		
@@ -13871,6 +14057,9 @@ require([
 		// No close method because this view is always there
 	});
 
+	/**************************************************************************
+	 * Secondary navigation view
+	 *************************************************************************/
 	var NavSecondaryView = Backbone.View.extend({
 		el: $('#nav-secondary'),
 		
@@ -13897,8 +14086,10 @@ require([
 		// No close method because this view is always there
 	});
 	
-	
-	// This view is the main entry point of the application
+	/**************************************************************************
+	 * Application view
+	 * This view is the main entry point of the application
+	 *************************************************************************/
 	var AppView = Backbone.View.extend({
 		navPrimary: null,
 		navSecondary: null,
@@ -13928,14 +14119,24 @@ require([
 			this.navPrimary = new NavPrimaryView();
 			this.navSecondary = new NavSecondaryView();
 			
-			var tempView = new tempModule.views.temp(new riderModule.collection());
+			tempView = new tempModule.views.temp(new riderModule.collection());
+			modalView = new ModalView();
+			register.setModal(modalView);
+			
+			router = new Router();
+			Backbone.history.start({pushState: true});
 		},
 		
 		el: $('#app'),
 
 		events: {
 			'click': function(e) {
-				preventDefaultActions(e, 'click');
+				var $e = $(e.target);
+				if($e.is('.dyn-link')){
+					router.navigate($e.data('href'), {trigger: true});
+					e.preventDefault();
+					e.stopPropagation();
+				}
 			},
 			
 			'submit': function(e) {
@@ -13943,8 +14144,14 @@ require([
 			}
 			
 		}
+
+		// No close method because this view is always there
 	});
 	
 	var appView = new AppView(appConfig);
+	var mainView = new MainView();
+	var modalView;
+	var tempView;
+	var router;
 });
 define("../bin/main", function(){});

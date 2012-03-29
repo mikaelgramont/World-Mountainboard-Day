@@ -7,14 +7,14 @@
     	<ul class="dropdown-menu" id="lang-picker">
     		<!-- dropdown menu links -->
     		{{#languages}}
-    		<li><a href="#" data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>
+    		<li><a href="#" data-lang="{{.}}" class="dyn-link lang {{.}}">{{.}}</a></li>
     		{{/languages}}
 	    </ul>
     </div>
 	
     <div class="btn-group login-btn-group">
-    	<a id="login-btn" class="btn" href="/user/login/">{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}</a>
-    	<a class="btn" href="/user/register/">
+    	<a id="login-btn" class="dyn-link btn" href="/user/login/">{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}</a>
+    	<a id="registration-btn" class="dyn-link btn" href="/user/register/">
     		{{#i18n}}
     			{{#ucfirst}}{{ register }}{{/ucfirst}}
     		{{/i18n}}

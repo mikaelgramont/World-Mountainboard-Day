@@ -11,7 +11,7 @@
 		<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>
 
 		<label class="checkbox">
-        	<input type="checkbox" value="1" id="userR" name="userR"/>{{#ucfirst}}{{ i18n.rememberMeNextTime }}{{/ucfirst}}
+        	<input type="checkbox" value="1" id="userR" name="userR"/>{{#ucfirst}}{{ i18n.keepMeLoggedIn }}{{/ucfirst}}
         </label>
 	</div>
 	<div class="modal-footer">

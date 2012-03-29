@@ -20,12 +20,13 @@ define([
 	'text!templates/session/corner-logged-out.tpl',
 	'text!templates/session/login-form.tpl',
 	'text!templates/session/logout-message.tpl',
-	'text!templates/session/register-form.tpl',
+	'text!templates/session/registration-form.tpl',
 
 	// Bootstrap plugins
 	'order!bootstrap/bootstrap-dropdown'
 	
-	], function($, cookie, _, Backbone, mustache, register, riderModule, cornerLoggedInTpl, cornerLoggedOutTpl, loginFormTpl, logoutMessageTpl, dropdownPlugin){
+	], function($, cookie, _, Backbone, mustache, register, riderModule, cornerLoggedInTpl, cornerLoggedOutTpl, loginFormTpl,
+			logoutMessageTpl, registrationTpl, dropdownPlugin){
 
 	// View instances
 	var sessionCorner, loginLogout;
@@ -238,6 +239,8 @@ define([
 					this.model.logout();
 				} else if($el.is('#login-btn')) {
 					loginLogout.displayLoginForm();
+				} else if($el.is('#registration-btn')) {
+					loginLogout.displayRegistrationForm();
 				} else if ($el.is('#lang-picker a')) {
 					$el.parent().parent().removeClass('open');
 					register.setLang($el.data('lang'));
@@ -248,7 +251,7 @@ define([
 	}); 
 	
 	/**************************************************************************
-	 * Login/logout modal
+	 * Login/logout/registration modal
 	 *************************************************************************/
 	var LoginLogoutView = Backbone.View.extend({
 		el: $('#modal'),
@@ -274,8 +277,14 @@ define([
 			$(this.el).addClass('session-logout-message').modal();	
 		},
 		
+		displayRegistrationForm: function() {
+			this.model.resetError();
+			this.render(true);
+			$(this.el).addClass('session-registration-message').modal();
+		},
+		
 		remove: function() {
-			$(this.el).removeClass('session-login-form session-logout-message')
+			$(this.el).removeClass('session-login-form session-logout-message session-registration-message')
 			          .modal('hide');
 		},
 
@@ -287,8 +296,13 @@ define([
 			});
 		},
 		
-		render: function() {
-			var templateFile = this.model.isLoggedIn() ? logoutMessageTpl : loginFormTpl;
+		render: function(registration) {
+			var templateFile;
+			if(registration) {
+				templateFile = registrationTpl;
+			} else {
+				templateFile = this.model.isLoggedIn() ? logoutMessageTpl : loginFormTpl;
+			}
 			this.template = mustache.compile(templateFile);
 			
 			$(this.el).html(

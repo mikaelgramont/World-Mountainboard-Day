@@ -8,7 +8,9 @@
 	"register": "s'enregistrer",
 	
 	"username": "pseudo",
+	"email": "email",
 	"password": "mot de passe",
+	"passwordConf": "encore",
 	"keepMeLoggedIn": "rester connecte",	
 	
 	"cancel": "annuler",

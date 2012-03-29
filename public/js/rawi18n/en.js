@@ -8,7 +8,9 @@
 	"register": "register",
 	
 	"username": "username",
+	"email": "email",
 	"password": "password",
+	"passwordConf": "again",
 	"keepMeLoggedIn": "keep me logged-in",
 	
 	"cancel": "cancel",

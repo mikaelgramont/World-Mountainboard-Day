@@ -8,7 +8,9 @@
 	"register": "title that introduces the action of creating a new user account",
 	
 	"username": "indicates a form field to enter a username",
+	"email": "indicates a form field to enter an email",
 	"password": "indicates a form field to enter a password",
+	"passwordConf": "indicates a second form field to enter a password",
 	"keepMeLoggedIn": "label for a checkbox a user can check if they want the system to keep them logged in",	
 
 	"cancel": "title that introduces the action of interrupting or stopping a process",	

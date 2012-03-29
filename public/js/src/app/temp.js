@@ -30,17 +30,16 @@ define([
 	 * VIEWS 
 	 *************************************************************************/
 	var ModalContentView = Backbone.View.extend({
+		// This is necessary to keep event handlers working:
 		el: $('#modal'),
 		
 		template: mustache.compile(modalContentTpl),
 		
 		render: function(){
-			$(this.el).html(this.template());
-			return this;
-		},
-		
-		getHtml: function() {
-			return $(this.el).html();
+			return {
+				contentHtml: this.template(),
+				title: 'aTitle'
+			};
 		},
 		
 		events: {
@@ -112,13 +111,10 @@ define([
 		
 		events: {
 			click: function() {
-				var modalContent = new ModalContentView({model: this.model});
+				var modalContent = new ModalContentView({model: this.model}).render();
 				var modal = register.getModal();
 				
-				modal.addDataForRender({
-					title: 'myTitle',
-					contentHtml: modalContent.render().getHtml()
-				});
+				modal.addDataForRender(modalContent);
 				modal.render();
 				$(modal.el).modal();
 				
