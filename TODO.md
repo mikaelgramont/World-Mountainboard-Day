@@ -1,6 +1,7 @@
 # Client-side TODO
 Modal cancels: popstate on history
-User creation modal
+API: if creation/update fails, return a 400 => update all tests and controllers
+User creation modal: login and registration should use the same username field. Plus drop the slide question? OR add it dynamically? Use a CSRF protection?
 
 Use lukew's design patterns to determine a strategy for responsiveness http://www.lukew.com/ff/entry.asp?1514
 Have constants in config file to determine size thresholds, and have events fire when window is resized, and initially too

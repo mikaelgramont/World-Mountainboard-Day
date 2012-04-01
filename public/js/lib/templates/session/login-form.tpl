@@ -7,7 +7,7 @@
 		<span class="control-group error">
 			<span class="help-inline">{{ error }}</span>
 		</span>
-		<input type="text" id="userN" name="userN" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>
+		<input type="text" id="username" name="username" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>
 		<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>
 
 		<label class="checkbox">

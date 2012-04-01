@@ -13210,11 +13210,11 @@ define('text!templates/session/corner-logged-in.tpl',[],function () { return '<n
 
 define('text!templates/session/corner-logged-out.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n   \t\t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu" id="lang-picker">\n    \t\t<!-- dropdown menu links -->\n    \t\t{{#languages}}\n    \t\t<li><a href="#" data-lang="{{.}}" class="dyn-link lang {{.}}">{{.}}</a></li>\n    \t\t{{/languages}}\n\t    </ul>\n    </div>\n\t\n    <div class="btn-group login-btn-group">\n    \t<a id="login-btn" class="dyn-link btn" href="/user/login/">{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}</a>\n    \t<a id="registration-btn" class="dyn-link btn" href="/user/register/">\n    \t\t{{#i18n}}\n    \t\t\t{{#ucfirst}}{{ register }}{{/ucfirst}}\n    \t\t{{/i18n}}\n    \t</a>\n    </div>\t\n</nav>';});
 
-define('text!templates/session/login-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/login/" method="post" id="login-form">\n\t<div class="modal-body">\n\t\t<span class="control-group error">\n\t\t\t<span class="help-inline">{{ error }}</span>\n\t\t</span>\n\t\t<input type="text" id="userN" name="userN" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="userR" name="userR"/>{{#ucfirst}}{{ i18n.keepMeLoggedIn }}{{/ucfirst}}\n        </label>\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="login-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="login-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
+define('text!templates/session/login-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/login/" method="post" id="login-form">\n\t<div class="modal-body">\n\t\t<span class="control-group error">\n\t\t\t<span class="help-inline">{{ error }}</span>\n\t\t</span>\n\t\t<input type="text" id="username" name="username" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="userR" name="userR"/>{{#ucfirst}}{{ i18n.keepMeLoggedIn }}{{/ucfirst}}\n        </label>\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="login-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="login-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
 
 define('text!templates/session/logout-message.tpl',[],function () { return '<div class="modal-header">\n\t<h3>Logout</h3>\n</div>\n<div class="modal-body">\n\t<span class="control-group error hide" id="session-logout-error">\n\t\t<span class="help-inline">{{#ucfirst}}{{ error }}{{/ucfirst}}</span>\n\t</span>\n\t<div class="modal-footer">\n\t\t<input type="button" id="session-logout-close" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.close }}{{/ucfirst}}" disabled="disabled"/>\n\t</div>\n</div>\n';});
 
-define('text!templates/session/registration-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/register/" method="post" id="register-form">\n\t<div class="modal-body">\n\t\t<span class="control-group error">\n\t\t\t<span class="help-inline">{{ error }}</span>\n\t\t</span>\n\t\t<input type="text" id="userN" name="userN" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>\n\t\t<input type="email" id="email" name="email" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.email }}{{/ucfirst}}" value=""/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\t\t<input type="password" id="userPC" name="userPC" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.passwordConf }}{{/ucfirst}}"/>\n\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="register-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="register-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
+define('text!templates/session/registration-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/register/" method="post" id="register-form">\n\t<div class="modal-body">\n\t\t<span class="control-group error">\n\t\t\t<span class="help-inline">{{ error }}</span>\n\t\t</span>\n\t\t<input type="text" id="username" name="username" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>\n\t\t<input type="email" id="email" name="email" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.email }}{{/ucfirst}}" value=""/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\t\t<input type="password" id="userPC" name="userPC" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.passwordConf }}{{/ucfirst}}"/>\n\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="register-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="register-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
 
 define('text!templates/rider/username.tpl',[],function () { return '<h2>\n\t<a href="/riders/{{ userId }}/" class="rider">\n\t\t{{ username }}\n\t</a>\n</h2>\n<p>{{ i18n.country }}: {{ country.title }}</p>';});
 
@@ -13263,6 +13263,7 @@ define('../src/app/rider',[
 				//console.info('rider - initialize', initialValues);
 			}
 			pubsub = register.getPubsub();
+			this.url = register.getApiResourceUrl('rider');
 		},
 		
 		isLoggedIn: function() {
@@ -13503,6 +13504,30 @@ define('../src/app/session',[
 				success: _.bind(this.onLoginLogoutSuccess, this, {isLogin: false}),
 				error: _.bind(this.onLoginLogoutError, this, false) 
 			});
+		}, 
+		
+		onRegisterSuccess: function(params, data, status){
+			console.log('register success', arguments);
+			this.login(params.formValues, params.formValuesAsArray);
+		},
+		
+		onRegisterError: function(jqXHR, textStatus, errorThrown) {
+			console.log('register error', arguments)
+		},
+		
+		register: function(formValues, formValuesAsArray) {
+			this.resetError();
+			var rider = new riderModule.model;
+			
+			$.ajax({
+				url: rider.url,
+				type: 'POST',
+				dataType: 'json',
+				data: formValues,
+				success: _.bind(this.onRegisterSuccess, this, {formValues: formValues, formValuesAsArray: formValuesAsArray}),
+				error: _.bind(this.onRegisterError, this) 
+			});
+			
 		},
 		
 		resetError: function() {
@@ -13692,8 +13717,12 @@ define('../src/app/session',[
 		
 		events: {
 			'submit': function(e){
-				var form = e.target;
-				this.model.login($(form).serialize(), $(form).serializeArray());
+				var $form = $(e.target);
+				if($form.is('#login-form'))  {
+					this.model.login($form.serialize(), $form.serializeArray());
+				} else {
+					this.model.register($form.serialize(), $form.serializeArray());
+				}
 			}
 		}
 	}); 

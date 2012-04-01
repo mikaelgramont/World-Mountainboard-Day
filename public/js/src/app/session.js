@@ -132,6 +132,30 @@ define([
 				success: _.bind(this.onLoginLogoutSuccess, this, {isLogin: false}),
 				error: _.bind(this.onLoginLogoutError, this, false) 
 			});
+		}, 
+		
+		onRegisterSuccess: function(params, data, status){
+			console.log('register success', arguments);
+			this.login(params.formValues, params.formValuesAsArray);
+		},
+		
+		onRegisterError: function(jqXHR, textStatus, errorThrown) {
+			console.log('register error', arguments)
+		},
+		
+		register: function(formValues, formValuesAsArray) {
+			this.resetError();
+			var rider = new riderModule.model;
+			
+			$.ajax({
+				url: rider.url,
+				type: 'POST',
+				dataType: 'json',
+				data: formValues,
+				success: _.bind(this.onRegisterSuccess, this, {formValues: formValues, formValuesAsArray: formValuesAsArray}),
+				error: _.bind(this.onRegisterError, this) 
+			});
+			
 		},
 		
 		resetError: function() {
@@ -321,8 +345,12 @@ define([
 		
 		events: {
 			'submit': function(e){
-				var form = e.target;
-				this.model.login($(form).serialize(), $(form).serializeArray());
+				var $form = $(e.target);
+				if($form.is('#login-form'))  {
+					this.model.login($form.serialize(), $form.serializeArray());
+				} else {
+					this.model.register($form.serialize(), $form.serializeArray());
+				}
 			}
 		}
 	}); 

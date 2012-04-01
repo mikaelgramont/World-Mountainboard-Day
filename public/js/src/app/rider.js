@@ -41,6 +41,7 @@ define([
 				//console.info('rider - initialize', initialValues);
 			}
 			pubsub = register.getPubsub();
+			this.url = register.getApiResourceUrl('rider');
 		},
 		
 		isLoggedIn: function() {

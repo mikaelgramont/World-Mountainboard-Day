@@ -31,7 +31,7 @@ class Globals
 	const IMG = 'img/';
 	
 	const COOKIE_USER_REMEMBER = 'userR';
-	const COOKIE_USER_USERNAME = 'userN';
+	const COOKIE_USER_USERNAME = 'username';
 	const COOKIE_USER_PASSWORD = 'userP';
 	
 	/**
@@ -468,7 +468,7 @@ class Globals
 		$client = new Zend_Http_Client();
 		$client->setUri($config->apiScheme . '://' . $config->apiUrl . '/sessions/');
 		$client->setParameterPost(array(
-			'userN' => $username,
+			'username' => $username,
 			'userP' => $password,
 		));
 		
