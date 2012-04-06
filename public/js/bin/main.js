@@ -13214,7 +13214,7 @@ define('text!templates/session/login-form.tpl',[],function () { return '<div cla
 
 define('text!templates/session/logout-message.tpl',[],function () { return '<div class="modal-header">\n\t<h3>Logout</h3>\n</div>\n<div class="modal-body">\n\t<span class="control-group error hide" id="session-logout-error">\n\t\t<span class="help-inline">{{#ucfirst}}{{ error }}{{/ucfirst}}</span>\n\t</span>\n\t<div class="modal-footer">\n\t\t<input type="button" id="session-logout-close" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.close }}{{/ucfirst}}" disabled="disabled"/>\n\t</div>\n</div>\n';});
 
-define('text!templates/session/registration-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/register/" method="post" id="register-form">\n\t<div class="modal-body">\n\t\t<span class="control-group error">\n\t\t\t<span class="help-inline">{{ error }}</span>\n\t\t</span>\n\t\t<input type="text" id="username" name="username" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>\n\t\t<input type="email" id="email" name="email" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.email }}{{/ucfirst}}" value=""/>\n\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\t\t<input type="password" id="userPC" name="userPC" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.passwordConf }}{{/ucfirst}}"/>\n\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="register-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="register-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
+define('text!templates/session/registration-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/register/" method="post" id="register-form">\n\t<div class="modal-body control-group error">\n\t\t<div class="controls">\n\t\t\t<input type="text" id="username" name="username" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>\n\t\t\t<span class="help-inline hide">{{#ucfirst}}{{ errorMsg.username }}{{/ucfirst}}</span>\n\t\t</div>\n\t\t<div class="controls">\n\t\t\t<input type="email" id="email" name="email" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.email }}{{/ucfirst}}" value=""/>\n\t\t\t<span class="help-inline hide">{{#ucfirst}}{{ errorMsg.email }}{{/ucfirst}}</span>\n\t\t</div>\n\t\t<div class="controls">\n\t\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\t\t\t<span class="help-inline hide">{{#ucfirst}}{{ errorMsg.userP }}{{/ucfirst}}</span>\n\t\t</div>\n\t\t<div class="controls">\n\t\t\t<input type="password" id="userPC" name="userPC" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.passwordConf }}{{/ucfirst}}"/>\n\t\t\t<span class="help-inline hide">{{#ucfirst}}{{ errorMsg.userPC }}{{/ucfirst}}</span>\n\t\t</div>\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="register-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="register-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
 
 define('text!templates/rider/username.tpl',[],function () { return '<h2>\n\t<a href="/riders/{{ userId }}/" class="rider">\n\t\t{{ username }}\n\t</a>\n</h2>\n<p>{{ i18n.country }}: {{ country.title }}</p>';});
 
@@ -13507,12 +13507,13 @@ define('../src/app/session',[
 		}, 
 		
 		onRegisterSuccess: function(params, data, status){
-			console.log('register success', arguments);
 			this.login(params.formValues, params.formValuesAsArray);
 		},
 		
 		onRegisterError: function(jqXHR, textStatus, errorThrown) {
-			console.log('register error', arguments)
+			var response = JSON.parse(jqXHR.responseText);
+			this.set({error: response.errors});
+			loginLogout.showRegistrationError();
 		},
 		
 		register: function(formValues, formValuesAsArray) {
@@ -13661,21 +13662,25 @@ define('../src/app/session',[
 			this.model.unbind();
 		},
 		
-		template: mustache.compile(loginFormTpl),
+		templateFile: null,
 
 		displayLoginForm: function() {
 			this.model.resetError();
+			this.templateFile = loginFormTpl;
 			this.render();
 			$(this.el).addClass('session-login-form').modal();
 		},
 		
 		displayLogoutMessage: function() {
+			this.templateFile = logoutMessageTpl;
+			this.render();
 			$(this.el).addClass('session-logout-message').modal();	
 		},
 		
 		displayRegistrationForm: function() {
 			this.model.resetError();
-			this.render(true);
+			this.templateFile = registrationTpl;
+			this.render();
 			$(this.el).addClass('session-registration-message').modal();
 		},
 		
@@ -13685,21 +13690,30 @@ define('../src/app/session',[
 		},
 
 		getDataForRender: function() {
+			var error = this.model.get('error');
+			var errorMsg;
+			
+			if(!error) {
+				errorMsg = null;
+			} else if(error.hasOwnProperty) {
+				errorMsg = {};
+				_.each(error, function(val, key){
+					errorMsg[key] = register.getI18n()[val[0]];
+				});
+			} else {
+				errorMsg = register.getI18n()[error];
+			}
+			
 			return register.decorateForMustache({
 				rider: this.model.get('rider').attributes,
 				i18n: register.getI18n(),
-				error: register.getI18n()[this.model.get('error')]
+				error: errorMsg
 			});
 		},
 		
 		render: function(registration) {
-			var templateFile;
-			if(registration) {
-				templateFile = registrationTpl;
-			} else {
-				templateFile = this.model.isLoggedIn() ? logoutMessageTpl : loginFormTpl;
-			}
-			this.template = mustache.compile(templateFile);
+			console.log('loginlogout render', arguments);
+			this.template = mustache.compile(this.templateFile);
 			
 			$(this.el).html(
 				this.template(this.getDataForRender())
@@ -13713,6 +13727,14 @@ define('../src/app/session',[
 			$(this.el).find('#session-logout-error').show().end()
 			          .find('#session-logout-message').hide().end()
 			          .find('#session-logout-close').removeAttr('disabled');
+		},
+		
+		showRegistrationError: function() {
+			
+			
+			this.render();
+			
+			$(this.el).find('#session-registration-error').show();
 		},
 		
 		events: {

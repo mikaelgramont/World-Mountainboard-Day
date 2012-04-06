@@ -1,4 +1,4 @@
-{
+	{
 
 	
 	"country": "pays",
@@ -10,13 +10,15 @@
 	"username": "pseudo",
 	"email": "email",
 	"password": "mot de passe",
-	"passwordConf": "encore",
+	"passwordConf": "mot de passe - encore",
 	"keepMeLoggedIn": "rester connecte",	
 	
 	"cancel": "annuler",
 	"close": "fermer",
 	
 	"missingValue": "un ou des champs sont manquants",
+	"isEmpty": "ne doit pas etre vide",
+	
 	"failedToLogin": "email et/ou mot de passe non-reconnu",
 	"loginSystemError": "erreur systeme: impossible de te connecter",
 	"logoutSystemError": "erreur systeme: impossible de te deconnecter",

@@ -1,4 +1,7 @@
 # Client-side TODO
+Username missing should prompt an error when registering
+Passwords: empty + empty, empty + something, something + empty, different
+
 Modal cancels: popstate on history
 API: if creation/update fails, return a 400 => update all tests and controllers
 User creation modal: login and registration should use the same username field. Plus drop the slide question? OR add it dynamically? Use a CSRF protection?
@@ -13,6 +16,8 @@ plurals need to be fed translated strings. or it could do it on its own.
 
 setup a router in order to deal with local urls
 once the app starts, if there is a url fragment that looks like #goto-(.*), load that url
+
+Ridedb registration email
 
 
 Build controllers to proxy the API calls, plus some other ones like /user/logout/

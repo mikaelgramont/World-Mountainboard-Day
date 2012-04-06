@@ -10,13 +10,15 @@
 	"username": "username",
 	"email": "email",
 	"password": "password",
-	"passwordConf": "again",
+	"passwordConf": "password - again",
 	"keepMeLoggedIn": "keep me logged-in",
 	
 	"cancel": "cancel",
 	"close": "close",
 
 	"missingValue": "one or several fields are missing",
+	"isEmpty": "cannot be empty",
+	
 	"failedToLogin": "your email and/or password is incorrect",
 	"loginSystemError": "the system failed to log you in",
 	"logoutSystemError": "the system failed to log you out",

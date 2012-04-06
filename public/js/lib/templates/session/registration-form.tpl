@@ -4,14 +4,22 @@
 </div>
 <form action="/user/register/" method="post" id="register-form">
 	<div class="modal-body">
-		<span class="control-group error">
-			<span class="help-inline">{{ error }}</span>
-		</span>
-		<input type="text" id="username" name="username" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>
-		<input type="email" id="email" name="email" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.email }}{{/ucfirst}}" value=""/>
-		<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>
-		<input type="password" id="userPC" name="userPC" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.passwordConf }}{{/ucfirst}}"/>
-
+		<div class="control-group {{#error.username}} error{{/error.username}}">
+			<input type="text" id="username" name="username" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>
+			<span class="help-inline">{{#ucfirst}}{{ error.username }}{{/ucfirst}}</span>
+		</div>
+		<div class="control-group {{#error.email}} error{{/error.email}}">
+			<input type="email" id="email" name="email" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.email }}{{/ucfirst}}" value=""/>
+			<span class="help-inline">{{#ucfirst}}{{ error.email }}{{/ucfirst}}</span>
+		</div>
+		<div class="control-group {{#error.userP}} error{{/error.userP}}">
+			<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>
+			<span class="help-inline">{{#ucfirst}}{{ error.userP }}{{/ucfirst}}</span>
+		</div>
+		<div class="control-group {{#error.userPC}} error{{/error.userPC}}">
+			<input type="password" id="userPC" name="userPC" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.passwordConf }}{{/ucfirst}}"/>
+			<span class="help-inline">{{#ucfirst}}{{ error.userPC }}{{/ucfirst}}</span>
+		</div>
 	</div>
 	<div class="modal-footer">
 		<input type="button" id="register-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>

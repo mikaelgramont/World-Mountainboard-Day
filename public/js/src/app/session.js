@@ -135,12 +135,13 @@ define([
 		}, 
 		
 		onRegisterSuccess: function(params, data, status){
-			console.log('register success', arguments);
 			this.login(params.formValues, params.formValuesAsArray);
 		},
 		
 		onRegisterError: function(jqXHR, textStatus, errorThrown) {
-			console.log('register error', arguments)
+			var response = JSON.parse(jqXHR.responseText);
+			this.set({error: response.errors});
+			loginLogout.showRegistrationError();
 		},
 		
 		register: function(formValues, formValuesAsArray) {
@@ -289,21 +290,26 @@ define([
 			this.model.unbind();
 		},
 		
-		template: mustache.compile(loginFormTpl),
+		templateFile: null,
 
 		displayLoginForm: function() {
 			this.model.resetError();
+			this.templateFile = loginFormTpl;
 			this.render();
 			$(this.el).addClass('session-login-form').modal();
 		},
 		
 		displayLogoutMessage: function() {
+			this.templateFile = logoutMessageTpl;
+			this.render();
 			$(this.el).addClass('session-logout-message').modal();	
 		},
 		
 		displayRegistrationForm: function() {
 			this.model.resetError();
-			this.render(true);
+			this.templateFile = registrationTpl;
+			this.render();
+			$(this.el).find('span.help-inline').addClass('hide');			
 			$(this.el).addClass('session-registration-message').modal();
 		},
 		
@@ -313,21 +319,30 @@ define([
 		},
 
 		getDataForRender: function() {
+			var error = this.model.get('error');
+			var errorMsg;
+			
+			if(!error) {
+				errorMsg = null;
+			} else if(error.hasOwnProperty) {
+				errorMsg = {};
+				_.each(error, function(val, key){
+					errorMsg[key] = register.getI18n()[val[0]];
+				});
+			} else {
+				errorMsg = register.getI18n()[error];
+			}
+			
 			return register.decorateForMustache({
 				rider: this.model.get('rider').attributes,
 				i18n: register.getI18n(),
-				error: register.getI18n()[this.model.get('error')]
+				error: errorMsg
 			});
 		},
 		
 		render: function(registration) {
-			var templateFile;
-			if(registration) {
-				templateFile = registrationTpl;
-			} else {
-				templateFile = this.model.isLoggedIn() ? logoutMessageTpl : loginFormTpl;
-			}
-			this.template = mustache.compile(templateFile);
+			console.log('loginlogout render', arguments);
+			this.template = mustache.compile(this.templateFile);
 			
 			$(this.el).html(
 				this.template(this.getDataForRender())
@@ -341,6 +356,16 @@ define([
 			$(this.el).find('#session-logout-error').show().end()
 			          .find('#session-logout-message').hide().end()
 			          .find('#session-logout-close').removeAttr('disabled');
+		},
+		
+		showRegistrationError: function() {
+			this.render();
+
+			$(this.el).find('span.help-inline').each(function(i, el) {
+				$(el).toggleClass('hide', !$(el).html());
+			});
+			
+			$(this.el).find('#session-registration-error').show();
 		},
 		
 		events: {

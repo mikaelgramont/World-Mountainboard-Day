@@ -130,7 +130,7 @@ ASIDE;
   		if($config->useBundles) {
   			$main = $bundles['main'.($config->minify ? ".min" : "")]. '.js';
   		} else {
-			$main = '../js/src/main.js';
+			$main = '/js/src/main.js';
   		}
   		$require = $cdnUrl . 'js/lib/require-1.0.6' . ($config->minify ? '.min' : '') . '.js';
   	?>
