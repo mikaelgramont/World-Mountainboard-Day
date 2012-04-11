@@ -8,8 +8,6 @@
     		{{ lang }}
     		<span class="caret"></span>
     	</a>
-    	<ul class="dropdown-menu">
-    		<!-- dropdown menu links -->
     	<ul class="dropdown-menu" id="lang-picker">
     		<!-- dropdown menu links -->
     		{{#languages}}
@@ -20,5 +18,6 @@
 	
     <div class="btn-group logout-btn-group">
     	<a id="logout-btn" class="btn dyn-link" href="/user/logout/">{{#ucfirst}}{{ i18n.logout }}{{/ucfirst}}</a>
+    	<a id="profile-btn" class="btn dyn-link" href="/user/edit-profile/">{{#ucfirst}}{{ i18n.editProfile }}{{/ucfirst}}</a>
     </div>	
 </nav>

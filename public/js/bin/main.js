@@ -13206,7 +13206,7 @@ define('text!templates/layout/nav-secondary.tpl',[],function () { return '<nav i
 
 define('text!templates/layout/modal.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}} {{title}} {{/ucfirst}}</h3>\n</div>\n{{{ contentHtml }}}';});
 
-define('text!templates/session/corner-logged-in.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n\t<div class="username">\n\t\t{{ rider.username }}\n\t</div>\n\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu">\n    \t\t<!-- dropdown menu links -->\n    \t<ul class="dropdown-menu" id="lang-picker">\n    \t\t<!-- dropdown menu links -->\n    \t\t{{#languages}}\n    \t\t<li><a href="#" data-lang="{{.}}" class="dyn-link lang {{.}}">{{.}}</a></li>\n    \t\t{{/languages}}\n\t    </ul>\n    </div>\n\t\n    <div class="btn-group logout-btn-group">\n    \t<a id="logout-btn" class="btn dyn-link" href="/user/logout/">{{#ucfirst}}{{ i18n.logout }}{{/ucfirst}}</a>\n    </div>\t\n</nav>';});
+define('text!templates/session/corner-logged-in.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n\t<div class="username">\n\t\t{{ rider.username }}\n\t</div>\n\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu" id="lang-picker">\n    \t\t<!-- dropdown menu links -->\n    \t\t{{#languages}}\n    \t\t<li><a href="#" data-lang="{{.}}" class="dyn-link lang {{.}}">{{.}}</a></li>\n    \t\t{{/languages}}\n\t    </ul>\n    </div>\n\t\n    <div class="btn-group logout-btn-group">\n    \t<a id="logout-btn" class="btn dyn-link" href="/user/logout/">{{#ucfirst}}{{ i18n.logout }}{{/ucfirst}}</a>\n    \t<a id="profile-btn" class="btn dyn-link" href="/user/edit-profile/">{{#ucfirst}}{{ i18n.editProfile }}{{/ucfirst}}</a>\n    </div>\t\n</nav>';});
 
 define('text!templates/session/corner-logged-out.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n   \t\t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu" id="lang-picker">\n    \t\t<!-- dropdown menu links -->\n    \t\t{{#languages}}\n    \t\t<li><a href="#" data-lang="{{.}}" class="dyn-link lang {{.}}">{{.}}</a></li>\n    \t\t{{/languages}}\n\t    </ul>\n    </div>\n\t\n    <div class="btn-group login-btn-group">\n    \t<a id="login-btn" class="dyn-link btn" href="/user/login/">{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}</a>\n    \t<a id="registration-btn" class="dyn-link btn" href="/user/register/">\n    \t\t{{#i18n}}\n    \t\t\t{{#ucfirst}}{{ register }}{{/ucfirst}}\n    \t\t{{/i18n}}\n    \t</a>\n    </div>\t\n</nav>';});
 
@@ -13214,11 +13214,13 @@ define('text!templates/session/login-form.tpl',[],function () { return '<div cla
 
 define('text!templates/session/logout-message.tpl',[],function () { return '<div class="modal-header">\n\t<h3>Logout</h3>\n</div>\n<div class="modal-body">\n\t<span class="control-group error hide" id="session-logout-error">\n\t\t<span class="help-inline">{{#ucfirst}}{{ error }}{{/ucfirst}}</span>\n\t</span>\n\t<div class="modal-footer">\n\t\t<input type="button" id="session-logout-close" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.close }}{{/ucfirst}}" disabled="disabled"/>\n\t</div>\n</div>\n';});
 
-define('text!templates/session/registration-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/register/" method="post" id="register-form">\n\t<div class="modal-body control-group error">\n\t\t<div class="controls">\n\t\t\t<input type="text" id="username" name="username" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>\n\t\t\t<span class="help-inline hide">{{#ucfirst}}{{ errorMsg.username }}{{/ucfirst}}</span>\n\t\t</div>\n\t\t<div class="controls">\n\t\t\t<input type="email" id="email" name="email" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.email }}{{/ucfirst}}" value=""/>\n\t\t\t<span class="help-inline hide">{{#ucfirst}}{{ errorMsg.email }}{{/ucfirst}}</span>\n\t\t</div>\n\t\t<div class="controls">\n\t\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\t\t\t<span class="help-inline hide">{{#ucfirst}}{{ errorMsg.userP }}{{/ucfirst}}</span>\n\t\t</div>\n\t\t<div class="controls">\n\t\t\t<input type="password" id="userPC" name="userPC" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.passwordConf }}{{/ucfirst}}"/>\n\t\t\t<span class="help-inline hide">{{#ucfirst}}{{ errorMsg.userPC }}{{/ucfirst}}</span>\n\t\t</div>\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="register-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="register-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
+define('text!templates/session/registration-form.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}</h3>\n</div>\n<form action="/user/register/" method="post" id="register-form">\n\t<div class="modal-body">\n\t\t<div class="control-group {{#error.username}} error{{/error.username}}">\n\t\t\t<input type="text" id="username" name="username" value="{{ rider.username }}" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}"/>\n\t\t\t<span class="help-inline">{{#ucfirst}}{{ error.username }}{{/ucfirst}}</span>\n\t\t</div>\n\t\t<div class="control-group {{#error.email}} error{{/error.email}}">\n\t\t\t<input type="email" id="email" name="email" value="{{ rider.email }}" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.email }}{{/ucfirst}}"/>\n\t\t\t<span class="help-inline">{{#ucfirst}}{{ error.email }}{{/ucfirst}}</span>\n\t\t</div>\n\t\t<div class="control-group {{#error.userP}} error{{/error.userP}}">\n\t\t\t<input type="password" id="userP" name="userP" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.password }}{{/ucfirst}}"/>\n\t\t\t<span class="help-inline">{{#ucfirst}}{{ error.userP }}{{/ucfirst}}</span>\n\t\t</div>\n\t\t<div class="control-group {{#error.userPC}} error{{/error.userPC}}">\n\t\t\t<input type="password" id="userPC" name="userPC" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.passwordConf }}{{/ucfirst}}"/>\n\t\t\t<span class="help-inline">{{#ucfirst}}{{ error.userPC }}{{/ucfirst}}</span>\n\t\t</div>\n\t</div>\n\t<div class="modal-footer">\n\t\t<input type="button" id="register-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="register-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.register }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n</form>';});
 
 define('text!templates/rider/username.tpl',[],function () { return '<h2>\n\t<a href="/riders/{{ userId }}/" class="rider">\n\t\t{{ username }}\n\t</a>\n</h2>\n<p>{{ i18n.country }}: {{ country.title }}</p>';});
 
 define('text!templates/rider/modal.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>Name: {{ username }}</h3>\n</div>\n<div class="modal-body">\n{{#country}}\n\t<p class="country">Country: <a href="/countries/{{ id }}">{{ title }}</a></p>\n{{/country}}\n</div>\n<div class="modal-footer">\n\t<a href="#" class="btn">Close</a>\n</div>';});
+
+define('text!templates/rider/profile.tpl',[],function () { return '<h1>Edit my profile</h1>\n<form action="/rider/{{ id }}" method="post" id="profile-form">\n\t<div class="control-group {{#error.}} error{{/error.username}}">\n\t    <div class="btn-group lang-selector">\n\t    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n\t    \t\t{{ rider.lang }}\n\t    \t\t<span class="caret"></span>\n\t    \t</a>\n\t    \t<ul class="dropdown-menu" id="profile-lang-picker">\n\t    \t\t<!-- dropdown menu links -->\n\t    \t\t{{#languages}}\n\t    \t\t<li><a href="#" data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>\n\t    \t\t{{/languages}}\n\t\t    </ul>\n\t    </div>\n\n\t\t<input type="hidden" id="lang" name="lang" value="{{ rider.lang }}" class="whole-row"/>\n\t\t<span class="help-inline">{{#ucfirst}}{{ error.lang }}{{/ucfirst}}</span>\n\t</div>\n\t\n\t<div>\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="rideType-freeride" name="rideType"/>{{#ucfirst}}{{ i18n.freeride }}{{/ucfirst}}\n        </label>\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="rideType-freestyle" name="rideType"/>{{#ucfirst}}{{ i18n.freestyle }}{{/ucfirst}}\n        </label>\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="rideType-kite" name="rideType"/>{{#ucfirst}}{{ i18n.kite }}{{/ucfirst}}\n        </label>\n\t</div>\t\n\t\n\t<div>\n\t\t<label>\n\t\t\t{{#ucfirst}}{{ profilePicture }}{{/ucfirst}}\n\t\t\t<input type="file" id="avatar" class="btn" tabIndex="1"/>\n\t\t</label>\n\t</div>\n\t\n\t<div>\n\t\t<input type="button" id="profile-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="profile-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.update }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n\t\n\t<input type="hidden" id="latitude" name="latitude" value="{{ rider.latitude }}" class="whole-row"/>\n\t<input type="hidden" id="longitude" name="longitude" value="{{ rider.longitude }}" class="whole-row"/>\n\t<input type="hidden" id="zoom" name="zoom" value="{{ rider.zoom }}" class="whole-row"/>\n\t<input type="hidden" id="mapType" name="mapType" value="{{ rider.mapType }}" class="whole-row"/>\n</form>';});
 
 /******************************************************************************
  * js/src/app/rider.js
@@ -13238,11 +13240,12 @@ define('../src/app/rider',[
 	// Templates
 	'text!templates/rider/username.tpl',
 	'text!templates/rider/modal.tpl',
+	'text!templates/rider/profile.tpl',
 
 	// Bootstrap  plugins
 	'order!bootstrap/bootstrap-modal'
 
-	], function($, _, Backbone, mustache, register, usernameTpl, modalTpl, bootstrapModal){
+	], function($, _, Backbone, mustache, register, usernameTpl, modalTpl, profileTpl, bootstrapModal){
 
 	var pubsub;
 	
@@ -13356,6 +13359,17 @@ define('../src/app/rider',[
 		}
 	});
 
+	var ProfileView = Backbone.View.extend({
+		template: mustache.compile(profileTpl),
+		
+		render: function(){
+			$(this.el).html(
+				this.template(this.model.toJSON())
+			);
+			return this;
+		}		
+	});
+	
 	
 	/**************************************************************************
 	 * MODULE INTERFACE 
@@ -13510,7 +13524,7 @@ define('../src/app/session',[
 			this.login(params.formValues, params.formValuesAsArray);
 		},
 		
-		onRegisterError: function(jqXHR, textStatus, errorThrown) {
+		onRegisterError: function(params, jqXHR, textStatus, errorThrown) {
 			var response = JSON.parse(jqXHR.responseText);
 			this.set({error: response.errors});
 			loginLogout.showRegistrationError();
@@ -13518,7 +13532,13 @@ define('../src/app/session',[
 		
 		register: function(formValues, formValuesAsArray) {
 			this.resetError();
-			var rider = new riderModule.model;
+			var rider = register.getRider();
+			var updates = {};
+			_.map(formValuesAsArray, function(obj){
+				updates[obj.name] = obj.value;
+			});
+			
+			rider.set(updates);
 			
 			$.ajax({
 				url: rider.url,
@@ -13526,7 +13546,7 @@ define('../src/app/session',[
 				dataType: 'json',
 				data: formValues,
 				success: _.bind(this.onRegisterSuccess, this, {formValues: formValues, formValuesAsArray: formValuesAsArray}),
-				error: _.bind(this.onRegisterError, this) 
+				error: _.bind(this.onRegisterError, this, {formValues: formValues, formValuesAsArray: formValuesAsArray}) 
 			});
 			
 		},
@@ -13681,6 +13701,7 @@ define('../src/app/session',[
 			this.model.resetError();
 			this.templateFile = registrationTpl;
 			this.render();
+			$(this.el).find('span.help-inline').addClass('hide');			
 			$(this.el).addClass('session-registration-message').modal();
 		},
 		
@@ -13712,7 +13733,10 @@ define('../src/app/session',[
 		},
 		
 		render: function(registration) {
-			console.log('loginlogout render', arguments);
+			if(!this.templateFile) {
+				return;
+			}
+			
 			this.template = mustache.compile(this.templateFile);
 			
 			$(this.el).html(
@@ -13730,9 +13754,11 @@ define('../src/app/session',[
 		},
 		
 		showRegistrationError: function() {
-			
-			
 			this.render();
+
+			$(this.el).find('span.help-inline').each(function(i, el) {
+				$(el).toggleClass('hide', !$(el).html());
+			});
 			
 			$(this.el).find('#session-registration-error').show();
 		},

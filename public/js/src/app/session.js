@@ -138,7 +138,7 @@ define([
 			this.login(params.formValues, params.formValuesAsArray);
 		},
 		
-		onRegisterError: function(jqXHR, textStatus, errorThrown) {
+		onRegisterError: function(params, jqXHR, textStatus, errorThrown) {
 			var response = JSON.parse(jqXHR.responseText);
 			this.set({error: response.errors});
 			loginLogout.showRegistrationError();
@@ -146,7 +146,13 @@ define([
 		
 		register: function(formValues, formValuesAsArray) {
 			this.resetError();
-			var rider = new riderModule.model;
+			var rider = register.getRider();
+			var updates = {};
+			_.map(formValuesAsArray, function(obj){
+				updates[obj.name] = obj.value;
+			});
+			
+			rider.set(updates);
 			
 			$.ajax({
 				url: rider.url,
@@ -154,7 +160,7 @@ define([
 				dataType: 'json',
 				data: formValues,
 				success: _.bind(this.onRegisterSuccess, this, {formValues: formValues, formValuesAsArray: formValuesAsArray}),
-				error: _.bind(this.onRegisterError, this) 
+				error: _.bind(this.onRegisterError, this, {formValues: formValues, formValuesAsArray: formValuesAsArray}) 
 			});
 			
 		},
@@ -266,6 +272,8 @@ define([
 					loginLogout.displayLoginForm();
 				} else if($el.is('#registration-btn')) {
 					loginLogout.displayRegistrationForm();
+				} else if($el.is('#profile-btn')) {
+					pubsub.publish('register.content.changeRequest', 'rider-profile-form');
 				} else if ($el.is('#lang-picker a')) {
 					$el.parent().parent().removeClass('open');
 					register.setLang($el.data('lang'));
@@ -313,6 +321,10 @@ define([
 			$(this.el).addClass('session-registration-message').modal();
 		},
 		
+		displayProfileUpdateForm: function() {
+			
+		},
+		
 		remove: function() {
 			$(this.el).removeClass('session-login-form session-logout-message session-registration-message')
 			          .modal('hide');
@@ -341,7 +353,10 @@ define([
 		},
 		
 		render: function(registration) {
-			console.log('loginlogout render', arguments);
+			if(!this.templateFile) {
+				return;
+			}
+			
 			this.template = mustache.compile(this.templateFile);
 			
 			$(this.el).html(

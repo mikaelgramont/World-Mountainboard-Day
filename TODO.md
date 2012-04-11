@@ -1,10 +1,23 @@
 # Client-side TODO
-Username missing should prompt an error when registering
-Passwords: empty + empty, empty + something, something + empty, different
+edit profile: lang, ride type, avatar, location
+hit PUT /riders/:id/
+new view in rider.js: ProfileView
+form with the following inputs:
+	lang,
+	rideType,
+	avatar,
+	latitude
+	longitude
+	zoom,
+	mapType
+	submit
+	cancel
+reset location link
 
-Modal cancels: popstate on history
-API: if creation/update fails, return a 400 => update all tests and controllers
-User creation modal: login and registration should use the same username field. Plus drop the slide question? OR add it dynamically? Use a CSRF protection?
+Show weather on spot pages
+http://googlegeodevelopers.blogspot.com/2012/04/weather-layer-now-available-in-google.html
+
+
 
 Use lukew's design patterns to determine a strategy for responsiveness http://www.lukew.com/ff/entry.asp?1514
 Have constants in config file to determine size thresholds, and have events fire when window is resized, and initially too

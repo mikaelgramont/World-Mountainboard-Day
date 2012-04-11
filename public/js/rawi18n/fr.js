@@ -5,6 +5,7 @@
 	
 	"login": "connexion",
 	"logout": "deconnexion",
+	"editProfile": "modifier mon profil",
 	"register": "s'enregistrer",
 	
 	"username": "pseudo",
@@ -18,6 +19,7 @@
 	
 	"missingValue": "un ou des champs sont manquants",
 	"isEmpty": "ne doit pas etre vide",
+	"notSame": "ne doit pas etre different",
 	
 	"failedToLogin": "email et/ou mot de passe non-reconnu",
 	"loginSystemError": "erreur systeme: impossible de te connecter",

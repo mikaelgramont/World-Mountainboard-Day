@@ -5,11 +5,11 @@
 <form action="/user/register/" method="post" id="register-form">
 	<div class="modal-body">
 		<div class="control-group {{#error.username}} error{{/error.username}}">
-			<input type="text" id="username" name="username" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}" value=""/>
+			<input type="text" id="username" name="username" value="{{ rider.username }}" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.username }}{{/ucfirst}}"/>
 			<span class="help-inline">{{#ucfirst}}{{ error.username }}{{/ucfirst}}</span>
 		</div>
 		<div class="control-group {{#error.email}} error{{/error.email}}">
-			<input type="email" id="email" name="email" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.email }}{{/ucfirst}}" value=""/>
+			<input type="email" id="email" name="email" value="{{ rider.email }}" class="whole-row" placeholder="{{#ucfirst}}{{ i18n.email }}{{/ucfirst}}"/>
 			<span class="help-inline">{{#ucfirst}}{{ error.email }}{{/ucfirst}}</span>
 		</div>
 		<div class="control-group {{#error.userP}} error{{/error.userP}}">

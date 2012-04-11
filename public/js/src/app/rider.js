@@ -16,11 +16,12 @@ define([
 	// Templates
 	'text!templates/rider/username.tpl',
 	'text!templates/rider/modal.tpl',
+	'text!templates/rider/profile.tpl',
 
 	// Bootstrap  plugins
 	'order!bootstrap/bootstrap-modal'
 
-	], function($, _, Backbone, mustache, register, usernameTpl, modalTpl, bootstrapModal){
+	], function($, _, Backbone, mustache, register, usernameTpl, modalTpl, profileTpl, bootstrapModal){
 
 	var pubsub;
 	
@@ -135,6 +136,18 @@ define([
 	});
 
 	
+	var ProfileView = Backbone.View.extend({
+		template: mustache.compile(profileTpl),
+		
+		render: function(){
+			$(this.el).html(
+				this.template(this.model.toJSON())
+			);
+			return this;
+		}		
+	});
+	
+	
 	/**************************************************************************
 	 * MODULE INTERFACE 
 	 *************************************************************************/
@@ -143,7 +156,8 @@ define([
 		'collection': RiderCollection,
 		'views': {
 			modal: ModalView,
-			username: UsernameView
+			username: UsernameView,
+			profile: ProfileView
 		}
 	};
 });

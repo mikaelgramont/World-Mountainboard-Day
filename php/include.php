@@ -451,7 +451,7 @@ class Globals
 		
 		
 		$guest = new stdClass();
-		$guest->username = 'guest';
+		$guest->username = '';
 		$guest->userId = 0;
 		$guest->lang = null;
 		return $guest;

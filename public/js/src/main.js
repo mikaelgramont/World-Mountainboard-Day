@@ -131,9 +131,17 @@ require([
 			if(register.isDebug()) {
 				console.log('main - mainView - initialize', appConfig);
 			}
+			register.getPubsub().subscribe('register.content.changeRequest', _.bind(this.onContentChangeRequest, this));
 			register.getPubsub().subscribe('register.content.ready', _.bind(this.onContentReady, this));
 		},
-	
+
+		onContentChangeRequest: function(targetContentName) {
+			console.log('onContentChangeRequest', arguments);
+			// TODO: instantiate a riderModule.views.profile
+			// make it render
+			// publish a register.content.ready
+		},
+		
 		// When a content ready event is triggered, this updates the main view
 		onContentReady: function(sectionView, asideView) {
 			if(register.isDebug()) {

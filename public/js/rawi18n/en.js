@@ -5,6 +5,7 @@
 	
 	"login": "login",
 	"logout": "logout",
+	"editProfile": "edit my profile",
 	"register": "register",
 	
 	"username": "username",
@@ -18,6 +19,7 @@
 
 	"missingValue": "one or several fields are missing",
 	"isEmpty": "cannot be empty",
+	"notSame": "cannot be different",
 	
 	"failedToLogin": "your email and/or password is incorrect",
 	"loginSystemError": "the system failed to log you in",
