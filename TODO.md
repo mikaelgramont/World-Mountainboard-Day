@@ -1,4 +1,12 @@
 # Client-side TODO
+remove temp click listener after temp was closed
+
+have all views register themselves in the view registry when they're created, and removed when destroyed
+
+register must keep track of the current content, in order to be able to apply/remove class on #main when content changes
+how to do that for the initial content? have the state name be part of session data?
+
+
 edit profile: lang, ride type, avatar, location
 hit PUT /riders/:id/
 new view in rider.js: ProfileView

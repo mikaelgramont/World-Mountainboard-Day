@@ -1,4 +1,4 @@
-<h1>Edit my profile</h1>
+<h1>{{ i18n.editProfile }}</h1>
 <form action="/rider/{{ id }}" method="post" id="profile-form">
 	<div class="control-group">
 	    <div class="btn-group lang-selector">
@@ -9,7 +9,7 @@
 	    	<ul class="dropdown-menu" id="profile-lang-picker">
 	    		<!-- dropdown menu links -->
 	    		{{#languages}}
-	    		<li><a href="#" data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>
+	    		<li><a data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>
 	    		{{/languages}}
 		    </ul>
 	    </div>

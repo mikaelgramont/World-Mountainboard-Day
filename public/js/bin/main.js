@@ -12548,7 +12548,10 @@ define('../src/app/register',[], function(){
 		// The languages supported
 		languages: {},
 		// The only modal dialog instance
-		modal: null
+		modal: null,
+		// The handle for current content name
+		contentName: ''
+		
 	};
 	
 	var apiResourceUrls = {
@@ -12726,6 +12729,14 @@ define('../src/app/register',[], function(){
 		
 		setModal: function(modal) {
 			set('modal', modal);
+		},
+		
+		getContentName: function() {
+			return get('contentName');
+		},
+		
+		setContentName: function(contentName) {
+			set('contentName', contentName)
 		}
 	};
 });
@@ -13206,7 +13217,7 @@ define('text!templates/layout/nav-secondary.tpl',[],function () { return '<nav i
 
 define('text!templates/layout/modal.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>{{#ucfirst}} {{title}} {{/ucfirst}}</h3>\n</div>\n{{{ contentHtml }}}';});
 
-define('text!templates/session/corner-logged-in.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n\t<div class="username">\n\t\t{{ rider.username }}\n\t</div>\n\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu" id="lang-picker">\n    \t\t<!-- dropdown menu links -->\n    \t\t{{#languages}}\n    \t\t<li><a href="#" data-lang="{{.}}" class="dyn-link lang {{.}}">{{.}}</a></li>\n    \t\t{{/languages}}\n\t    </ul>\n    </div>\n\t\n    <div class="btn-group logout-btn-group">\n    \t<a id="logout-btn" class="btn dyn-link" href="/user/logout/">{{#ucfirst}}{{ i18n.logout }}{{/ucfirst}}</a>\n    \t<a id="profile-btn" class="btn dyn-link" href="/user/edit-profile/">{{#ucfirst}}{{ i18n.editProfile }}{{/ucfirst}}</a>\n    </div>\t\n</nav>';});
+define('text!templates/session/corner-logged-in.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n\t<div class="username">\n\t\t{{ rider.username }}\n\t</div>\n\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n    \t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu" id="lang-picker">\n    \t\t<!-- dropdown menu links -->\n    \t\t{{#languages}}\n    \t\t<li><a data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>\n    \t\t{{/languages}}\n\t    </ul>\n    </div>\n\t\n    <div class="btn-group logout-btn-group">\n    \t<a id="logout-btn" class="btn dyn-link" href="/user/logout/">{{#ucfirst}}{{ i18n.logout }}{{/ucfirst}}</a>\n    \t<a id="profile-btn" class="btn dyn-link" href="/user/edit-profile/">{{#ucfirst}}{{ i18n.editProfile }}{{/ucfirst}}</a>\n    </div>\t\n</nav>';});
 
 define('text!templates/session/corner-logged-out.tpl',[],function () { return '<nav class="session-corner" id="session-corner">\n    <div class="btn-group lang-selector">\n    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n   \t\t\t{{ lang }}\n    \t\t<span class="caret"></span>\n    \t</a>\n    \t<ul class="dropdown-menu" id="lang-picker">\n    \t\t<!-- dropdown menu links -->\n    \t\t{{#languages}}\n    \t\t<li><a href="#" data-lang="{{.}}" class="dyn-link lang {{.}}">{{.}}</a></li>\n    \t\t{{/languages}}\n\t    </ul>\n    </div>\n\t\n    <div class="btn-group login-btn-group">\n    \t<a id="login-btn" class="dyn-link btn" href="/user/login/">{{#ucfirst}}{{ i18n.login }}{{/ucfirst}}</a>\n    \t<a id="registration-btn" class="dyn-link btn" href="/user/register/">\n    \t\t{{#i18n}}\n    \t\t\t{{#ucfirst}}{{ register }}{{/ucfirst}}\n    \t\t{{/i18n}}\n    \t</a>\n    </div>\t\n</nav>';});
 
@@ -13220,7 +13231,7 @@ define('text!templates/rider/username.tpl',[],function () { return '<h2>\n\t<a h
 
 define('text!templates/rider/modal.tpl',[],function () { return '<div class="modal-header">\n\t<a class="close" data-dismiss="modal">x</a>\n\t<h3>Name: {{ username }}</h3>\n</div>\n<div class="modal-body">\n{{#country}}\n\t<p class="country">Country: <a href="/countries/{{ id }}">{{ title }}</a></p>\n{{/country}}\n</div>\n<div class="modal-footer">\n\t<a href="#" class="btn">Close</a>\n</div>';});
 
-define('text!templates/rider/profile.tpl',[],function () { return '<h1>Edit my profile</h1>\n<form action="/rider/{{ id }}" method="post" id="profile-form">\n\t<div class="control-group {{#error.}} error{{/error.username}}">\n\t    <div class="btn-group lang-selector">\n\t    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n\t    \t\t{{ rider.lang }}\n\t    \t\t<span class="caret"></span>\n\t    \t</a>\n\t    \t<ul class="dropdown-menu" id="profile-lang-picker">\n\t    \t\t<!-- dropdown menu links -->\n\t    \t\t{{#languages}}\n\t    \t\t<li><a href="#" data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>\n\t    \t\t{{/languages}}\n\t\t    </ul>\n\t    </div>\n\n\t\t<input type="hidden" id="lang" name="lang" value="{{ rider.lang }}" class="whole-row"/>\n\t\t<span class="help-inline">{{#ucfirst}}{{ error.lang }}{{/ucfirst}}</span>\n\t</div>\n\t\n\t<div>\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="rideType-freeride" name="rideType"/>{{#ucfirst}}{{ i18n.freeride }}{{/ucfirst}}\n        </label>\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="rideType-freestyle" name="rideType"/>{{#ucfirst}}{{ i18n.freestyle }}{{/ucfirst}}\n        </label>\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="rideType-kite" name="rideType"/>{{#ucfirst}}{{ i18n.kite }}{{/ucfirst}}\n        </label>\n\t</div>\t\n\t\n\t<div>\n\t\t<label>\n\t\t\t{{#ucfirst}}{{ profilePicture }}{{/ucfirst}}\n\t\t\t<input type="file" id="avatar" class="btn" tabIndex="1"/>\n\t\t</label>\n\t</div>\n\t\n\t<div>\n\t\t<input type="button" id="profile-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="profile-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.update }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n\t\n\t<input type="hidden" id="latitude" name="latitude" value="{{ rider.latitude }}" class="whole-row"/>\n\t<input type="hidden" id="longitude" name="longitude" value="{{ rider.longitude }}" class="whole-row"/>\n\t<input type="hidden" id="zoom" name="zoom" value="{{ rider.zoom }}" class="whole-row"/>\n\t<input type="hidden" id="mapType" name="mapType" value="{{ rider.mapType }}" class="whole-row"/>\n</form>';});
+define('text!templates/rider/profile.tpl',[],function () { return '<h1>{{ i18n.editProfile }}</h1>\n<form action="/rider/{{ id }}" method="post" id="profile-form">\n\t<div class="control-group">\n\t    <div class="btn-group lang-selector">\n\t    \t<a class="btn dropdown-toggle lang" data-toggle="dropdown" href="#">\n\t    \t\t{{ rider.lang }}\n\t    \t\t<span class="caret"></span>\n\t    \t</a>\n\t    \t<ul class="dropdown-menu" id="profile-lang-picker">\n\t    \t\t<!-- dropdown menu links -->\n\t    \t\t{{#languages}}\n\t    \t\t<li><a data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>\n\t    \t\t{{/languages}}\n\t\t    </ul>\n\t    </div>\n\n\t\t<input type="hidden" id="lang" name="lang" value="{{ rider.lang }}" class="whole-row"/>\n\t\t<span class="help-inline">{{#ucfirst}}{{ error.lang }}{{/ucfirst}}</span>\n\t</div>\n\t\n\t<div>\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="rideType-freeride" name="rideType"/>{{#ucfirst}}{{ i18n.freeride }}{{/ucfirst}}\n        </label>\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="rideType-freestyle" name="rideType"/>{{#ucfirst}}{{ i18n.freestyle }}{{/ucfirst}}\n        </label>\n\t\t<label class="checkbox">\n        \t<input type="checkbox" value="1" id="rideType-kite" name="rideType"/>{{#ucfirst}}{{ i18n.kite }}{{/ucfirst}}\n        </label>\n\t</div>\t\n\t\n\t<div>\n\t\t<label>\n\t\t\t{{#ucfirst}}{{ profilePicture }}{{/ucfirst}}\n\t\t\t<input type="file" id="avatar" class="btn" tabIndex="1"/>\n\t\t</label>\n\t</div>\n\t\n\t<div>\n\t\t<input type="button" id="profile-form-cancel" class="btn" data-dismiss="modal" value="{{#ucfirst}}{{ i18n.cancel }}{{/ucfirst}}" tabIndex="1"/>\n\t\t<input type="submit" id="profile-form-submit" class="btn btn-primary" value="{{#ucfirst}}{{ i18n.update }}{{/ucfirst}}" tabindex="0" />\n\t</div>\n\t\n\t<input type="hidden" id="latitude" name="latitude" value="{{ rider.latitude }}" class="whole-row"/>\n\t<input type="hidden" id="longitude" name="longitude" value="{{ rider.longitude }}" class="whole-row"/>\n\t<input type="hidden" id="zoom" name="zoom" value="{{ rider.zoom }}" class="whole-row"/>\n\t<input type="hidden" id="mapType" name="mapType" value="{{ rider.mapType }}" class="whole-row"/>\n</form>';});
 
 /******************************************************************************
  * js/src/app/rider.js
@@ -13359,14 +13370,25 @@ define('../src/app/rider',[
 		}
 	});
 
+	
 	var ProfileView = Backbone.View.extend({
 		template: mustache.compile(profileTpl),
 		
+		initialize: function(rider) {
+			this.model = rider;
+			
+			register.getPubsub().subscribe('register.lang.ready', _.bind(this.onLangChange, this));
+		},
+		
+		onLangChange: function(lang) {
+			this.model.set({lang: lang});
+			this.render();
+		},		
+		
 		render: function(){
-			$(this.el).html(
-				this.template(this.model.toJSON())
-			);
-			return this;
+			var data = _.extend(this.model.toJSON(), {i18n: register.getI18n()});
+			console.log('profile data', data);
+			return this.template(data);
 		}		
 	});
 	
@@ -13379,7 +13401,8 @@ define('../src/app/rider',[
 		'collection': RiderCollection,
 		'views': {
 			modal: ModalView,
-			username: UsernameView
+			username: UsernameView,
+			profile: ProfileView
 		}
 	};
 });
@@ -13658,6 +13681,8 @@ define('../src/app/session',[
 					loginLogout.displayLoginForm();
 				} else if($el.is('#registration-btn')) {
 					loginLogout.displayRegistrationForm();
+				} else if($el.is('#profile-btn')) {
+					pubsub.publish('register.content.changeRequest', 'rider-profile-form');
 				} else if ($el.is('#lang-picker a')) {
 					$el.parent().parent().removeClass('open');
 					register.setLang($el.data('lang'));
@@ -13703,6 +13728,10 @@ define('../src/app/session',[
 			this.render();
 			$(this.el).find('span.help-inline').addClass('hide');			
 			$(this.el).addClass('session-registration-message').modal();
+		},
+		
+		displayProfileUpdateForm: function() {
+			
 		},
 		
 		remove: function() {
@@ -13844,7 +13873,7 @@ define('../src/app/temp',[
 				}
 				var s = new SectionView(),
 				    a = new AsideView();
-				register.getPubsub().publish('register.content.ready', s, a);
+				register.getPubsub().publish('register.content.ready', 'temp-content', s, a);
 			}
 		},
 		
@@ -13889,8 +13918,9 @@ define('../src/app/temp',[
 			}
 			this.riders.unbind();
 			this.riders = null;
+			// Stop listening to the events below
+			this.undelegateEvents();
 
-			console.log('temp - unsubscribing');
 			register.getPubsub().unsubscribe('register.lang.ready', this.redraw, this);
 		},
 		
@@ -14070,14 +14100,27 @@ require([
 			if(register.isDebug()) {
 				console.log('main - mainView - initialize', appConfig);
 			}
+			register.getPubsub().subscribe('register.content.changeRequest', _.bind(this.onContentChangeRequest, this));
 			register.getPubsub().subscribe('register.content.ready', _.bind(this.onContentReady, this));
 		},
-	
+
+		onContentChangeRequest: function(targetContentName) {
+			var profileView = new riderModule.views.profile(register.getRider());
+			register.getPubsub().publish('register.content.ready', 'edit-profile', profileView);
+		},
+		
 		// When a content ready event is triggered, this updates the main view
-		onContentReady: function(sectionView, asideView) {
+		onContentReady: function(newContentName, sectionView, asideView) {
 			if(register.isDebug()) {
 				console.log('main - MainView - onContentReady', arguments);
 			}
+			
+			var currentContentName = register.getContentName();
+			register.setContentName(newContentName);
+			
+			$(this.el).removeClass(currentContentName)
+			  		  .addClass(newContentName);
+			
 			if(this.section && this.section.close){
 				this.section.close();
 			}
@@ -14090,18 +14133,33 @@ require([
 				tempView = null;
 			}
 			
-			this.section = sectionView;
-			this.aside = asideView;
+			if(sectionView) {
+				if(this.section) {
+					this.section.close();
+				}
+				this.section = sectionView;
+			}
+			
+			if(asideView) {
+				if(this.aside) {
+					this.aside.close();
+				}
+				this.aside = asideView;
+			}
 			
 			this.render();
 		},
 		
 		render: function(){
-			var s = this.section.render();
-			$(this.el).find('section').html(s);
+			if(this.section) {
+				var s = this.section.render();
+				$(this.el).find('section').html(s);
+			}
 
-			var a = this.aside.render();
-			$(this.el).find('aside').html(a);
+			if(this.aside) {
+				var a = this.aside.render();
+				$(this.el).find('aside').html(a);
+			}
 		}
 	});
 	

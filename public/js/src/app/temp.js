@@ -49,7 +49,7 @@ define([
 				}
 				var s = new SectionView(),
 				    a = new AsideView();
-				register.getPubsub().publish('register.content.ready', s, a);
+				register.getPubsub().publish('register.content.ready', 'temp-content', s, a);
 			}
 		},
 		
@@ -94,8 +94,9 @@ define([
 			}
 			this.riders.unbind();
 			this.riders = null;
+			// Stop listening to the events below
+			this.undelegateEvents();
 
-			console.log('temp - unsubscribing');
 			register.getPubsub().unsubscribe('register.lang.ready', this.redraw, this);
 		},
 		

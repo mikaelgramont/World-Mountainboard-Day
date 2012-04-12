@@ -25,7 +25,10 @@ define([], function(){
 		// The languages supported
 		languages: {},
 		// The only modal dialog instance
-		modal: null
+		modal: null,
+		// The handle for current content name
+		contentName: ''
+		
 	};
 	
 	var apiResourceUrls = {
@@ -203,6 +206,14 @@ define([], function(){
 		
 		setModal: function(modal) {
 			set('modal', modal);
+		},
+		
+		getContentName: function() {
+			return get('contentName');
+		},
+		
+		setContentName: function(contentName) {
+			set('contentName', contentName)
 		}
 	};
 });

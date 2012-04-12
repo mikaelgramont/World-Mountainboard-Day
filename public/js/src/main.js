@@ -136,17 +136,22 @@ require([
 		},
 
 		onContentChangeRequest: function(targetContentName) {
-			console.log('onContentChangeRequest', arguments);
-			// TODO: instantiate a riderModule.views.profile
-			// make it render
-			// publish a register.content.ready
+			var profileView = new riderModule.views.profile(register.getRider());
+			register.getPubsub().publish('register.content.ready', 'edit-profile', profileView);
 		},
 		
 		// When a content ready event is triggered, this updates the main view
-		onContentReady: function(sectionView, asideView) {
+		onContentReady: function(newContentName, sectionView, asideView) {
 			if(register.isDebug()) {
 				console.log('main - MainView - onContentReady', arguments);
 			}
+			
+			var currentContentName = register.getContentName();
+			register.setContentName(newContentName);
+			
+			$(this.el).removeClass(currentContentName)
+			  		  .addClass(newContentName);
+			
 			if(this.section && this.section.close){
 				this.section.close();
 			}
@@ -159,18 +164,33 @@ require([
 				tempView = null;
 			}
 			
-			this.section = sectionView;
-			this.aside = asideView;
+			if(sectionView) {
+				if(this.section) {
+					this.section.close();
+				}
+				this.section = sectionView;
+			}
+			
+			if(asideView) {
+				if(this.aside) {
+					this.aside.close();
+				}
+				this.aside = asideView;
+			}
 			
 			this.render();
 		},
 		
 		render: function(){
-			var s = this.section.render();
-			$(this.el).find('section').html(s);
+			if(this.section) {
+				var s = this.section.render();
+				$(this.el).find('section').html(s);
+			}
 
-			var a = this.aside.render();
-			$(this.el).find('aside').html(a);
+			if(this.aside) {
+				var a = this.aside.render();
+				$(this.el).find('aside').html(a);
+			}
 		}
 	});
 	

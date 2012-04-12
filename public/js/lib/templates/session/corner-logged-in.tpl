@@ -11,7 +11,7 @@
     	<ul class="dropdown-menu" id="lang-picker">
     		<!-- dropdown menu links -->
     		{{#languages}}
-    		<li><a href="#" data-lang="{{.}}" class="dyn-link lang {{.}}">{{.}}</a></li>
+    		<li><a data-lang="{{.}}" class="lang {{.}}">{{.}}</a></li>
     		{{/languages}}
 	    </ul>
     </div>

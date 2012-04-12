@@ -137,13 +137,27 @@ define([
 
 	
 	var ProfileView = Backbone.View.extend({
+		el: $('#main section').get(0),
+		
 		template: mustache.compile(profileTpl),
 		
+		initialize: function(rider) {
+			this.model = rider;
+			
+			register.getPubsub().subscribe('register.lang.ready', _.bind(this.onLangChange, this));
+		},
+		
+		onLangChange: function(lang) {
+			this.model.set({lang: lang});
+			
+			// TODO make sure that the section is updated
+			$(this.el).html(this.render());
+		},		
+		
 		render: function(){
-			$(this.el).html(
-				this.template(this.model.toJSON())
-			);
-			return this;
+			var data = _.extend({rider: this.model.toJSON()}, {i18n: register.getI18n()});
+			console.log('profile data', data);
+			return this.template(data);
 		}		
 	});
 	
